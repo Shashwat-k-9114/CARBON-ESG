@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}Server Error{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 text-center">
+        <div class="card">
+            <div class="card-body py-5">
+                <i class="bi bi-bug" style="font-size: 5rem; color: #dc3545;"></i>
+                <h1 class="display-4 mt-4">500</h1>
+                <h2 class="mb-4">Internal Server Error</h2>
+                <p class="lead mb-4">
+                    Something went wrong on our end. Please try again later.
+                </p>
+                <div class="alert alert-info">
+                    <h5><i class="bi bi-info-circle"></i> Troubleshooting Tips:</h5>
+                    <ul class="text-start">
+                        <li>Refresh the page</li>
+                        <li>Clear your browser cache</li>
+                        <li>Check your internet connection</li>
+                        <li>Contact support if the problem persists</li>
+                    </ul>
+                </div>
+                <div class="d-flex justify-content-center gap-3 flex-wrap">
+                    <button onclick="window.location.reload()" class="btn btn-success btn-lg">
+                        <i class="bi bi-arrow-clockwise"></i> Refresh Page
+                    </button>
+                    <a href="{{ url_for('index') }}" class="btn btn-outline-success btn-lg">
+                        <i class="bi bi-house"></i> Go to Homepage
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

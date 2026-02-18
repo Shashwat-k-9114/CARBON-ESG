@@ -1,0 +1,434 @@
+{% extends "base.html" %}
+
+{% block title %}Individual Dashboard{% endblock %}
+
+{% block extra_css %}
+<style>
+    .carbon-level {
+        font-size: 1.2rem;
+        font-weight: bold;
+        padding: 5px 15px;
+        border-radius: 20px;
+        display: inline-block;
+    }
+    .level-low {
+        background-color: #d4edda;
+        color: #155724;
+    }
+    .level-medium {
+        background-color: #fff3cd;
+        color: #856404;
+    }
+    .level-high {
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Left Column: User Info and Previous Assessments -->
+    <div class="col-lg-4 mb-4">
+        <!-- User Info Card -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-person-circle"></i> User Profile
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="text-center mb-3">
+                    <div class="mb-3">
+                        <i class="bi bi-person-bounding-box" style="font-size: 4rem; color: #2E7D32;"></i>
+                    </div>
+                    <h4>{{ user.username }}</h4>
+                    <p class="text-muted">
+                        <i class="bi bi-person-check"></i> Individual User
+                    </p>
+                </div>
+                
+                <div class="list-group list-group-flush">
+                    <div class="list-group-item d-flex justify-content-between">
+                        <span>Member Since</span>
+                        <span class="fw-bold">{{ user.created_at[:10] if user.created_at else 'N/A' }}</span>
+                    </div>
+                    <div class="list-group-item d-flex justify-content-between">
+                        <span>Assessments Done</span>
+                        <span class="fw-bold">{{ assessments|length }}</span>
+                    </div>
+                    <div class="list-group-item d-flex justify-content-between">
+                        <span>Last Assessment</span>
+                        <span class="fw-bold">
+                            {% if assessments %}
+                                {{ assessments[0].created_at[:10] }}
+                            {% else %}
+                                None
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Previous Assessments -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-clock-history"></i> Previous Assessments
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if assessments %}
+                    <div class="list-group list-group-flush">
+                        {% for assessment in assessments %}
+                        <div class="list-group-item">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">Assessment #{{ assessment.id }}</h6>
+                                <small>{{ assessment.created_at[:10] }}</small>
+                            </div>
+                            <p class="mb-1">
+                                Footprint: <strong>{{ assessment.carbon_footprint|round|int }} kg CO2e</strong>
+                            </p>
+                            <small>
+                                Level: 
+                                <span class="carbon-level level-{{ assessment.carbon_level|lower }}">
+                                    {{ assessment.carbon_level }}
+                                </span>
+                            </small>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted text-center mb-0">
+                        <i class="bi bi-info-circle"></i> No assessments yet
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Quick Tips -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-lightbulb"></i> Quick Carbon Tips
+                </h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled mb-0">
+                    <li class="mb-2">
+                        <i class="bi bi-check-circle text-success"></i>
+                        Switch to LED bulbs to save 75% energy
+                    </li>
+                    <li class="mb-2">
+                        <i class="bi bi-check-circle text-success"></i>
+                        Carpool twice a week to reduce emissions by 20%
+                    </li>
+                    <li class="mb-2">
+                        <i class="bi bi-check-circle text-success"></i>
+                        Have one vegetarian day per week
+                    </li>
+                    <li class="mb-2">
+                        <i class="bi bi-check-circle text-success"></i>
+                        Unplug devices when not in use
+                    </li>
+                    <li>
+                        <i class="bi bi-check-circle text-success"></i>
+                        Recycle paper, plastic, and glass
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Right Column: Calculator Form -->
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">
+                    <i class="bi bi-calculator"></i> Carbon Footprint Calculator
+                </h4>
+            </div>
+            <div class="card-body">
+                {% if errors %}
+                <div class="alert alert-danger">
+                    <h5><i class="bi bi-exclamation-triangle"></i> Please fix the following errors:</h5>
+                    <ul class="mb-0">
+                        {% for error in errors %}
+                        <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+                
+                <form method="POST" action="{{ url_for('calculate_individual') }}">
+                    <div class="row">
+                        <!-- Country -->
+                        <div class="col-md-6 mb-3">
+                            <label for="country" class="form-label">
+                                <i class="bi bi-globe"></i> Country
+                            </label>
+                            <select class="form-select" id="country" name="country" required>
+                                <option value="">Select your country</option>
+                                <option value="USA" {% if form_data and form_data.country == 'USA' %}selected{% endif %}>United States</option>
+                                <option value="UK" {% if form_data and form_data.country == 'UK' %}selected{% endif %}>United Kingdom</option>
+                                <option value="India" {% if form_data and form_data.country == 'India' %}selected{% endif %}>India</option>
+                                <option value="China" {% if form_data and form_data.country == 'China' %}selected{% endif %}>China</option>
+                                <option value="Germany" {% if form_data and form_data.country == 'Germany' %}selected{% endif %}>Germany</option>
+                                <option value="Canada" {% if form_data and form_data.country == 'Canada' %}selected{% endif %}>Canada</option>
+                                <option value="Australia" {% if form_data and form_data.country == 'Australia' %}selected{% endif %}>Australia</option>
+                                <option value="Other" {% if form_data and form_data.country == 'Other' %}selected{% endif %}>Other</option>
+                            </select>
+                            <div class="form-text">Country-specific emission factors are used</div>
+                        </div>
+                        
+                        <!-- Electricity Usage -->
+                        <div class="col-md-6 mb-3">
+                            <label for="electricity_kwh" class="form-label">
+                                <i class="bi bi-lightning-charge"></i> Monthly Electricity Usage (kWh)
+                            </label>
+                            <input type="number" 
+                                   class="form-control" 
+                                   id="electricity_kwh" 
+                                   name="electricity_kwh" 
+                                   min="0" 
+                                   max="10000" 
+                                   step="10"
+                                   value="{{ form_data.electricity_kwh if form_data else '300' }}"
+                                   required>
+                            <div class="form-text">Average household: 300-900 kWh/month</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Transportation Section -->
+                    <div class="card mb-4">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">
+                                <i class="bi bi-truck"></i> Transportation
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="vehicle_type" class="form-label">Vehicle Type</label>
+                                    <select class="form-select" id="vehicle_type" name="vehicle_type" required>
+                                        <option value="none" {% if form_data and form_data.vehicle_type == 'none' %}selected{% endif %}>
+                                            No personal vehicle
+                                        </option>
+                                        <option value="petrol" {% if form_data and form_data.vehicle_type == 'petrol' %}selected{% endif %}>
+                                            Petrol/Gasoline vehicle
+                                        </option>
+                                        <option value="diesel" {% if form_data and form_data.vehicle_type == 'diesel' %}selected{% endif %}>
+                                            Diesel vehicle
+                                        </option>
+                                    </select>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="vehicle_km" class="form-label">Monthly Distance (km)</label>
+                                    <input type="number" 
+                                           class="form-control" 
+                                           id="vehicle_km" 
+                                           name="vehicle_km" 
+                                           min="0" 
+                                           max="10000"
+                                           value="{{ form_data.vehicle_km if form_data else '500' }}"
+                                           required>
+                                    <div class="form-text">Kilometers traveled per month</div>
+                                </div>
+                                
+                                <div class="col-12 mb-3">
+                                    <label for="flight_type" class="form-label">Flight Frequency</label>
+                                    <select class="form-select" id="flight_type" name="flight_type" required>
+                                        <option value="none" {% if form_data and form_data.flight_type == 'none' %}selected{% endif %}>
+                                            No flights (or very rare)
+                                        </option>
+                                        <option value="short" {% if form_data and form_data.flight_type == 'short' %}selected{% endif %}>
+                                            Short flights (1-3 hours) occasionally
+                                        </option>
+                                        <option value="medium" {% if form_data and form_data.flight_type == 'medium' %}selected{% endif %}>
+                                            Medium flights (3-6 hours) regularly
+                                        </option>
+                                        <option value="long" {% if form_data and form_data.flight_type == 'long' %}selected{% endif %}>
+                                            Long flights (6+ hours) frequently
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Lifestyle Section -->
+                    <div class="card mb-4">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">
+                                <i class="bi bi-people"></i> Lifestyle
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="diet_type" class="form-label">Diet Type</label>
+                                    <select class="form-select" id="diet_type" name="diet_type" required>
+                                        <option value="veg" {% if form_data and form_data.diet_type == 'veg' %}selected{% endif %}>
+                                            Vegetarian/Vegan
+                                        </option>
+                                        <option value="mixed" {% if form_data and form_data.diet_type == 'mixed' %}selected{% endif %}>
+                                            Mixed (meat occasionally)
+                                        </option>
+                                        <option value="non-veg" {% if form_data and form_data.diet_type == 'non-veg' %}selected{% endif %}>
+                                            Non-vegetarian (meat regularly)
+                                        </option>
+                                    </select>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="shopping_freq" class="form-label">Shopping Frequency</label>
+                                    <select class="form-select" id="shopping_freq" name="shopping_freq" required>
+                                        <option value="low" {% if form_data and form_data.shopping_freq == 'low' %}selected{% endif %}>
+                                            Low (minimal shopping)
+                                        </option>
+                                        <option value="medium" {% if form_data and form_data.shopping_freq == 'medium' %}selected{% endif %}>
+                                            Medium (average shopping)
+                                        </option>
+                                        <option value="high" {% if form_data and form_data.shopping_freq == 'high' %}selected{% endif %}>
+                                            High (frequent shopping)
+                                        </option>
+                                    </select>
+                                </div>
+                                
+                                <div class="col-12">
+                                    <label class="form-label">Recycling Practice</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" 
+                                               type="radio" 
+                                               name="recycling" 
+                                               id="recycling_yes" 
+                                               value="yes"
+                                               {% if not form_data or form_data.recycling == 'yes' %}checked{% endif %}>
+                                        <label class="form-check-label" for="recycling_yes">
+                                            <i class="bi bi-check-circle text-success"></i> Yes, I recycle regularly
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" 
+                                               type="radio" 
+                                               name="recycling" 
+                                               id="recycling_no" 
+                                               value="no"
+                                               {% if form_data and form_data.recycling == 'no' %}checked{% endif %}>
+                                        <label class="form-check-label" for="recycling_no">
+                                            <i class="bi bi-x-circle text-danger"></i> No, I don't recycle regularly
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Submit Button -->
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <button type="reset" class="btn btn-outline-secondary me-md-2">
+                            <i class="bi bi-arrow-clockwise"></i> Reset Form
+                        </button>
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-calculator"></i> Calculate My Carbon Footprint
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Information Card -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-info-circle"></i> How It Works
+                </h5>
+            </div>
+            <div class="card-body">
+                <p>Our carbon calculator uses:</p>
+                <ol>
+                    <li><strong>Emission Factors:</strong> DEFRA conversion factors for accurate calculations</li>
+                    <li><strong>Machine Learning:</strong> Random Forest model trained on consumption patterns</li>
+                    <li><strong>Hybrid Approach:</strong> Combines rule-based and ML methods for better accuracy</li>
+                    <li><strong>Personalization:</strong> Custom recommendations based on your inputs</li>
+                </ol>
+                <p class="mb-0 text-muted">
+                    <i class="bi bi-exclamation-triangle"></i>
+                    <small>This tool provides estimates for awareness and educational purposes.</small>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Update vehicle km field based on vehicle type
+    const vehicleType = document.getElementById('vehicle_type');
+    const vehicleKm = document.getElementById('vehicle_km');
+    
+    function updateVehicleKmField() {
+        if (vehicleType.value === 'none') {
+            vehicleKm.value = '0';
+            vehicleKm.disabled = true;
+            vehicleKm.style.backgroundColor = '#f8f9fa';
+            vehicleKm.style.cursor = 'not-allowed';
+        } else {
+            vehicleKm.disabled = false;
+            vehicleKm.style.backgroundColor = '';
+            vehicleKm.style.cursor = '';
+            if (vehicleKm.value === '0' || vehicleKm.value === '') {
+                vehicleKm.value = '500';
+            }
+        }
+    }
+    
+    vehicleType.addEventListener('change', updateVehicleKmField);
+    
+    // Also validate before form submission
+    const form = document.querySelector('form');
+    form.addEventListener('submit', function(event) {
+        // Basic client-side validation
+        const electricity = document.getElementById('electricity_kwh');
+        if (!electricity.value || isNaN(electricity.value) || parseFloat(electricity.value) < 0) {
+            alert('Please enter a valid electricity usage (positive number)');
+            event.preventDefault();
+            return;
+        }
+        
+        if (vehicleType.value !== 'none') {
+            if (!vehicleKm.value || isNaN(vehicleKm.value) || parseFloat(vehicleKm.value) < 0) {
+                alert('Please enter a valid vehicle distance (positive number)');
+                event.preventDefault();
+                return;
+            }
+        }
+        
+        // Show loading state
+        const submitBtn = form.querySelector('button[type="submit"]');
+        if (submitBtn) {
+            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status"></span> Calculating...';
+            submitBtn.disabled = true;
+        }
+    });
+    
+    // Initialize on page load
+    updateVehicleKmField();
+    
+    // Add input validation for numbers
+    const numberInputs = document.querySelectorAll('input[type="number"]');
+    numberInputs.forEach(input => {
+        input.addEventListener('input', function() {
+            if (this.value < 0) {
+                this.value = 0;
+            }
+            if (this.max && this.value > parseFloat(this.max)) {
+                this.value = this.max;
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

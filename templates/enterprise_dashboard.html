@@ -1,0 +1,362 @@
+{% extends "base.html" %}
+
+{% block title %}Enterprise Dashboard{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Left Column: Company Info and Previous Assessments -->
+    <div class="col-lg-4 mb-4">
+        <!-- Company Info Card -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-building"></i> Company Profile
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="text-center mb-3">
+                    <div class="mb-3">
+                        <i class="bi bi-building" style="font-size: 4rem; color: #2E7D32;"></i>
+                    </div>
+                    <h4>{{ user.username }}</h4>
+                    <p class="text-muted">
+                        <i class="bi bi-briefcase"></i> Enterprise Account
+                    </p>
+                </div>
+                
+                <div class="list-group list-group-flush">
+                    <div class="list-group-item d-flex justify-content-between">
+                        <span>Account Created</span>
+                        <span class="fw-bold">{{ user.created_at[:10] if user.created_at else 'N/A' }}</span>
+                    </div>
+                    <div class="list-group-item d-flex justify-content-between">
+                        <span>ESG Assessments</span>
+                        <span class="fw-bold">{{ assessments|length }}</span>
+                    </div>
+                    <div class="list-group-item d-flex justify-content-between">
+                        <span>Last Assessment</span>
+                        <span class="fw-bold">
+                            {% if assessments %}
+                                {{ assessments[0].created_at[:10] }}
+                            {% else %}
+                                None
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Previous ESG Assessments -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-graph-up"></i> Previous ESG Assessments
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if assessments %}
+                    <div class="list-group list-group-flush">
+                        {% for assessment in assessments %}
+                        <div class="list-group-item">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">{{ assessment.company_name }}</h6>
+                                <small>{{ assessment.created_at[:10] }}</small>
+                            </div>
+                            <p class="mb-1">
+                                ESG Score: <strong>{{ assessment.esg_score }}/100</strong>
+                            </p>
+                            <small>
+                                Risk: 
+                                {% if assessment.esg_risk == 'Low' %}
+                                <span class="badge bg-success">{{ assessment.esg_risk }}</span>
+                                {% elif assessment.esg_risk == 'Medium' %}
+                                <span class="badge bg-warning">{{ assessment.esg_risk }}</span>
+                                {% else %}
+                                <span class="badge bg-danger">{{ assessment.esg_risk }}</span>
+                                {% endif %}
+                            </small>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted text-center mb-0">
+                        <i class="bi bi-info-circle"></i> No ESG assessments yet
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- ESG Benefits -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-award"></i> Benefits of ESG Readiness
+                </h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled mb-0">
+                    <li class="mb-2">
+                        <i class="bi bi-check-circle text-success"></i>
+                        Improved investor confidence
+                    </li>
+                    <li class="mb-2">
+                        <i class="bi bi-check-circle text-success"></i>
+                        Better risk management
+                    </li>
+                    <li class="mb-2">
+                        <i class="bi bi-check-circle text-success"></i>
+                        Enhanced brand reputation
+                    </li>
+                    <li class="mb-2">
+                        <i class="bi bi-check-circle text-success"></i>
+                        Operational cost savings
+                    </li>
+                    <li>
+                        <i class="bi bi-check-circle text-success"></i>
+                        Competitive advantage
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Right Column: ESG Assessment Form -->
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">
+                    <i class="bi bi-clipboard-data"></i> ESG Readiness Assessment
+                </h4>
+            </div>
+            <div class="card-body">
+                {% if errors %}
+                <div class="alert alert-danger">
+                    <h5><i class="bi bi-exclamation-triangle"></i> Please fix the following errors:</h5>
+                    <ul class="mb-0">
+                        {% for error in errors %}
+                        <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+                
+                <form method="POST" action="{{ url_for('calculate_enterprise') }}">
+                    <!-- Company Information -->
+                    <div class="card mb-4">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">
+                                <i class="bi bi-building"></i> Company Information
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="company_name" class="form-label">Company Name</label>
+                                    <input type="text" 
+                                           class="form-control" 
+                                           id="company_name" 
+                                           name="company_name" 
+                                           value="{{ form_data.company_name if form_data else '' }}"
+                                           required>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="industry" class="form-label">Industry</label>
+                                    <select class="form-select" id="industry" name="industry" required>
+                                        <option value="">Select industry</option>
+                                        <option value="Manufacturing" {% if form_data and form_data.industry == 'Manufacturing' %}selected{% endif %}>
+                                            Manufacturing
+                                        </option>
+                                        <option value="IT" {% if form_data and form_data.industry == 'IT' %}selected{% endif %}>
+                                            Information Technology
+                                        </option>
+                                        <option value="Retail" {% if form_data and form_data.industry == 'Retail' %}selected{% endif %}>
+                                            Retail
+                                        </option>
+                                        <option value="Healthcare" {% if form_data and form_data.industry == 'Healthcare' %}selected{% endif %}>
+                                            Healthcare
+                                        </option>
+                                        <option value="Transport" {% if form_data and form_data.industry == 'Transport' %}selected{% endif %}>
+                                            Transportation
+                                        </option>
+                                        <option value="Other" {% if form_data and form_data.industry == 'Other' %}selected{% endif %}>
+                                            Other
+                                        </option>
+                                    </select>
+                                </div>
+                                
+                                <div class="col-12 mb-3">
+                                    <label for="employees" class="form-label">Number of Employees</label>
+                                    <input type="number" 
+                                           class="form-control" 
+                                           id="employees" 
+                                           name="employees" 
+                                           min="1" 
+                                           max="1000000"
+                                           value="{{ form_data.employees if form_data else '50' }}"
+                                           required>
+                                    <div class="form-text">Full-time equivalent employees</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Environmental Metrics -->
+                    <div class="card mb-4">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">
+                                <i class="bi bi-tree"></i> Environmental Metrics (70% of score)
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="energy_usage" class="form-label">Monthly Energy Usage (kWh)</label>
+                                    <input type="number" 
+                                           class="form-control" 
+                                           id="energy_usage" 
+                                           name="energy_usage" 
+                                           min="0" 
+                                           step="100"
+                                           value="{{ form_data.energy_usage if form_data else '10000' }}"
+                                           required>
+                                    <div class="form-text">Total electricity and fuel consumption</div>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="travel_km" class="form-label">Annual Business Travel (km)</label>
+                                    <input type="number" 
+                                           class="form-control" 
+                                           id="travel_km" 
+                                           name="travel_km" 
+                                           min="0" 
+                                           step="1000"
+                                           value="{{ form_data.travel_km if form_data else '50000' }}"
+                                           required>
+                                    <div class="form-text">Total distance for business trips</div>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Cloud Services Usage</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" 
+                                               type="radio" 
+                                               name="cloud_usage" 
+                                               id="cloud_yes" 
+                                               value="yes"
+                                               {% if not form_data or form_data.cloud_usage == 'yes' %}checked{% endif %}>
+                                        <label class="form-check-label" for="cloud_yes">
+                                            <i class="bi bi-check-circle text-success"></i> Yes, we use cloud services
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" 
+                                               type="radio" 
+                                               name="cloud_usage" 
+                                               id="cloud_no" 
+                                               value="no"
+                                               {% if form_data and form_data.cloud_usage == 'no' %}checked{% endif %}>
+                                        <label class="form-check-label" for="cloud_no">
+                                            <i class="bi bi-x-circle text-danger"></i> No, we use on-premise infrastructure
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="waste_management" class="form-label">Waste Management Level</label>
+                                    <select class="form-select" id="waste_management" name="waste_management" required>
+                                        <option value="1" {% if form_data and form_data.waste_management == '1' %}selected{% endif %}>
+                                            1 - Basic disposal, no recycling
+                                        </option>
+                                        <option value="2" {% if form_data and form_data.waste_management == '2' %}selected{% endif %}>
+                                            2 - Some recycling initiatives
+                                        </option>
+                                        <option value="3" {% if form_data and form_data.waste_management == '3' %}selected{% endif %}>
+                                            3 - Established recycling program
+                                        </option>
+                                        <option value="4" {% if form_data and form_data.waste_management == '4' %}selected{% endif %}>
+                                            4 - Advanced waste reduction
+                                        </option>
+                                        <option value="5" {% if form_data and form_data.waste_management == '5' %}selected{% endif %}>
+                                            5 - Circular economy practices
+                                        </option>
+                                    </select>
+                                    <div class="form-text">1 (Poor) to 5 (Excellent)</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Note about Social & Governance -->
+                    <div class="alert alert-info">
+                        <h6><i class="bi bi-info-circle"></i> Note on Social & Governance Assessment</h6>
+                        <p class="mb-0">
+                            Social (15%) and Governance (15%) components are evaluated based on industry benchmarks,
+                            company size, and inferred from environmental practices. For detailed S&G assessment,
+                            additional data collection would be required.
+                        </p>
+                    </div>
+                    
+                    <!-- Submit Button -->
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <button type="reset" class="btn btn-outline-secondary me-md-2">
+                            <i class="bi bi-arrow-clockwise"></i> Reset Form
+                        </button>
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-clipboard-check"></i> Assess ESG Readiness
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Assessment Methodology -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-diagram-2"></i> ESG Assessment Methodology
+                </h5>
+            </div>
+            <div class="card-body">
+                <p>Our ESG assessment uses a Decision Tree Classifier with:</p>
+                
+                <div class="row">
+                    <div class="col-md-4">
+                        <h6 class="text-success">Environmental (70%)</h6>
+                        <ul class="small">
+                            <li>Energy efficiency</li>
+                            <li>Carbon emissions</li>
+                            <li>Waste management</li>
+                            <li>Resource consumption</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-4">
+                        <h6 class="text-success">Social (15%)</h6>
+                        <ul class="small">
+                            <li>Employee welfare</li>
+                            <li>Community impact</li>
+                            <li>Diversity & inclusion</li>
+                            <li>Customer satisfaction</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-4">
+                        <h6 class="text-success">Governance (15%)</h6>
+                        <ul class="small">
+                            <li>Board accountability</li>
+                            <li>Transparency</li>
+                            <li>Ethical practices</li>
+                            <li>Risk management</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <p class="mb-0 text-muted">
+                    <i class="bi bi-exclamation-triangle"></i>
+                    <small>This assessment provides a readiness indicator, not formal ESG certification.</small>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

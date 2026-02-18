@@ -1,0 +1,389 @@
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section text-center py-5">
+    <div class="container">
+        <h1 class="display-4 fw-bold text-success mb-4">
+            <i class="bi bi-tree-fill"></i> Carbon ESG Platform
+        </h1>
+        <p class="lead mb-4">
+            AI-powered Carbon Footprint Estimation & ESG Readiness Assessment
+        </p>
+        <p class="text-muted mb-5">
+            Calculate your environmental impact and assess sustainability readiness with machine learning models
+        </p>
+        
+        {% if not session.user_id %}
+        <div class="d-flex justify-content-center gap-3 flex-wrap">
+            <a href="{{ url_for('register') }}" class="btn btn-success btn-lg">
+                <i class="bi bi-person-plus"></i> Get Started Free
+            </a>
+            <a href="{{ url_for('login') }}" class="btn btn-outline-success btn-lg">
+                <i class="bi bi-box-arrow-in-right"></i> Login
+            </a>
+        </div>
+        {% else %}
+        <div class="d-flex justify-content-center gap-3 flex-wrap">
+            <a href="{{ url_for('dashboard') }}" class="btn btn-success btn-lg">
+                <i class="bi bi-speedometer2"></i> Go to Dashboard
+            </a>
+            <a href="{{ url_for('view_reports') }}" class="btn btn-outline-success btn-lg">
+                <i class="bi bi-file-earmark-text"></i> View Reports
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="features-section py-5 bg-light">
+    <div class="container">
+        <h2 class="text-center mb-5">Key Features</h2>
+        
+        <div class="row g-4">
+            <!-- Feature 1 -->
+            <div class="col-md-4">
+                <div class="card h-100 text-center">
+                    <div class="card-body">
+                        <div class="feature-icon mb-3">
+                            <i class="bi bi-person-circle text-success" style="font-size: 3rem;"></i>
+                        </div>
+                        <h4 class="card-title">Individual Calculator</h4>
+                        <p class="card-text">
+                            Calculate your personal carbon footprint based on lifestyle, 
+                            consumption patterns, and daily activities.
+                        </p>
+                        <ul class="list-unstyled text-start">
+                            <li><i class="bi bi-check-circle text-success"></i> Electricity Usage</li>
+                            <li><i class="bi bi-check-circle text-success"></i> Transportation</li>
+                            <li><i class="bi bi-check-circle text-success"></i> Diet Analysis</li>
+                            <li><i class="bi bi-check-circle text-success"></i> Shopping Habits</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Feature 2 -->
+            <div class="col-md-4">
+                <div class="card h-100 text-center">
+                    <div class="card-body">
+                        <div class="feature-icon mb-3">
+                            <i class="bi bi-building text-success" style="font-size: 3rem;"></i>
+                        </div>
+                        <h4 class="card-title">Enterprise ESG Assessment</h4>
+                        <p class="card-text">
+                            Evaluate your organization's Environmental, Social, and 
+                            Governance (ESG) readiness and risk factors.
+                        </p>
+                        <ul class="list-unstyled text-start">
+                            <li><i class="bi bi-check-circle text-success"></i> Environmental Impact</li>
+                            <li><i class="bi bi-check-circle text-success"></i> Social Responsibility</li>
+                            <li><i class="bi bi-check-circle text-success"></i> Governance Metrics</li>
+                            <li><i class="bi bi-check-circle text-success"></i> Risk Classification</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Feature 3 -->
+            <div class="col-md-4">
+                <div class="card h-100 text-center">
+                    <div class="card-body">
+                        <div class="feature-icon mb-3">
+                            <i class="bi bi-file-earmark-pdf text-success" style="font-size: 3rem;"></i>
+                        </div>
+                        <h4 class="card-title">AI-Powered Reports</h4>
+                        <p class="card-text">
+                            Generate professional PDF reports with insights, 
+                            recommendations, and actionable steps.
+                        </p>
+                        <ul class="list-unstyled text-start">
+                            <li><i class="bi bi-check-circle text-success"></i> Carbon Footprint Reports</li>
+                            <li><i class="bi bi-check-circle text-success"></i> ESG Assessment Reports</li>
+                            <li><i class="bi bi-check-circle text-success"></i> Personalized Recommendations</li>
+                            <li><i class="bi bi-check-circle text-success"></i> Downloadable Certificates</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works -->
+<section class="how-it-works py-5">
+    <div class="container">
+        <h2 class="text-center mb-5">How It Works</h2>
+        
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <div class="step-card mb-4">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h4>Sign Up & Choose Your Profile</h4>
+                        <p>Register as an individual or enterprise user. The platform customizes the experience based on your needs.</p>
+                    </div>
+                </div>
+                
+                <div class="step-card mb-4">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h4>Input Your Data</h4>
+                        <p>Fill in your consumption patterns, lifestyle choices, or business operations data through our intuitive forms.</p>
+                    </div>
+                </div>
+                
+                <div class="step-card mb-4">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h4>AI Analysis</h4>
+                        <p>Our machine learning models analyze your inputs using Random Forest and Decision Tree algorithms.</p>
+                    </div>
+                </div>
+                
+                <div class="step-card">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h4>Get Results & Reports</h4>
+                        <p>Receive detailed assessments, recommendations, and professional PDF reports for your records.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="text-center">
+                    <img src="https://cdn.pixabay.com/photo/2017/09/12/11/56/universe-2742113_1280.jpg" 
+                         alt="Sustainability" 
+                         class="img-fluid rounded shadow"
+                         style="max-height: 400px;">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ML Models Section -->
+<!-- ML Models Section with REAL Performance Data -->
+<section class="ml-models py-5 bg-light">
+    <div class="container">
+        <h2 class="text-center mb-4">🚀 Machine Learning Performance</h2>
+        <p class="text-center text-muted mb-5">Our models achieved exceptional accuracy on real-world data</p>
+        
+        <div class="row">
+            <!-- Carbon Model Card -->
+            <div class="col-md-6 mb-4">
+                <div class="card h-100 border-0 shadow-lg">
+                    <div class="card-header bg-success text-white py-3">
+                        <h4 class="mb-0">
+                            <i class="bi bi-diagram-3 me-2"></i> Gradient Boosting Regressor
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="text-center mb-4">
+                            <span class="badge bg-success fs-5 p-3">R² Score: 0.976 (97.6% Accuracy)</span>
+                        </div>
+                        
+                        <div class="row mb-4">
+                            <div class="col-6 text-center">
+                                <div class="display-4 fw-bold text-success">118</div>
+                                <small class="text-muted">Mean Absolute Error (kg)</small>
+                            </div>
+                            <div class="col-6 text-center">
+                                <div class="display-4 fw-bold text-success">5.5%</div>
+                                <small class="text-muted">Mean Absolute % Error</small>
+                            </div>
+                        </div>
+                        
+                        <h5 class="mt-4 mb-3">🎯 Purpose: Individual Carbon Footprint</h5>
+                        <p><strong>Training Data:</strong> 10,000 records from Carbon Emission Dataset</p>
+                        
+                        <h5 class="mt-4 mb-3">📊 Top 5 Predictive Features:</h5>
+                        <div class="progress mb-3" style="height: 25px;">
+                            <div class="progress-bar bg-success" style="width: 23.7%">Flight Frequency (23.7%)</div>
+                        </div>
+                        <div class="progress mb-3" style="height: 25px;">
+                            <div class="progress-bar bg-info" style="width: 20.2%">Vehicle Distance (20.2%)</div>
+                        </div>
+                        <div class="progress mb-3" style="height: 25px;">
+                            <div class="progress-bar bg-warning" style="width: 17.1%">Distance (log) (17.1%)</div>
+                        </div>
+                        <div class="progress mb-3" style="height: 25px;">
+                            <div class="progress-bar bg-primary" style="width: 15.6%">Vehicle Type (15.6%)</div>
+                        </div>
+                        <div class="progress mb-3" style="height: 25px;">
+                            <div class="progress-bar bg-secondary" style="width: 5.0%">Waste Volume (5.0%)</div>
+                        </div>
+                        
+                        <div class="alert alert-success mt-4">
+                            <i class="bi bi-check-circle-fill me-2"></i>
+                            <strong>Cross-Validation Score:</strong> 0.923 (±0.002)
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- ESG Model Card -->
+            <div class="col-md-6 mb-4">
+                <div class="card h-100 border-0 shadow-lg">
+                    <div class="card-header bg-primary text-white py-3">
+                        <h4 class="mb-0">
+                            <i class="bi bi-diagram-2 me-2"></i> Decision Tree Classifier
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="text-center mb-4">
+                            <span class="badge bg-primary fs-5 p-3">Accuracy: 90.3%</span>
+                        </div>
+                        
+                        <div class="row mb-4">
+                            <div class="col-4 text-center">
+                                <div class="h3 fw-bold text-primary">93%</div>
+                                <small class="text-muted">Precision (Low Risk)</small>
+                            </div>
+                            <div class="col-4 text-center">
+                                <div class="h3 fw-bold text-primary">96%</div>
+                                <small class="text-muted">Recall (Low Risk)</small>
+                            </div>
+                            <div class="col-4 text-center">
+                                <div class="h3 fw-bold text-primary">89%</div>
+                                <small class="text-muted">5-Fold CV</small>
+                            </div>
+                        </div>
+                        
+                        <h5 class="mt-4 mb-3">🎯 Purpose: ESG Risk Classification</h5>
+                        <p><strong>Training Data:</strong> Synthetic ESG Dataset (2,000 samples)</p>
+                        
+                        <h5 class="mt-4 mb-3">📊 Classification Features:</h5>
+                        <div class="row">
+                            <div class="col-6">
+                                <ul class="list-unstyled">
+                                    <li><i class="bi bi-building text-primary me-2"></i> Industry Type</li>
+                                    <li><i class="bi bi-people text-primary me-2"></i> Employee Count</li>
+                                    <li><i class="bi bi-lightning text-primary me-2"></i> Energy Usage</li>
+                                    <li><i class="bi bi-airplane text-primary me-2"></i> Travel Distance</li>
+                                </ul>
+                            </div>
+                            <div class="col-6">
+                                <ul class="list-unstyled">
+                                    <li><i class="bi bi-cloud text-primary me-2"></i> Cloud Adoption</li>
+                                    <li><i class="bi bi-trash text-primary me-2"></i> Waste Management</li>
+                                    <li><i class="bi bi-recycle text-primary me-2"></i> Recycling Rate</li>
+                                    <li><i class="bi bi-sun text-primary me-2"></i> Renewable Energy</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4 p-3 bg-light rounded">
+                            <h6 class="mb-2">🔍 Confusion Matrix:</h6>
+                            <div class="row text-center">
+                                <div class="col-6">
+                                    <small>Actual \ Predicted</small>
+                                    <div class="border p-2 mt-1">Low Risk: 339 ✓ | 14 ✗</div>
+                                </div>
+                                <div class="col-6">
+                                    <small>Medium Risk</small>
+                                    <div class="border p-2 mt-1">25 ✗ | 22 ✓</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Edge Case Testing Results -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card border-0 shadow">
+                    <div class="card-header bg-dark text-white">
+                        <h5 class="mb-0"><i class="bi bi-lightbulb me-2"></i> Edge Case Testing Results</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6 class="text-success mb-3">🌱 Low Carbon Profiles</h6>
+                                <table class="table table-sm">
+                                    <tr><td>Ultra-Green (vegan, no car)</td><td class="text-success">590 kg</td></tr>
+                                    <tr><td>Electric Vehicle + Vegan</td><td class="text-success">740 kg</td></tr>
+                                    <tr><td>No Vehicle + Vegetarian</td><td class="text-success">650 kg</td></tr>
+                                </table>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="text-danger mb-3">🔥 High Carbon Profiles</h6>
+                                <table class="table table-sm">
+                                    <tr><td>Frequent Flyer + Meat Diet</td><td class="text-warning">2,084 kg</td></tr>
+                                    <tr><td>Max Carbon (all high)</td><td class="text-danger">4,034 kg</td></tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Performance Badge -->
+        <div class="text-center mt-5">
+            <div class="alert alert-success d-inline-block">
+                <i class="bi bi-star-fill text-warning me-2"></i>
+                <strong>Model Performance:</strong> 97.6% Accuracy | 5.5% Error | 10,000+ Training Samples
+                <i class="bi bi-star-fill text-warning ms-2"></i>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Disclaimer -->
+<section class="disclaimer py-4 bg-warning bg-opacity-10">
+    <div class="container">
+        <div class="alert alert-warning mb-0">
+            <h5><i class="bi bi-exclamation-triangle"></i> Important Disclaimer</h5>
+            <p class="mb-0">
+                This platform is developed as a final year engineering project for academic purposes. 
+                All carbon footprint calculations and ESG assessments are estimates based on AI models 
+                and should not be used for formal certification, regulatory compliance, or investment decisions. 
+                Always consult with certified professionals for accurate environmental assessments.
+            </p>
+        </div>
+    </div>
+</section>
+
+<style>
+.step-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    padding: 15px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+}
+
+.step-number {
+    width: 40px;
+    height: 40px;
+    background-color: var(--primary-color);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+.step-content h4 {
+    color: var(--dark-green);
+    margin-bottom: 5px;
+}
+
+.step-content p {
+    color: #666;
+    margin-bottom: 0;
+}
+</style>
+{% endblock %}

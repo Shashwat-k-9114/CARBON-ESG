@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+
+{% block title %}Register{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card">
+            <div class="card-header text-center">
+                <h4 class="mb-0">
+                    <i class="bi bi-person-plus"></i> Create Your Account
+                </h4>
+            </div>
+            <div class="card-body">
+                {% if errors %}
+                <div class="alert alert-danger">
+                    <ul class="mb-0">
+                        {% for error in errors %}
+                        <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+                
+                <form method="POST" action="{{ url_for('register') }}">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="username" class="form-label">
+                                <i class="bi bi-person"></i> Username *
+                            </label>
+                            <input type="text" 
+                                   class="form-control" 
+                                   id="username" 
+                                   name="username" 
+                                   required
+                                   value="{{ request.form.username if request.form }}">
+                            <div class="form-text">Choose a unique username</div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="email" class="form-label">
+                                <i class="bi bi-envelope"></i> Email Address *
+                            </label>
+                            <input type="email" 
+                                   class="form-control" 
+                                   id="email" 
+                                   name="email" 
+                                   required
+                                   value="{{ request.form.email if request.form }}">
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="password" class="form-label">
+                                <i class="bi bi-lock"></i> Password *
+                            </label>
+                            <input type="password" 
+                                   class="form-control" 
+                                   id="password" 
+                                   name="password" 
+                                   required>
+                            <div class="form-text">Minimum 6 characters</div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="confirm_password" class="form-label">
+                                <i class="bi bi-lock-fill"></i> Confirm Password *
+                            </label>
+                            <input type="password" 
+                                   class="form-control" 
+                                   id="confirm_password" 
+                                   name="confirm_password" 
+                                   required>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="form-label">
+                            <i class="bi bi-person-badge"></i> Account Type *
+                        </label>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-check card p-3">
+                                    <input class="form-check-input" 
+                                           type="radio" 
+                                           name="user_type" 
+                                           id="individual" 
+                                           value="individual" 
+                                           checked
+                                           {% if request.form.user_type == 'individual' %}checked{% endif %}>
+                                    <label class="form-check-label" for="individual">
+                                        <h6 class="mb-1">
+                                            <i class="bi bi-person-circle text-success"></i> Individual
+                                        </h6>
+                                        <p class="small text-muted mb-0">
+                                            Calculate personal carbon footprint and track environmental impact
+                                        </p>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check card p-3">
+                                    <input class="form-check-input" 
+                                           type="radio" 
+                                           name="user_type" 
+                                           id="enterprise" 
+                                           value="enterprise"
+                                           {% if request.form.user_type == 'enterprise' %}checked{% endif %}>
+                                    <label class="form-check-label" for="enterprise">
+                                        <h6 class="mb-1">
+                                            <i class="bi bi-building text-success"></i> Enterprise
+                                        </h6>
+                                        <p class="small text-muted mb-0">
+                                            Assess ESG readiness and sustainability performance for businesses
+                                        </p>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-person-plus"></i> Create Account
+                        </button>
+                    </div>
+                </form>
+                
+                <div class="text-center mt-3">
+                    <p class="mb-0">
+                        Already have an account? 
+                        <a href="{{ url_for('login') }}" class="text-success">Login here</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-body">
+                <h6><i class="bi bi-info-circle"></i> About Account Types</h6>
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="text-success">Individual Account</h6>
+                        <ul class="small">
+                            <li>Personal carbon footprint calculator</li>
+                            <li>Lifestyle-based emissions analysis</li>
+                            <li>Personalized reduction suggestions</li>
+                            <li>Progress tracking over time</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-success">Enterprise Account</h6>
+                        <ul class="small">
+                            <li>ESG readiness assessment</li>
+                            <li>Business sustainability metrics</li>
+                            <li>Risk classification and reporting</li>
+                            <li>Professional PDF reports</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.form-check .card {
+    border: 2px solid #dee2e6;
+    transition: all 0.3s;
+    cursor: pointer;
+}
+
+.form-check-input:checked ~ .card {
+    border-color: var(--primary-color);
+    background-color: rgba(46, 125, 50, 0.05);
+}
+
+.form-check-input {
+    margin-top: 0.5rem;
+}
+</style>
+{% endblock %}

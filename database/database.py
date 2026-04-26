@@ -14,7 +14,9 @@ def init_db():
         email TEXT UNIQUE NOT NULL,
         password TEXT NOT NULL,
         user_type TEXT NOT NULL CHECK(user_type IN ('individual', 'enterprise')),
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        subscription_plan TEXT DEFAULT 'free',
+        plan_updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
     ''')
     
@@ -34,6 +36,12 @@ def init_db():
         carbon_footprint REAL,
         carbon_level TEXT,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        home_type TEXT,
+        heating_source TEXT,
+        meat_frequency INTEGER,
+        food_waste TEXT,
+        vehicle_efficiency REAL,
+        renewable_percent REAL,
         FOREIGN KEY (user_id) REFERENCES users (id)
     )
     ''')

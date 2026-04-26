@@ -7,26 +7,53 @@ import os
 class CarbonCalculator:
     def __init__(self):
         self.carbon_model = None
-        self.scaler = None
         self.model_features = None
-        self.model_type = None
-        self.ensemble_weights = None
 
-        model_path = "models/carbon_model_laptop.pkl"
+        model_path = "models/carbon_model_v3.pkl"
 
         if os.path.exists(model_path):
-            model_package = joblib.load(model_path)
+            try:
+                model_package = joblib.load(model_path)
 
-            self.carbon_model = model_package.get("model")
-            self.scaler = model_package.get("scaler")
-            self.model_features = model_package.get("features")
-            self.model_type = model_package.get("model_type")
-            self.ensemble_weights = model_package.get("ensemble_weights")
+                self.carbon_model = model_package["model"]
+                self.model_features = model_package["features"]
 
-            print(f"ML Model Loaded: {self.model_type}")
-            print(f"Features Expected: {len(self.model_features)}")
+                print("ML Model Loaded: UI-Aligned v2")
+                print(f"Features Expected: {len(self.model_features)}")
 
-        self.emission_factors = joblib.load("models/emission_factors.pkl")
+            except Exception as e:
+                print(f"Error loading model: {e}")
+                self.carbon_model = None
+                self.model_features = []
+        else:
+            print("No model found at", model_path)
+            self.carbon_model = None
+            self.model_features = []
+
+        # Load emission factors
+        try:
+            self.emission_factors = joblib.load("models/emission_factors.pkl")
+        except:
+            # Emission factors sourced from IEA 2023 + DEFRA 2023 guidelines
+            self.emission_factors = {
+                'electricity': {
+                    'USA': 0.38, 'UK': 0.23, 'Canada': 0.15, 'Australia': 0.70,
+                    'Germany': 0.35, 'France': 0.05, 'India': 0.67, 'China': 0.58,
+                    'Japan': 0.43, 'Brazil': 0.08, 'South Africa': 0.80, 'Other': 0.50
+                },
+                'vehicle': {
+                    'none': 0, 'petrol': 0.19, 'diesel': 0.21,
+                    'hybrid': 0.10, 'electric': 0.05
+                },
+                'flights': {
+                    'none': 0, 'domestic': 300, 'international': 1500, 'frequent': 3000
+                },
+                'diet': {
+                    'vegan': 1000, 'vegetarian': 1500, 'mixed': 2200, 'non-veg': 2800
+                },
+                'shopping': {'low': 500, 'medium': 1000, 'high': 2000},
+                'recycling': {'yes': -200, 'no': 0}
+            }
 
     # ============================================================
     # MAIN FUNCTION
@@ -34,202 +61,243 @@ class CarbonCalculator:
 
     def calculate_individual_footprint(self, inputs):
 
-        # ------------------------------------------------------------
+        # ==============================
         # 1️⃣ RULE-BASED CALCULATION
-        # ------------------------------------------------------------
+        # ==============================
 
         country = inputs.get("country", "Other")
+        household_size = max(int(inputs.get("household_size", 1)), 1)
+        energy_source = inputs.get("energy_source", "grid")
+        home_type = inputs.get("home_type", "apartment")
+        heating_source = inputs.get("heating_source", "electric")
+        meat_frequency = int(inputs.get("meat_frequency", 3))
+        food_waste = inputs.get("food_waste", "rarely")
+        vehicle_efficiency = float(inputs.get("vehicle_efficiency", 15))
+        renewable_percent = float(inputs.get("renewable_percent", 0))
 
-        electricity_factor = self.emission_factors["electricity"].get(country, 0.5)
-        electricity_emissions = inputs["electricity_kwh"] * electricity_factor * 12
+        # Multipliers
+        _home_type_mult  = {"apartment": 0.8, "house": 1.0, "shared": 0.6}
+        _heating_ef      = {"electric": 0.4, "gas": 0.2, "oil": 0.3, "heatpump": 0.1, "none": 0}
+        _food_waste_mult = {"rarely": 1.0, "sometimes": 1.1, "often": 1.2}
+        _energy_mult     = {"grid": 1.0, "solar": 0.1, "mixed": 0.6}
 
-        vehicle_type = inputs["vehicle_type"]
-        vehicle_factor = self.emission_factors["vehicle"].get(vehicle_type, 0.18)
-        vehicle_emissions = inputs["vehicle_km"] * vehicle_factor * 12
+        # Electricity — adjusted for home type + renewable %
+        country_factor = self.emission_factors["electricity"].get(country, 0.5)
+        base_elec_per_capita = inputs["electricity_kwh"] * 12 / household_size
+        home_adj_elec = base_elec_per_capita * _home_type_mult.get(home_type, 1.0)
+        if energy_source == "grid":
+            effective_ef = country_factor * (1 - renewable_percent / 100) + (0.1 * renewable_percent / 100)
+        else:
+            effective_ef = country_factor * _energy_mult.get(energy_source, 1.0)
+        electricity_emissions = home_adj_elec * effective_ef
+
+        # Heating — based on home type base kWh × fuel factor
+        _heating_base_kwh = {"house": 4000, "apartment": 2500, "shared": 1500}
+        heating_kwh_per_capita = _heating_base_kwh.get(home_type, 2500) / household_size
+        heating_emissions = heating_kwh_per_capita * _heating_ef.get(heating_source, 0.2)
+
+        # Transport — use fuel efficiency if provided
+        if inputs["vehicle_type"] != "none" and vehicle_efficiency > 0:
+            fuel_per_km = 1 / vehicle_efficiency
+            vehicle_emissions = inputs["vehicle_km"] * 12 * fuel_per_km * 2.3
+        else:
+            veh_factor = self.emission_factors["vehicle"].get(inputs["vehicle_type"], 0)
+            vehicle_emissions = inputs["vehicle_km"] * veh_factor * 12
 
         flight_emissions = self.emission_factors["flights"].get(inputs["flight_type"], 0)
 
-        diet_emissions = (
-            self.emission_factors["diet"].get(inputs["diet_type"], 600) * 12
-        )
+        # Diet — base + meat frequency + food waste adjustment
+        base_diet = self.emission_factors["diet"].get(inputs["diet_type"], 2200)
+        meat_extra = meat_frequency * 52 * 7.0
+        diet_emissions = (base_diet + meat_extra) * _food_waste_mult.get(food_waste, 1.0)
 
-        shopping_emissions = (
-            self.emission_factors["shopping"].get(inputs["shopping_freq"], 150)
-            * 12
-        )
-
-        recycling_effect = (
-            self.emission_factors["recycling"].get(inputs["recycling"], 0) * 12
-        )
+        shopping_emissions = self.emission_factors["shopping"].get(inputs["shopping_freq"], 1000)
+        recycling_effect = self.emission_factors["recycling"].get(inputs["recycling"], 0)
 
         rule_based_total = (
-            electricity_emissions
-            + vehicle_emissions
-            + flight_emissions
-            + diet_emissions
-            + shopping_emissions
-            + recycling_effect
+            electricity_emissions + heating_emissions +
+            vehicle_emissions + flight_emissions +
+            diet_emissions + shopping_emissions + recycling_effect
         )
 
-        # ------------------------------------------------------------
-        # 2️⃣ ML PREDICTION (FULL FEATURE REBUILD)
-        # ------------------------------------------------------------
 
-        ml_prediction = None
+        # ==============================
+        # 2️⃣ ML PREDICTION
+        # ==============================
+
+        ml_prediction = 0
         final_footprint = rule_based_total
 
         if self.carbon_model and self.model_features:
-
             try:
-                # Create full feature dict initialized to zero
-                feature_dict = {feature: 0 for feature in self.model_features}
+                # Maps matching the training script exactly
+                _vehicle_ef = {"none": 0, "petrol": 0.19, "diesel": 0.21, "hybrid": 0.10, "electric": 0.05}
+                _diet_ef    = {"veg": 1000, "mixed": 2200, "non-veg": 2800}
+                _shop_ef    = {"low": 500, "medium": 1000, "high": 2000}
+                _flight_map = {0: 0, 1: 300, 2: 1500, 3: 3000}
+                _energy_mult = {"grid": 1.0, "solar": 0.1, "mixed": 0.6}
 
-                # -------------------------
-                # Core Feature Mapping
-                # -------------------------
+                # Convert flight_type string → integer used in training
+                flight_str_to_int = {"none": 0, "domestic": 1, "international": 2, "frequent": 3}
+                flights_int = flight_str_to_int.get(inputs.get("flight_type", "none"), 0)
 
-                vehicle_map = {"none": 0, "petrol": 1, "diesel": 2}
-                flight_map = {"none": 0, "short": 1, "medium": 2, "long": 3}
-                diet_map = {"veg": 1.5, "mixed": 2.0, "non-veg": 2.5}
-                shopping_map = {"low": 1, "medium": 2, "high": 3}
+                elec_per_capita   = inputs["electricity_kwh"] * 12 / household_size
+                country_ef_val    = self.emission_factors["electricity"].get(country, 0.5)
+                elec_country_fac  = elec_per_capita * country_ef_val
+                elec_source_mult  = _energy_mult.get(energy_source, 1.0)
+                veh_emission_raw  = inputs["vehicle_km"] * 12 * _vehicle_ef.get(inputs["vehicle_type"], 0)
+                flt_emission_raw  = _flight_map.get(flights_int, 0)
+                diet_emission_raw = _diet_ef.get(inputs["diet_type"], 2200)
+                shop_emission_raw = _shop_ef.get(inputs["shopping_freq"], 1000)
+                rec_credit        = -200 if inputs["recycling"] == "yes" else 0
 
-                # Vehicle
-                if "vehicle_type_encoded" in feature_dict:
-                    feature_dict["vehicle_type_encoded"] = vehicle_map.get(
-                        inputs["vehicle_type"], 0
-                    )
+                ml_input = pd.DataFrame([{
+                    "country":              inputs["country"],
+                    "electricity_kwh":      inputs["electricity_kwh"],
+                    "household_size":       household_size,
+                    "energy_source":        energy_source,
+                    "vehicle_type":         inputs["vehicle_type"],
+                    "vehicle_km":           inputs["vehicle_km"],
+                    "flights_per_year":     flights_int,
+                    "public_transport":     inputs.get("public_transport", "sometimes"),
+                    "diet_type":            inputs["diet_type"],
+                    "shopping_freq":        inputs["shopping_freq"],
+                    "recycling":            inputs["recycling"],
+                    "elec_per_capita":      elec_per_capita,
+                    "elec_country_factor":  elec_country_fac,
+                    "elec_source_mult":     elec_source_mult,
+                    "vehicle_emission_raw": veh_emission_raw,
+                    "flight_emission_raw":  flt_emission_raw,
+                    "diet_emission_raw":    diet_emission_raw,
+                    "shopping_emission_raw":shop_emission_raw,
+                    "recycle_credit":       rec_credit,
+                    "home_type":              home_type,
+                    "heating_source":         heating_source,
+                    "meat_frequency":         meat_frequency,
+                    "food_waste":             food_waste,
+                    "vehicle_efficiency":     vehicle_efficiency,
+                    "renewable_percent":      renewable_percent,
+                    "elec_per_capita_base":   base_elec_per_capita,
+                    "elec_per_capita_home_adj": home_adj_elec,
+                    "country_ef":             country_factor,
+                    "effective_elec_ef":      effective_ef,
+                    "heating_kwh_per_capita": heating_kwh_per_capita,
+                    "heating_emission_raw":   heating_emissions,
 
-                if "vehicle_km" in feature_dict:
-                    feature_dict["vehicle_km"] = inputs["vehicle_km"]
+                }])
 
-                if "vehicle_km_log" in feature_dict:
-                    feature_dict["vehicle_km_log"] = np.log1p(inputs["vehicle_km"])
+                categorical_cols = ["country", "energy_source", "vehicle_type", "home_type", "heating_source", "food_waste",
+                                    "public_transport", "diet_type", "shopping_freq", "recycling"]
+                ml_encoded = pd.get_dummies(ml_input, columns=categorical_cols, drop_first=False)
+                ml_encoded = ml_encoded.reindex(columns=self.model_features, fill_value=0)
 
-                # Flight
-                if "flight_freq_score" in feature_dict:
-                    feature_dict["flight_freq_score"] = flight_map.get(
-                        inputs["flight_type"], 0
-                    )
-
-                # Diet
-                if "diet_carbon_factor" in feature_dict:
-                    feature_dict["diet_carbon_factor"] = diet_map.get(
-                        inputs["diet_type"], 2.0
-                    )
-
-                # Shopping proxy
-                if "clothes_consumption_score" in feature_dict:
-                    feature_dict["clothes_consumption_score"] = shopping_map.get(
-                        inputs["shopping_freq"], 2
-                    )
-
-                # Recycling
-                if "recycles_any" in feature_dict:
-                    feature_dict["recycles_any"] = 1 if inputs["recycling"] == "yes" else 0
-
-                # Interaction Terms
-                if "vehicle_km_type_interaction" in feature_dict:
-                    feature_dict["vehicle_km_type_interaction"] = (
-                        feature_dict.get("vehicle_km", 0)
-                        * feature_dict.get("vehicle_type_encoded", 0)
-                    )
-
-                if "lifestyle_composite" in feature_dict:
-                    feature_dict["lifestyle_composite"] = (
-                        feature_dict.get("diet_carbon_factor", 2.0)
-                        + feature_dict.get("clothes_consumption_score", 2)
-                        + feature_dict.get("flight_freq_score", 0)
-                    )
-
-                # -------------------------
-                # Create DataFrame in correct order
-                # -------------------------
-
-                ml_input_df = pd.DataFrame([feature_dict])[self.model_features]
-
-                # Apply scaler if exists
-                if self.scaler:
-                    ml_input_scaled = self.scaler.transform(ml_input_df)
-                else:
-                    ml_input_scaled = ml_input_df.values
-
-                # Handle ensemble model
-                if isinstance(self.carbon_model, dict):
-                    rf = self.carbon_model["rf"]
-                    gb = self.carbon_model["gb"]
-                    ridge = self.carbon_model["ridge"]
-                    weights = self.ensemble_weights or [0.4, 0.4, 0.2]
-
-                    ml_prediction = (
-                        rf.predict(ml_input_scaled)[0] * weights[0]
-                        + gb.predict(ml_input_scaled)[0] * weights[1]
-                        + ridge.predict(ml_input_scaled)[0] * weights[2]
-                    )
-                else:
-                    ml_prediction = self.carbon_model.predict(
-                        ml_input_scaled
-                    )[0]
-
-                # Blend 70% ML + 30% Rule
-                final_footprint = 0.7 * ml_prediction + 0.3 * rule_based_total
+                ml_prediction  = float(self.carbon_model.predict(ml_encoded)[0])
+                final_footprint = ml_prediction
 
             except Exception as e:
-                print("ML Prediction Failed:", e)
-                ml_prediction = None
+                print("ML Prediction Failed, falling back to rule-based:", e)
                 final_footprint = rule_based_total
+        else:
+            final_footprint = rule_based_total
+        # if self.carbon_model and self.model_features:
+        #     try:
+        #         import pandas as pd
 
-        # ------------------------------------------------------------
-        # 3️⃣ BREAKDOWN SCALING
-        # ------------------------------------------------------------
+        #         ml_input = pd.DataFrame([{
+        #             "country": inputs["country"],
+        #             "electricity_kwh": inputs["electricity_kwh"],
+        #             "household_size": household_size,
+        #             "energy_source": energy_source,
+        #             "vehicle_type": inputs["vehicle_type"],
+        #             "vehicle_km": inputs["vehicle_km"],
+        #             "flight_type": inputs["flight_type"],
+        #             "diet_type": inputs["diet_type"],
+        #             "shopping_freq": inputs["shopping_freq"],
+        #             "recycling": 1 if inputs["recycling"] == "yes" else 0
+        #         }])
+
+        #         ml_encoded = pd.get_dummies(ml_input)
+        #         ml_encoded = ml_encoded.reindex(columns=self.model_features, fill_value=0)
+        #         ml_prediction = float(self.carbon_model.predict(ml_encoded)[0])
+
+                
+
+        #         # ==============================
+        #         # Dynamic Hybrid Blending
+        #         # ==============================
+
+        #         if ml_prediction > 0:
+
+        #             # Low emission users → trust rule more
+        #             if rule_based_total < 2000:
+        #                 alpha = 0.7
+
+        #             # Very high users → trust ML more
+        #             elif rule_based_total > 5000:
+        #                 alpha = 0.3
+
+        #             # Mid-range → balanced
+        #             else:
+        #                 alpha = 0.5
+
+        #             final_footprint = (
+        #                 alpha * rule_based_total +
+        #                 (1 - alpha) * ml_prediction
+        #             )
+
+        #     except Exception as e:
+        #         print("ML Prediction Failed:", e)
+        #         final_footprint = rule_based_total
+
+        # ==============================
+        # 3️⃣ BREAKDOWN
+        # ==============================
 
         raw_breakdown = {
-            "electricity": electricity_emissions,
+            "electricity": electricity_emissions + heating_emissions,
             "transport": vehicle_emissions + flight_emissions,
             "diet": diet_emissions,
             "shopping": shopping_emissions,
             "recycling_credit": recycling_effect,
         }
 
+
         raw_total = sum(raw_breakdown.values())
-        scaling_factor = final_footprint / raw_total if raw_total > 0 else 1
+
+        if raw_total <= 0:
+            scaling_factor = 1
+        else:
+            scaling_factor = final_footprint / raw_total
 
         breakdown = {
             key: round(value * scaling_factor, 2)
             for key, value in raw_breakdown.items()
         }
 
-        final_footprint = sum(breakdown.values())
+        final_footprint = round(sum(breakdown.values()), 2)
 
-        # ------------------------------------------------------------
-        # 4️⃣ Carbon Level Classification
-        # ------------------------------------------------------------
+        # ==============================
+        # 4️⃣ LEVEL CLASSIFICATION
+        # ==============================
 
-        if final_footprint < 3000:
-            carbon_level = "Very Low"
-        elif final_footprint < 5000:
-            carbon_level = "Low"
-        elif final_footprint < 7000:
-            carbon_level = "Medium-Low"
-        elif final_footprint < 9000:
-            carbon_level = "Medium"
-        elif final_footprint < 12000:
-            carbon_level = "Medium-High"
+        if final_footprint < 1538:
+            carbon_level = "Well Below Average"
+        elif final_footprint < 2080:
+            carbon_level = "Below Average"
+        elif final_footprint < 2768:
+            carbon_level = "Near Average"
+        elif final_footprint < 4285:
+            carbon_level = "Above Average"
         else:
-            carbon_level = "High"
-
-        suggestions = self.generate_suggestions(
-            inputs, final_footprint, carbon_level
-        )
+            carbon_level = "Well Above Average"
 
         return {
-            "total_footprint": round(final_footprint, 2),
+            "total_footprint": final_footprint,
             "carbon_level": carbon_level,
             "breakdown": breakdown,
-            "suggestions": suggestions,
-            "ml_prediction": round(ml_prediction, 2) if ml_prediction else None,
-            "rule_based": round(rule_based_total, 2),
+            "ml_prediction": round(ml_prediction, 2),
+            "rule_based": round(rule_based_total, 2)
         }
-
     # ============================================================
     # SUGGESTIONS
     # ============================================================
@@ -271,89 +339,157 @@ class CarbonCalculator:
             suggestions.append("🌳 Offset emissions via verified carbon credits.")
             suggestions.append("🏠 Improve insulation and home efficiency.")
 
-        return suggestions
+        return suggestions[:6]  # Limit to 6 suggestions
 
 
 # ============================================================
-# ESG CALCULATOR CLASS - ADDED TO FIX THE IMPORT ERROR
+# ESG CALCULATOR CLASS
+# ============================================================
+# ============================================================
+# STRUCTURED ESG CALCULATOR (Explainable + Professional)
 # ============================================================
 
 class ESGCalculator:
     def __init__(self):
-        # Try to load ESG model if it exists
-        esg_model_path = 'models/esg_model.pkl'
-        if os.path.exists(esg_model_path):
-            self.esg_model = joblib.load(esg_model_path)
-            print("ESG Model Loaded")
-        else:
-            # Create a simple default model if none exists
-            from sklearn.tree import DecisionTreeClassifier
-            print("ESG Model not found, using default classifier")
-            
-            # Create synthetic training data
-            np.random.seed(42)
-            X_synth = np.random.rand(100, 8)
-            y_synth = np.random.choice(['Low', 'Medium', 'High'], 100, p=[0.3, 0.4, 0.3])
-            
-            self.esg_model = DecisionTreeClassifier(max_depth=5, random_state=42)
-            self.esg_model.fit(X_synth, y_synth)
-        
+        print("Structured ESG Engine Loaded")
+
+    # ============================================================
+    # MAIN ESG CALCULATION
+    # ============================================================
+
     def calculate_esg_score(self, inputs):
-        """
-        Calculate ESG score and risk for enterprises
-        """
-        # Calculate derived metrics
-        emissions_per_employee = (inputs['energy_usage'] * 0.5) / max(inputs['employees'], 1)
-        energy_intensity = inputs['energy_usage'] / max(inputs['employees'], 1)
-        
-        # Prepare for ML model
-        industry_map = {
-            'Manufacturing': 0, 'IT': 1, 'Retail': 2,
-            'Healthcare': 3, 'Transport': 4, 'Other': 1
+
+        employees = max(inputs.get('employees', 1), 1)
+        energy_usage = inputs.get('energy_usage', 0)
+        travel_km = inputs.get('travel_km', 0)
+        waste_level = inputs.get('waste_management', 3)
+        cloud_usage = inputs.get('cloud_usage', 'no')
+
+        # ------------------------------------------------------------
+        # 1️⃣ ENVIRONMENTAL SCORE (70%)
+        # ------------------------------------------------------------
+
+        energy_per_employee = energy_usage / employees
+        travel_per_employee = travel_km / employees
+        emissions_per_employee = energy_per_employee + (travel_per_employee * 0.2)
+        industry_benchmarks = {
+            "technology": 2.5,
+            "manufacturing": 8.0,
+            "finance": 1.5,
+            "retail": 4.0,
+            "healthcare": 3.5,
+            "energy": 12.0,
+            "agriculture": 6.0,
+            "transport": 9.0,
+            "other": 4.0
         }
-        
-        ml_input = np.array([[
-            industry_map.get(inputs['industry'], 1),
-            inputs['employees'],
-            inputs['energy_usage'],
-            inputs['travel_km'],
-            1 if inputs['cloud_usage'] == 'yes' else 0,
-            inputs['waste_management'],
-            emissions_per_employee,
-            energy_intensity
-        ]])
-        
-        # Get risk prediction
-        risk_prediction = self.esg_model.predict(ml_input)[0]
-        
-        # Calculate ESG score (0-100)
-        base_score = 50
-        
-        # Adjust based on inputs
-        if inputs['cloud_usage'] == 'yes':
-            base_score += 10  # Cloud is generally more efficient
-        
-        if inputs['waste_management'] >= 4:
-            base_score += 15
-        elif inputs['waste_management'] >= 3:
-            base_score += 5
-        
-        if emissions_per_employee < 2:
-            base_score += 15
-        elif emissions_per_employee < 5:
-            base_score += 5
-        
-        if inputs['employees'] > 100:
-            base_score += 5  # Larger companies typically have better systems
-        
-        # Cap score
-        final_score = min(100, max(0, base_score))
-        
-        # Component scores
-        environmental_score = final_score * 0.7
-        social_score = final_score * 0.15
-        governance_score = final_score * 0.15
-        
+
+        industry = inputs.get("industry", "other").lower()
+        benchmark = industry_benchmarks.get(industry, 4.0)
+        energy_intensity = energy_per_employee
+
+        environmental_score = 100
+
+        if emissions_per_employee < benchmark:
+            benchmark_status = "Better than industry average"
+        elif emissions_per_employee < benchmark * 1.5:
+            benchmark_status = "Near industry average"
+        else:
+            benchmark_status = "Worse than industry average"
+
+        if travel_km > 40000:
+            environmental_score -= 5
+
+        # Energy intensity penalty (kWh per employee per month)
+        if energy_per_employee > 1500:
+            environmental_score -= 30
+        elif energy_per_employee > 800:
+            environmental_score -= 20
+        elif energy_per_employee > 400:
+            environmental_score -= 10
+
+        # Travel intensity penalty (km per employee per year)
+        if travel_per_employee > 4000:
+            environmental_score -= 25
+        elif travel_per_employee > 2000:
+            environmental_score -= 15
+        elif travel_per_employee > 1000:
+            environmental_score -= 10
+        elif travel_per_employee > 500:
+            environmental_score -= 5
+
+        # Waste management bonus
+        # Strong waste penalty scaling
+        if waste_level <= 2:
+            environmental_score -= 20
+        elif waste_level == 3:
+            environmental_score += 0
+        elif waste_level == 4:
+            environmental_score += 5
+        elif waste_level == 5:
+            environmental_score += 10
+
+        # Cloud efficiency bonus
+        if cloud_usage == "yes":
+            environmental_score += 10
+
+        environmental_score = max(0, min(100, environmental_score))
+
+        # ------------------------------------------------------------
+        # 2️⃣ SOCIAL SCORE (15%)
+        # ------------------------------------------------------------
+
+        social_score = 70  # Base assumption
+
+        # Larger companies usually have more structured systems
+        if employees > 500:
+            social_score += 15
+        elif employees > 100:
+            social_score += 10
+        elif employees > 20:
+            social_score += 5
+
+        social_score = max(0, min(100, social_score))
+
+        # ------------------------------------------------------------
+        # 3️⃣ GOVERNANCE SCORE (15%)
+        # ------------------------------------------------------------
+
+        governance_score = 60  # Base governance maturity
+
+        # Waste maturity contributes
+        governance_score += waste_level * 5
+
+        # Cloud usage implies digital maturity
+        if cloud_usage == "yes":
+            governance_score += 10
+
+        governance_score = max(0, min(100, governance_score))
+
+        # ------------------------------------------------------------
+        # 4️⃣ FINAL ESG SCORE
+        # ------------------------------------------------------------
+
+        final_score = (
+            environmental_score * 0.70 +
+            social_score * 0.15 +
+            governance_score * 0.15
+        )
+
+        final_score = round(final_score, 1)
+
+        # ------------------------------------------------------------
+        # 5️⃣ RISK CLASSIFICATION
+        # ------------------------------------------------------------
+
+        # Determine ESG risk category
+        if final_score >= 85:
+            risk_prediction = "Low"
+        elif final_score >= 65:
+            risk_prediction = "Medium"
+        else:
+            risk_prediction = "High"
+
         return {
             'total_score': round(final_score, 1),
             'environmental_score': round(environmental_score, 1),
@@ -362,29 +498,41 @@ class ESGCalculator:
             'esg_risk': risk_prediction,
             'emissions_per_employee': round(emissions_per_employee, 2),
             'energy_intensity': round(energy_intensity, 2),
+            'industry_benchmark': benchmark,
+            'benchmark_status': benchmark_status,
             'recommendations': self.generate_esg_recommendations(inputs, risk_prediction, final_score)
         }
-    
+
+    # ============================================================
+    # ESG RECOMMENDATIONS
+    # ============================================================
+
     def generate_esg_recommendations(self, inputs, risk, score):
-        """Generate ESG improvement recommendations"""
+
         recommendations = []
-        
-        if risk == 'High':
-            recommendations.append("⚠️ HIGH RISK: Immediate action required. Conduct a comprehensive ESG audit.")
-        
-        if score < 50:
-            recommendations.append("📋 Develop a formal ESG policy and sustainability strategy.")
-        
-        if inputs['cloud_usage'] == 'no':
-            recommendations.append("☁️ Migrate to cloud services to reduce energy consumption by up to 30%.")
-        
-        if inputs['waste_management'] < 3:
-            recommendations.append("🗑️ Implement a waste management system with recycling and composting.")
-        
-        if inputs['energy_usage'] / max(inputs['employees'], 1) > 1000:
-            recommendations.append("🔋 Conduct an energy audit and invest in energy-efficient equipment.")
-        
-        recommendations.append("📊 Start tracking and reporting ESG metrics quarterly.")
-        recommendations.append("👥 Establish an ESG committee with board oversight.")
-        
-        return recommendations
+
+        if risk == "High":
+            recommendations.append(
+                "⚠️ High ESG risk. Immediate sustainability audit recommended."
+            )
+
+        if inputs.get("cloud_usage") == "no":
+            recommendations.append(
+                "☁️ Consider migrating to cloud infrastructure for energy efficiency."
+            )
+
+        if inputs.get("waste_management", 0) < 3:
+            recommendations.append(
+                "🗑️ Improve waste management through recycling and structured disposal."
+            )
+
+        if inputs.get("energy_usage", 0) / max(inputs.get("employees", 1), 1) > 1000:
+            recommendations.append(
+                "🔋 Conduct an energy audit to reduce operational intensity."
+            )
+
+        recommendations.append(
+            "📊 Begin quarterly ESG reporting and transparency tracking."
+        ) 
+
+        return recommendations[:6]

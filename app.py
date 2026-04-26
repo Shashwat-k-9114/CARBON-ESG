@@ -1,4 +1,5 @@
-from flask import Flask, render_template, request, redirect, url_for, session, jsonify, send_file
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify, send_file, flash
+
 from werkzeug.security import generate_password_hash, check_password_hash
 import os
 import json
@@ -79,6 +80,7 @@ def login():
         if user and check_password_hash(user['password'], password):
             session['user_id'] = user['id']
             session['username'] = user['username']
+            session['subscription_plan'] = user['subscription_plan'] if user['subscription_plan'] else 'free'
             session['user_type'] = user['user_type']
             return redirect(url_for('dashboard'))
         else:
@@ -182,16 +184,51 @@ def calculate_individual():
         return redirect(url_for('dashboard'))
     
     if request.method == 'POST':
+        # Enforce free plan assessment limit
+        plan = session.get('subscription_plan', 'free')
+        if plan == 'free':
+            conn = get_db_connection()
+            from datetime import datetime
+            month_start = datetime.now().replace(day=1, hour=0, minute=0, second=0).strftime('%Y-%m-%d')
+            count = conn.execute(
+                'SELECT COUNT(*) FROM individual_assessments WHERE user_id = ? AND created_at >= ?',
+                (session['user_id'], month_start)
+            ).fetchone()[0]
+            conn.close()
+            if count >= 1:
+                return render_template('individual_dashboard.html', user=get_current_user(),
+                    errors=['Free plan allows 1 assessment/month. <a href="/pricing">Upgrade your plan</a> for unlimited.'])
+
+
+        flights_raw = request.form.get("flights_per_year", "0")
+
+        flight_mapping = {
+            "0": "none",
+            "1": "domestic",
+            "2": "international",
+            "3": "frequent"
+        }
+
+        mapped_flight_type = flight_mapping.get(flights_raw, "none")
         # Get form data
         form_data = {
             'country': request.form.get('country', '').strip(),
+            'household_size': request.form.get('household_size', '1').strip(),
             'electricity_kwh': request.form.get('electricity_kwh', '0').strip(),
+            'energy_source': request.form.get('energy_source', 'grid').strip(),
             'vehicle_type': request.form.get('vehicle_type', 'none').strip(),
             'vehicle_km': request.form.get('vehicle_km', '0').strip(),
-            'flight_type': request.form.get('flight_type', 'none').strip(),
+            'flight_type': mapped_flight_type,
+            'public_transport': request.form.get('public_transport', 'sometimes').strip(),
             'diet_type': request.form.get('diet_type', 'mixed').strip(),
             'shopping_freq': request.form.get('shopping_freq', 'medium').strip(),
-            'recycling': request.form.get('recycling', 'no').strip()
+            'recycling': request.form.get('recycling', 'no').strip(),
+            'home_type': request.form.get('home_type', 'apartment').strip(),
+            'heating_source': request.form.get('heating_source', 'electric').strip(),
+            'meat_frequency': request.form.get('meat_frequency', '3').strip(),
+            'food_waste': request.form.get('food_waste', 'rarely').strip(),
+            'vehicle_efficiency': request.form.get('vehicle_efficiency', '15').strip(),
+            'renewable_percent': request.form.get('renewable_percent', '0').strip()
         }
         
         # Validate inputs
@@ -207,13 +244,23 @@ def calculate_individual():
         try:
             inputs = {
                 'country': form_data['country'],
+                'household_size': int(form_data['household_size']),
                 'electricity_kwh': float(form_data['electricity_kwh']),
+                'energy_source': form_data['energy_source'],
                 'vehicle_type': form_data['vehicle_type'],
                 'vehicle_km': float(form_data['vehicle_km']),
                 'flight_type': form_data['flight_type'],
+                'public_transport': form_data['public_transport'],
                 'diet_type': form_data['diet_type'],
                 'shopping_freq': form_data['shopping_freq'],
-                'recycling': form_data['recycling']
+                'recycling': form_data['recycling'],
+                'home_type': form_data['home_type'],
+                'heating_source': form_data['heating_source'],
+                'meat_frequency': int(form_data['meat_frequency']),
+                'food_waste': form_data['food_waste'],
+                'vehicle_efficiency': float(form_data['vehicle_efficiency']) if form_data['vehicle_efficiency'] else 15.0,
+                'renewable_percent': float(form_data['renewable_percent']),
+
             }
         except ValueError as e:
             errors = [f"Invalid number format: {str(e)}"]
@@ -346,6 +393,10 @@ def show_result():
     user = get_current_user()
     calculation = session['last_calculation']
     
+    # Make sure ml_prediction exists in the result
+    if 'ml_prediction' not in calculation['result']:
+        calculation['result']['ml_prediction'] = 0
+    
     return render_template('result.html', 
                           user=user,
                           inputs=calculation['inputs'],
@@ -360,7 +411,11 @@ def show_esg_result():
     user = get_current_user()
     calculation = session['last_esg_calculation']
     
-    return render_template('result.html',  # Reuse same template
+    # Ensure all required fields exist
+    if 'recommendations' not in calculation['result']:
+        calculation['result']['recommendations'] = []
+    
+    return render_template('result.html', 
                           user=user,
                           inputs=calculation['inputs'],
                           result=calculation['result'],
@@ -473,6 +528,46 @@ def page_not_found(e):
 def internal_server_error(e):
     return render_template('500.html'), 500
 
+
+# ------------------------------------------------------------
+# PRICING & SUBSCRIPTION ROUTES
+# ------------------------------------------------------------
+
+PLAN_FEATURES = {
+    'free':        {'assessments_per_month': 1, 'pdf_export': False, 'history_months': 0, 'personalized_tips': False, 'advanced_analytics': False, 'family_accounts': False, 'esg_reports': False},
+    'eco-starter': {'assessments_per_month': None, 'pdf_export': True,  'history_months': 6, 'personalized_tips': True,  'advanced_analytics': False, 'family_accounts': False, 'esg_reports': False},
+    'eco-pro':     {'assessments_per_month': None, 'pdf_export': True,  'history_months': 12, 'personalized_tips': True,  'advanced_analytics': True,  'family_accounts': True,  'esg_reports': False},
+    'business':    {'assessments_per_month': None, 'pdf_export': True,  'history_months': 24, 'personalized_tips': True,  'advanced_analytics': True,  'family_accounts': True,  'esg_reports': True},
+}
+
+@app.route('/pricing')
+def pricing():
+    current_plan = 'free'
+    if 'user_id' in session:
+        conn = get_db_connection()
+        user = conn.execute('SELECT subscription_plan FROM users WHERE id = ?', (session['user_id'],)).fetchone()
+        conn.close()
+        if user:
+            current_plan = user['subscription_plan'] or 'free'
+    return render_template('pricing.html', current_plan=current_plan)
+
+@app.route('/subscribe/<plan>')
+def subscribe(plan):
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    valid_plans = ['free', 'eco-starter', 'eco-pro', 'business']
+    if plan not in valid_plans:
+        return redirect(url_for('pricing'))
+    conn = get_db_connection()
+    conn.execute('UPDATE users SET subscription_plan = ?, plan_updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+                 (plan, session['user_id']))
+    conn.commit()
+    conn.close()
+    session['subscription_plan'] = plan
+    flash(f'Plan updated to {plan.title()}! (Developer Mode)', 'success')
+    return redirect(url_for('pricing'))
+
+
 # ------------------------------------------------------------
 # RUN APPLICATION
 # ------------------------------------------------------------
@@ -485,4 +580,5 @@ if __name__ == '__main__':
     
     print("Starting Carbon ESG Platform...")
     print("Open your browser and go to: http://localhost:5000")
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    debug_mode = app.config.get('DEBUG', False)
+    app.run(debug=debug_mode, host='0.0.0.0', port=5000)

@@ -1,13 +1,16 @@
 import joblib
 import os
 
-print("Creating emission factors...")
+print("Creating scientifically calibrated emission factors...")
 
-# Create default emission factors
+# Annual emission factors (kg CO2 per year unless stated)
+
 emission_factors = {
+
+    # kg CO2 per kWh
     'electricity': {
         'USA': 0.4,
-        'UK': 0.177,
+        'UK': 0.18,
         'Canada': 0.12,
         'Australia': 0.5,
         'Germany': 0.3,
@@ -19,34 +22,44 @@ emission_factors = {
         'South Africa': 0.8,
         'Other': 0.5
     },
+
+    # kg CO2 per km
     'vehicle': {
         'petrol': 0.18,
         'diesel': 0.21,
         'none': 0
     },
+
+    # Approximate annual emissions from flights
     'flights': {
         'none': 0,
-        'short': 500,
-        'medium': 1500,
-        'long': 4000
+        'short': 300,     # 1–2 short trips per year
+        'medium': 900,    # few regional flights
+        'long': 2000      # intercontinental
     },
+
+    # Annual diet-based emissions (scientifically realistic range)
     'diet': {
-        'veg': 400,
-        'mixed': 600,
-        'non-veg': 800
+        'veg': 1800,
+        'mixed': 2500,
+        'non-veg': 3200
     },
+
+    # Embedded consumption emissions per year
     'shopping': {
-        'low': 100,
-        'medium': 150,
-        'high': 250
+        'low': 800,
+        'medium': 1400,
+        'high': 2200
     },
+
+    # Recycling impact per year
     'recycling': {
-        'yes': -100,
+        'yes': -300,
         'no': 0
     }
 }
 
-# Save the file
 os.makedirs('models', exist_ok=True)
 joblib.dump(emission_factors, 'models/emission_factors.pkl')
-print("✓ Created models/emission_factors.pkl")
+
+print("✓ Calibrated emission factors saved to models/emission_factors.pkl")

@@ -34,22 +34,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Auto-format numbers with commas
-    const numberInputs = document.querySelectorAll('input[type="number"]');
-    numberInputs.forEach(input => {
-        input.addEventListener('blur', function() {
-            if (this.value) {
-                const num = parseFloat(this.value);
-                if (!isNaN(num)) {
-                    this.value = num.toLocaleString();
-                }
-            }
-        });
-        
-        input.addEventListener('focus', function() {
-            this.value = this.value.replace(/,/g, '');
-        });
-    });
 
     // Smooth scrolling for anchor links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {

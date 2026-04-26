@@ -1,6 +1,6 @@
 {
   "best_model": "Gradient Boosting",
-  "r2_score": 0.9486642163164369,
+  "r2_score": 0.948664216306174,
   "features_used": 37,
   "samples_trained": 8910
 }

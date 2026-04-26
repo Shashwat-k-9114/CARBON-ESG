@@ -77,34 +77,35 @@ def validate_enterprise_input(data):
     required_fields = ['company_name', 'industry', 'employees', 'energy_usage',
                       'travel_km', 'cloud_usage', 'waste_management']
     
+    # Check for missing required fields
     for field in required_fields:
         if field not in data or not str(data[field]).strip():
             errors.append(f"{field.replace('_', ' ').title()} is required")
     
     # Validate numerical values
     try:
-        employees = int(data['employees'])
+        employees = int(data.get('employees', 0))
         if employees < 1 or employees > 1000000:
             errors.append("Number of employees must be between 1 and 1,000,000")
     except (ValueError, TypeError):
         errors.append("Employees must be a whole number")
     
     try:
-        energy = float(data['energy_usage'])
+        energy = float(data.get('energy_usage', 0))
         if energy < 0 or energy > 10000000:
             errors.append("Energy usage must be between 0 and 10,000,000")
     except (ValueError, TypeError):
         errors.append("Energy usage must be a number")
     
     try:
-        travel = float(data['travel_km'])
+        travel = float(data.get('travel_km', 0))
         if travel < 0 or travel > 10000000:
             errors.append("Travel km must be between 0 and 10,000,000")
     except (ValueError, TypeError):
         errors.append("Travel km must be a number")
     
     try:
-        waste = int(data['waste_management'])
+        waste = int(data.get('waste_management', 0))
         if waste < 1 or waste > 5:
             errors.append("Waste management level must be between 1 and 5")
     except (ValueError, TypeError):

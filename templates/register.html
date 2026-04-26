@@ -1,183 +1,357 @@
 {% extends "base.html" %}
+{% block title %}Create Account{% endblock %}
 
-{% block title %}Register{% endblock %}
-
-{% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-8 col-lg-6">
-        <div class="card">
-            <div class="card-header text-center">
-                <h4 class="mb-0">
-                    <i class="bi bi-person-plus"></i> Create Your Account
-                </h4>
-            </div>
-            <div class="card-body">
-                {% if errors %}
-                <div class="alert alert-danger">
-                    <ul class="mb-0">
-                        {% for error in errors %}
-                        <li>{{ error }}</li>
-                        {% endfor %}
-                    </ul>
-                </div>
-                {% endif %}
-                
-                <form method="POST" action="{{ url_for('register') }}">
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="username" class="form-label">
-                                <i class="bi bi-person"></i> Username *
-                            </label>
-                            <input type="text" 
-                                   class="form-control" 
-                                   id="username" 
-                                   name="username" 
-                                   required
-                                   value="{{ request.form.username if request.form }}">
-                            <div class="form-text">Choose a unique username</div>
-                        </div>
-                        
-                        <div class="col-md-6 mb-3">
-                            <label for="email" class="form-label">
-                                <i class="bi bi-envelope"></i> Email Address *
-                            </label>
-                            <input type="email" 
-                                   class="form-control" 
-                                   id="email" 
-                                   name="email" 
-                                   required
-                                   value="{{ request.form.email if request.form }}">
-                        </div>
-                    </div>
-                    
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="password" class="form-label">
-                                <i class="bi bi-lock"></i> Password *
-                            </label>
-                            <input type="password" 
-                                   class="form-control" 
-                                   id="password" 
-                                   name="password" 
-                                   required>
-                            <div class="form-text">Minimum 6 characters</div>
-                        </div>
-                        
-                        <div class="col-md-6 mb-3">
-                            <label for="confirm_password" class="form-label">
-                                <i class="bi bi-lock-fill"></i> Confirm Password *
-                            </label>
-                            <input type="password" 
-                                   class="form-control" 
-                                   id="confirm_password" 
-                                   name="confirm_password" 
-                                   required>
-                        </div>
-                    </div>
-                    
-                    <div class="mb-4">
-                        <label class="form-label">
-                            <i class="bi bi-person-badge"></i> Account Type *
-                        </label>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-check card p-3">
-                                    <input class="form-check-input" 
-                                           type="radio" 
-                                           name="user_type" 
-                                           id="individual" 
-                                           value="individual" 
-                                           checked
-                                           {% if request.form.user_type == 'individual' %}checked{% endif %}>
-                                    <label class="form-check-label" for="individual">
-                                        <h6 class="mb-1">
-                                            <i class="bi bi-person-circle text-success"></i> Individual
-                                        </h6>
-                                        <p class="small text-muted mb-0">
-                                            Calculate personal carbon footprint and track environmental impact
-                                        </p>
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-check card p-3">
-                                    <input class="form-check-input" 
-                                           type="radio" 
-                                           name="user_type" 
-                                           id="enterprise" 
-                                           value="enterprise"
-                                           {% if request.form.user_type == 'enterprise' %}checked{% endif %}>
-                                    <label class="form-check-label" for="enterprise">
-                                        <h6 class="mb-1">
-                                            <i class="bi bi-building text-success"></i> Enterprise
-                                        </h6>
-                                        <p class="small text-muted mb-0">
-                                            Assess ESG readiness and sustainability performance for businesses
-                                        </p>
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-success">
-                            <i class="bi bi-person-plus"></i> Create Account
-                        </button>
-                    </div>
-                </form>
-                
-                <div class="text-center mt-3">
-                    <p class="mb-0">
-                        Already have an account? 
-                        <a href="{{ url_for('login') }}" class="text-success">Login here</a>
-                    </p>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card mt-3">
-            <div class="card-body">
-                <h6><i class="bi bi-info-circle"></i> About Account Types</h6>
-                <div class="row">
-                    <div class="col-md-6">
-                        <h6 class="text-success">Individual Account</h6>
-                        <ul class="small">
-                            <li>Personal carbon footprint calculator</li>
-                            <li>Lifestyle-based emissions analysis</li>
-                            <li>Personalized reduction suggestions</li>
-                            <li>Progress tracking over time</li>
-                        </ul>
-                    </div>
-                    <div class="col-md-6">
-                        <h6 class="text-success">Enterprise Account</h6>
-                        <ul class="small">
-                            <li>ESG readiness assessment</li>
-                            <li>Business sustainability metrics</li>
-                            <li>Risk classification and reporting</li>
-                            <li>Professional PDF reports</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
+{% block extra_css %}
 <style>
-.form-check .card {
-    border: 2px solid #dee2e6;
-    transition: all 0.3s;
-    cursor: pointer;
+.auth-wrap {
+  min-height: calc(100vh - 200px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 0;
 }
 
-.form-check-input:checked ~ .card {
-    border-color: var(--primary-color);
-    background-color: rgba(46, 125, 50, 0.05);
+.auth-card {
+  width: 100%;
+  max-width: 580px;
+  background: white;
+  border-radius: 28px;
+  box-shadow: 0 24px 80px rgba(0,0,0,.12);
+  overflow: hidden;
+  border: 1px solid rgba(0,0,0,.06);
+  animation: fade-up .5s cubic-bezier(.4,0,.2,1) both;
 }
 
-.form-check-input {
-    margin-top: 0.5rem;
+.auth-header {
+  background: linear-gradient(150deg, #0D2818, #155724 60%, #1a6b35);
+  padding: 44px 48px 36px;
+  position: relative;
+  overflow: hidden;
+}
+
+.auth-header::before {
+  content: '';
+  position: absolute;
+  top: -40px;
+  right: -40px;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(46,204,113,.12) 0%, transparent 70%);
+}
+
+.auth-logo {
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  background: rgba(255,255,255,.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  color: white;
+  margin-bottom: 20px;
+  border: 1px solid rgba(255,255,255,.15);
+}
+
+.auth-header h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.9rem;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 6px;
+  letter-spacing: -.02em;
+}
+
+.auth-header p { font-size: .9rem; color: rgba(255,255,255,.55); margin: 0; }
+
+.auth-body { padding: 40px 48px; }
+
+.auth-label {
+  font-size: .78rem;
+  font-weight: 700;
+  color: #6c6c70;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.auth-input {
+  width: 100%;
+  border: 1.5px solid rgba(0,0,0,.1);
+  border-radius: 14px;
+  padding: 14px 18px;
+  font-size: .95rem;
+  color: #1c1c1e;
+  background: #f8f5f0;
+  font-family: 'DM Sans', sans-serif;
+  transition: all .25s;
+  outline: none;
+}
+
+.auth-input:focus {
+  border-color: #155724;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(21,87,36,.1);
+}
+
+.auth-input::placeholder { color: #aeaeb2; }
+
+.field-row { display: flex; gap: 16px; margin-bottom: 20px; }
+.field-row > div { flex: 1; }
+
+.auth-field { margin-bottom: 20px; }
+
+/* Account type selector */
+.type-selector {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 28px;
+}
+
+.type-card {
+  flex: 1;
+  border: 2px solid rgba(0,0,0,.08);
+  border-radius: 18px;
+  padding: 22px 20px;
+  cursor: pointer;
+  transition: all .3s cubic-bezier(.4,0,.2,1);
+  position: relative;
+  background: white;
+  text-align: center;
+}
+
+.type-card input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.type-card:hover {
+  border-color: rgba(21,87,36,.25);
+  background: rgba(21,87,36,.02);
+}
+
+.type-card.selected {
+  border-color: #155724;
+  background: rgba(21,87,36,.04);
+  box-shadow: 0 0 0 3px rgba(21,87,36,.1);
+}
+
+.type-card .type-check {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #155724, #2ecc71);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: .6rem;
+  opacity: 0;
+  transform: scale(.6);
+  transition: all .25s;
+}
+
+.type-card.selected .type-check {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.type-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  margin: 0 auto 14px;
+  transition: all .3s;
+}
+
+.type-icon-individual {
+  background: rgba(21,87,36,.1);
+  color: #155724;
+}
+
+.type-icon-enterprise {
+  background: rgba(0,100,200,.08);
+  color: #004a99;
+}
+
+.type-card.selected .type-icon-individual {
+  background: linear-gradient(135deg, #155724, #2ecc71);
+  color: white;
+}
+
+.type-card.selected .type-icon-enterprise {
+  background: linear-gradient(135deg, #004a99, #0099ff);
+  color: white;
+}
+
+.type-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #0D2818;
+  margin-bottom: 6px;
+}
+
+.type-desc {
+  font-size: .78rem;
+  color: #6c6c70;
+  line-height: 1.5;
+}
+
+.auth-submit {
+  width: 100%;
+  background: linear-gradient(135deg, #0D2818, #155724);
+  color: white;
+  border: none;
+  border-radius: 14px;
+  padding: 15px 24px;
+  font-size: 1rem;
+  font-weight: 700;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+  transition: all .3s;
+  box-shadow: 0 6px 24px rgba(13,40,24,.3);
+}
+
+.auth-submit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(13,40,24,.4);
+}
+
+.auth-footer {
+  text-align: center;
+  padding: 24px 48px 36px;
+  border-top: 1px solid rgba(0,0,0,.06);
+}
+
+.auth-footer p { font-size: .9rem; color: #6c6c70; margin: 0; }
+.auth-footer a { color: #155724; font-weight: 700; text-decoration: none; }
+.auth-footer a:hover { text-decoration: underline; }
+
+.hint { font-size: .76rem; color: #aeaeb2; margin-top: 6px; }
+
+@media (max-width: 600px) {
+  .auth-body { padding: 28px 28px; }
+  .auth-header { padding: 32px 28px 24px; }
+  .auth-footer { padding: 20px 28px 28px; }
+  .field-row { flex-direction: column; gap: 0; }
+  .type-selector { flex-direction: column; }
 }
 </style>
+{% endblock %}
+
+{% block content %}
+<div class="auth-wrap">
+  <div style="width:100%;max-width:580px;">
+    <div class="auth-card">
+      <!-- Header -->
+      <div class="auth-header">
+        <div class="auth-logo"><i class="bi bi-tree-fill"></i></div>
+        <h1>Create your account</h1>
+        <p>Start your sustainability assessment journey today</p>
+      </div>
+
+      <!-- Body -->
+      <div class="auth-body">
+        {% if errors %}
+        <div class="alert alert-danger mb-4" style="border-radius:12px;font-size:.875rem;">
+          {% for error in errors %}
+          <div class="d-flex align-items-center gap-2 {% if not loop.last %}mb-1{% endif %}">
+            <i class="bi bi-exclamation-circle-fill"></i> {{ error }}
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Account Type -->
+        <div class="auth-label">Account Type</div>
+        <div class="type-selector">
+          <label class="type-card {% if not request.form or request.form.user_type == 'individual' %}selected{% endif %}" id="card-individual">
+            <input type="radio" name="user_type" value="individual" form="registerForm"
+              {% if not request.form or request.form.user_type == 'individual' %}checked{% endif %}>
+            <div class="type-check"><i class="bi bi-check2"></i></div>
+            <div class="type-icon type-icon-individual">
+              <i class="bi bi-person-circle"></i>
+            </div>
+            <div class="type-name">Individual</div>
+            <div class="type-desc">Personal carbon footprint tracking and lifestyle assessment</div>
+          </label>
+          <label class="type-card {% if request.form and request.form.user_type == 'enterprise' %}selected{% endif %}" id="card-enterprise">
+            <input type="radio" name="user_type" value="enterprise" form="registerForm"
+              {% if request.form and request.form.user_type == 'enterprise' %}checked{% endif %}>
+            <div class="type-check"><i class="bi bi-check2"></i></div>
+            <div class="type-icon type-icon-enterprise">
+              <i class="bi bi-building-check"></i>
+            </div>
+            <div class="type-name">Enterprise</div>
+            <div class="type-desc">ESG readiness assessment for businesses and organisations</div>
+          </label>
+        </div>
+
+        <form method="POST" action="{{ url_for('register') }}" id="registerForm">
+          <div class="field-row">
+            <div>
+              <label class="auth-label" for="username">Username</label>
+              <input type="text" class="auth-input" id="username" name="username"
+                     placeholder="Choose a username" required
+                     value="{{ request.form.username if request.form }}">
+              <div class="hint">Must be unique</div>
+            </div>
+            <div>
+              <label class="auth-label" for="email">Email Address</label>
+              <input type="email" class="auth-input" id="email" name="email"
+                     placeholder="your@email.com" required
+                     value="{{ request.form.email if request.form }}">
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div>
+              <label class="auth-label" for="password">Password</label>
+              <input type="password" class="auth-input" id="password" name="password"
+                     placeholder="Create password" required>
+              <div class="hint">Minimum 6 characters</div>
+            </div>
+            <div>
+              <label class="auth-label" for="confirm_password">Confirm Password</label>
+              <input type="password" class="auth-input" id="confirm_password" name="confirm_password"
+                     placeholder="Repeat password" required>
+            </div>
+          </div>
+
+          <button type="submit" class="auth-submit">
+            <i class="bi bi-arrow-right-circle me-2"></i> Create Account
+          </button>
+        </form>
+      </div>
+
+      <div class="auth-footer">
+        <p>Already have an account? <a href="{{ url_for('login') }}">Sign in here</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.querySelectorAll('.type-card').forEach(card => {
+  card.addEventListener('click', () => {
+    document.querySelectorAll('.type-card').forEach(c => c.classList.remove('selected'));
+    card.classList.add('selected');
+    card.querySelector('input[type="radio"]').checked = true;
+  });
+});
+</script>
 {% endblock %}

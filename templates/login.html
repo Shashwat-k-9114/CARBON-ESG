@@ -1,85 +1,328 @@
 {% extends "base.html" %}
+{% block title %}Sign In{% endblock %}
 
-{% block title %}Login{% endblock %}
+{% block extra_css %}
+<style>
+.auth-wrap {
+  min-height: calc(100vh - 200px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 0;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 480px;
+  background: white;
+  border-radius: 28px;
+  box-shadow: 0 24px 80px rgba(0,0,0,.12);
+  overflow: hidden;
+  border: 1px solid rgba(0,0,0,.06);
+  animation: fade-up .5s cubic-bezier(.4,0,.2,1) both;
+}
+
+.auth-header {
+  background: linear-gradient(150deg, #0D2818, #155724 60%, #1a6b35);
+  padding: 44px 48px 36px;
+  position: relative;
+  overflow: hidden;
+}
+
+.auth-header::before {
+  content: '';
+  position: absolute;
+  top: -40px;
+  right: -40px;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(46,204,113,.12) 0%, transparent 70%);
+}
+
+.auth-header::after {
+  content: '';
+  position: absolute;
+  bottom: -20px;
+  left: -20px;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.03);
+}
+
+.auth-logo {
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  background: rgba(255,255,255,.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  color: white;
+  margin-bottom: 20px;
+  border: 1px solid rgba(255,255,255,.15);
+}
+
+.auth-header h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.9rem;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 6px;
+  letter-spacing: -.02em;
+}
+
+.auth-header p {
+  font-size: .9rem;
+  color: rgba(255,255,255,.55);
+  margin: 0;
+}
+
+.auth-body {
+  padding: 40px 48px;
+}
+
+.auth-field {
+  margin-bottom: 20px;
+}
+
+.auth-label {
+  font-size: .8rem;
+  font-weight: 700;
+  color: #6c6c70;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.auth-input {
+  width: 100%;
+  border: 1.5px solid rgba(0,0,0,.1);
+  border-radius: 14px;
+  padding: 14px 18px;
+  font-size: .95rem;
+  color: #1c1c1e;
+  background: #f8f5f0;
+  font-family: 'DM Sans', sans-serif;
+  transition: all .25s;
+  outline: none;
+}
+
+.auth-input:focus {
+  border-color: #155724;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(21,87,36,.1);
+}
+
+.auth-input::placeholder { color: #aeaeb2; }
+
+.auth-input-icon {
+  position: relative;
+}
+
+.auth-input-icon .auth-input {
+  padding-left: 48px;
+}
+
+.auth-input-icon .icon {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #aeaeb2;
+  font-size: 1rem;
+  pointer-events: none;
+  transition: color .25s;
+}
+
+.auth-input-icon:focus-within .icon {
+  color: #155724;
+}
+
+.auth-submit {
+  width: 100%;
+  background: linear-gradient(135deg, #0D2818, #155724);
+  color: white;
+  border: none;
+  border-radius: 14px;
+  padding: 15px 24px;
+  font-size: 1rem;
+  font-weight: 700;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+  transition: all .3s;
+  box-shadow: 0 6px 24px rgba(13,40,24,.3);
+  margin-top: 8px;
+}
+
+.auth-submit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(13,40,24,.4);
+}
+
+.auth-footer {
+  text-align: center;
+  padding: 24px 48px 36px;
+  border-top: 1px solid rgba(0,0,0,.06);
+}
+
+.auth-footer p {
+  font-size: .9rem;
+  color: #6c6c70;
+  margin: 0;
+}
+
+.auth-footer a {
+  color: #155724;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.auth-footer a:hover { text-decoration: underline; }
+
+.demo-card {
+  background: #f8f5f0;
+  border-radius: 16px;
+  padding: 20px 24px;
+  margin-bottom: 24px;
+  border: 1px solid rgba(0,0,0,.05);
+}
+
+.demo-card-title {
+  font-size: .75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: #aeaeb2;
+  margin-bottom: 14px;
+}
+
+.demo-row {
+  display: flex;
+  gap: 16px;
+}
+
+.demo-account {
+  flex: 1;
+  background: white;
+  border-radius: 12px;
+  padding: 14px 16px;
+  border: 1px solid rgba(0,0,0,.06);
+  cursor: pointer;
+  transition: all .25s;
+}
+
+.demo-account:hover {
+  border-color: rgba(21,87,36,.3);
+  box-shadow: 0 4px 16px rgba(0,0,0,.08);
+}
+
+.demo-type {
+  font-size: .72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  color: #2ecc71;
+  margin-bottom: 6px;
+}
+
+.demo-cred {
+  font-size: .8rem;
+  color: #2c2c2e;
+  font-weight: 600;
+}
+
+.demo-cred span {
+  display: block;
+  color: #6c6c70;
+  font-weight: 400;
+  margin-top: 2px;
+}
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-6 col-lg-5">
-        <div class="card">
-            <div class="card-header text-center">
-                <h4 class="mb-0">
-                    <i class="bi bi-box-arrow-in-right"></i> Login to Your Account
-                </h4>
-            </div>
-            <div class="card-body">
-                {% if errors %}
-                <div class="alert alert-danger">
-                    <ul class="mb-0">
-                        {% for error in errors %}
-                        <li>{{ error }}</li>
-                        {% endfor %}
-                    </ul>
-                </div>
-                {% endif %}
-                
-                <form method="POST" action="{{ url_for('login') }}">
-                    <div class="mb-3">
-                        <label for="username" class="form-label">
-                            <i class="bi bi-person"></i> Username
-                        </label>
-                        <input type="text" 
-                               class="form-control" 
-                               id="username" 
-                               name="username" 
-                               required
-                               value="{{ request.form.username if request.form }}">
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label for="password" class="form-label">
-                            <i class="bi bi-lock"></i> Password
-                        </label>
-                        <input type="password" 
-                               class="form-control" 
-                               id="password" 
-                               name="password" 
-                               required>
-                    </div>
-                    
-                    <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-success">
-                            <i class="bi bi-box-arrow-in-right"></i> Login
-                        </button>
-                    </div>
-                </form>
-                
-                <div class="text-center mt-3">
-                    <p class="mb-0">
-                        Don't have an account? 
-                        <a href="{{ url_for('register') }}" class="text-success">Register here</a>
-                    </p>
-                </div>
-            </div>
+<div class="auth-wrap">
+  <div>
+    <div class="auth-card">
+      <!-- Header -->
+      <div class="auth-header">
+        <div class="auth-logo"><i class="bi bi-tree-fill"></i></div>
+        <h1>Welcome back</h1>
+        <p>Sign in to continue your sustainability journey</p>
+      </div>
+
+      <!-- Body -->
+      <div class="auth-body">
+        {% if errors %}
+        <div class="alert alert-danger mb-4" style="border-radius:12px;font-size:.875rem;">
+          {% for error in errors %}
+          <div class="d-flex align-items-center gap-2 {% if not loop.last %}mb-1{% endif %}">
+            <i class="bi bi-exclamation-circle-fill"></i> {{ error }}
+          </div>
+          {% endfor %}
         </div>
-        
-        <div class="card mt-3">
-            <div class="card-body text-center">
-                <h6>Demo Accounts</h6>
-                <p class="small text-muted mb-2">Use these for testing:</p>
-                <div class="row">
-                    <div class="col-6">
-                        <p class="mb-1"><strong>Individual User</strong></p>
-                        <p class="small mb-1">Username: <code>user1</code></p>
-                        <p class="small">Password: <code>password123</code></p>
-                    </div>
-                    <div class="col-6">
-                        <p class="mb-1"><strong>Enterprise User</strong></p>
-                        <p class="small mb-1">Username: <code>company1</code></p>
-                        <p class="small">Password: <code>password123</code></p>
-                    </div>
-                </div>
+        {% endif %}
+
+        <!-- Demo accounts -->
+        <div class="demo-card">
+          <div class="demo-card-title">Quick Demo Access</div>
+          <div class="demo-row">
+            <div class="demo-account" onclick="fillDemo('user1','password123')">
+              <div class="demo-type"><i class="bi bi-person me-1"></i> Individual</div>
+              <div class="demo-cred">user1 <span>password123</span></div>
             </div>
+            <div class="demo-account" onclick="fillDemo('company1','password123')">
+              <div class="demo-type"><i class="bi bi-building me-1"></i> Enterprise</div>
+              <div class="demo-cred">company1 <span>password123</span></div>
+            </div>
+          </div>
         </div>
+
+        <!-- Form -->
+        <form method="POST" action="{{ url_for('login') }}">
+          <div class="auth-field">
+            <label class="auth-label" for="username">Username</label>
+            <div class="auth-input-icon">
+              <i class="bi bi-person icon"></i>
+              <input type="text" class="auth-input" id="username" name="username"
+                     placeholder="Enter your username" required
+                     value="{{ request.form.username if request.form }}">
+            </div>
+          </div>
+
+          <div class="auth-field">
+            <label class="auth-label" for="password">Password</label>
+            <div class="auth-input-icon">
+              <i class="bi bi-lock icon"></i>
+              <input type="password" class="auth-input" id="password" name="password"
+                     placeholder="Enter your password" required>
+            </div>
+          </div>
+
+          <button type="submit" class="auth-submit">
+            <i class="bi bi-arrow-right-circle me-2"></i> Sign In
+          </button>
+        </form>
+      </div>
+
+      <!-- Footer -->
+      <div class="auth-footer">
+        <p>Don't have an account? <a href="{{ url_for('register') }}">Create one free</a></p>
+      </div>
     </div>
+  </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function fillDemo(user, pass) {
+  document.getElementById('username').value = user;
+  document.getElementById('password').value = pass;
+}
+</script>
 {% endblock %}

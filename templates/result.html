@@ -73,8 +73,8 @@
                     
                     <div class="mb-4">
                         <span class="result-badge 
-                            {% if result.carbon_level == 'Low' %}result-low
-                            {% elif result.carbon_level == 'Medium' %}result-medium
+                            {% if result.carbon_level == 'Low' or result.carbon_level == 'Very Low' %}result-low
+                            {% elif result.carbon_level == 'Medium' or result.carbon_level == 'Medium-Low' or result.carbon_level == 'Medium-High' %}result-medium
                             {% else %}result-high{% endif %}">
                             {{ result.carbon_level }} Impact
                         </span>
@@ -96,9 +96,15 @@
                         <i class="bi bi-award"></i> Get Certificate
                     </a>
                     {% else %}
+                    
+                    {% if session.get('subscription_plan', 'free') in ['eco-starter', 'eco-pro', 'business'] %}
                     <a href="{{ url_for('generate_report', report_type='individual') }}" class="btn btn-success btn-lg">
                         <i class="bi bi-file-earmark-pdf"></i> Download Carbon Report
                     </a>
+                    {% else %}
+                    <a href="/pricing" class="btn btn-outline">🔒 Upgrade for PDF Export</a>
+                    {% endif %}
+
                     <a href="{{ url_for('generate_report', report_type='certificate') }}" class="btn btn-outline-success btn-lg">
                         <i class="bi bi-award"></i> Get Certificate
                     </a>
@@ -121,8 +127,8 @@
                                 <p class="mb-0">Score (70% weight)</p>
                                 <div class="progress mt-3" style="height: 20px;">
                                     <div class="progress-bar bg-success" 
-                                         style="width: {{ result.environmental_score/70*100 }}%">
-                                        {{ (result.environmental_score/70*100)|round(1) }}%
+                                         style="width: {{result.environmental_score}}%">
+                                        {{result.environmental_score}}%
                                     </div>
                                 </div>
                             </div>
@@ -139,8 +145,8 @@
                                 <p class="mb-0">Score (15% weight)</p>
                                 <div class="progress mt-3" style="height: 20px;">
                                     <div class="progress-bar bg-info" 
-                                         style="width: {{ result.social_score/15*100 }}%">
-                                        {{ (result.social_score/15*100)|round(1) }}%
+                                         style="width: {{result.social_score}}%">
+                                        {{result.social_score}}%
                                     </div>
                                 </div>
                             </div>
@@ -157,8 +163,8 @@
                                 <p class="mb-0">Score (15% weight)</p>
                                 <div class="progress mt-3" style="height: 20px;">
                                     <div class="progress-bar bg-primary" 
-                                         style="width: {{ result.governance_score/15*100 }}%">
-                                        {{ (result.governance_score/15*100)|round(1) }}%
+                                         style="width: {{result.governance_score}}%">
+                                        {{result.governance_score}}%
                                     </div>
                                 </div>
                             </div>
@@ -185,7 +191,9 @@
                                     </div>
                                     <div class="list-group-item d-flex justify-content-between">
                                         <span>Industry Benchmark</span>
-                                        <span class="fw-bold">Average: 2.5 tons/employee</span>
+                                        <span class="fw-bold">Average: {{ result.industry_benchmark }} tons/employee
+<br>
+<small>{{ result.benchmark_status }}</small></span>
                                     </div>
                                 </div>
                             </div>
@@ -266,7 +274,13 @@
                             <div class="card-body">
                                 <p>Your footprint was calculated using:</p>
                                 <ul>
-                                    <li><strong>ML Prediction:</strong> {{ result.ml_prediction|round|int }} kg CO2e</li>
+                                    <li><strong>ML Prediction:</strong> 
+                                        {% if result.ml_prediction is defined and result.ml_prediction is not none and result.ml_prediction > 0 %}
+                                            {{ result.ml_prediction|round|int }} kg CO2e
+                                        {% else %}
+                                            <span class="text-muted">Using rule-based calculation only</span>
+                                        {% endif %}
+                                    </li>
                                     <li><strong>Rule-based:</strong> {{ result.rule_based|round|int }} kg CO2e</li>
                                 </ul>
                                 <p class="mb-0">
@@ -502,9 +516,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Calculate position based on carbon level
     let comparisonValue;
-    if ("{{ result.carbon_level }}" === "Low") {
+    if ("{{ result.carbon_level }}" === "Low" || "{{ result.carbon_level }}" === "Very Low") {
         comparisonValue = 30; // Below average
-    } else if ("{{ result.carbon_level }}" === "Medium") {
+    } else if ("{{ result.carbon_level }}" === "Medium" || "{{ result.carbon_level }}" === "Medium-Low" || "{{ result.carbon_level }}" === "Medium-High") {
         comparisonValue = 50; // Near average
     } else {
         comparisonValue = 80; // Above average
@@ -516,7 +530,7 @@ document.addEventListener('DOMContentLoaded', function() {
             datasets: [{
                 data: [comparisonValue, 100 - comparisonValue],
                 backgroundColor: [
-                    "{{ '#28a745' if result.carbon_level == 'Low' else '#ffc107' if result.carbon_level == 'Medium' else '#dc3545' }}",
+                    "{{ '#28a745' if result.carbon_level == 'Low' or result.carbon_level == 'Very Low' else '#ffc107' if 'Medium' in result.carbon_level else '#dc3545' }}",
                     '#e9ecef'
                 ],
                 borderWidth: 0,

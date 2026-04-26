@@ -1,37 +1,158 @@
 {% extends "base.html" %}
-
 {% block title %}Server Error{% endblock %}
 
+{% block extra_css %}
+<style>
+.error-stage {
+  min-height: calc(100vh - 220px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 60px 20px;
+}
+
+.error-card {
+  max-width: 560px; width: 100%; text-align: center;
+  background: white; border-radius: 32px;
+  border: 1px solid rgba(0,0,0,.06);
+  box-shadow: 0 24px 80px rgba(0,0,0,.1);
+  overflow: hidden;
+  animation: slide-up .6s cubic-bezier(.4,0,.2,1) both;
+}
+
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(32px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.error-visual {
+  background: linear-gradient(160deg, #1a0a0a, #7f1d1d 60%, #991b1b);
+  padding: 52px 44px 44px;
+  position: relative; overflow: hidden;
+}
+
+.error-visual::before {
+  content: ''; position: absolute;
+  top: -60px; right: -60px; width: 240px; height: 240px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(239,68,68,.12) 0%, transparent 70%);
+}
+
+.error-code {
+  font-family: 'Playfair Display', serif;
+  font-size: 7rem; font-weight: 900; line-height: 1;
+  color: transparent;
+  -webkit-text-stroke: 2px rgba(255,255,255,.18);
+  letter-spacing: -.04em; margin-bottom: 8px;
+}
+
+.error-icon-ring {
+  width: 72px; height: 72px; border-radius: 22px;
+  background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.15);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.8rem; color: white; margin: 0 auto 20px;
+  animation: shake 5s ease-in-out infinite;
+}
+
+@keyframes shake {
+  0%,90%,100% { transform: rotate(0deg); }
+  92% { transform: rotate(-4deg); }
+  94% { transform: rotate(4deg); }
+  96% { transform: rotate(-3deg); }
+  98% { transform: rotate(3deg); }
+}
+
+.error-title-visual {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.4rem; font-weight: 700; color: white; margin-bottom: 6px;
+}
+.error-sub-visual { font-size: .85rem; color: rgba(255,255,255,.5); margin: 0; }
+
+.error-body { padding: 36px 44px 44px; }
+
+.troubleshoot-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+  margin-bottom: 28px; text-align: left;
+}
+
+.troubleshoot-item {
+  padding: 14px 16px; border-radius: 12px;
+  background: #fafaf8; border: 1px solid rgba(0,0,0,.06);
+  display: flex; align-items: flex-start; gap: 10px;
+}
+.troubleshoot-icon {
+  width: 28px; height: 28px; border-radius: 8px;
+  background: rgba(21,87,36,.1); color: #155724;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .75rem; flex-shrink: 0; margin-top: 1px;
+}
+.troubleshoot-text { font-size: .78rem; color: #4a4a4a; line-height: 1.5; font-weight: 500; }
+
+.error-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+.btn-refresh {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 13px 26px; border-radius: 13px;
+  background: linear-gradient(135deg, #7f1d1d, #991b1b); color: white;
+  font-size: .9rem; font-weight: 700; font-family: 'DM Sans', sans-serif;
+  border: none; cursor: pointer;
+  box-shadow: 0 6px 24px rgba(127,29,29,.3); transition: all .3s;
+}
+.btn-refresh:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(127,29,29,.4); }
+
+.btn-home {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 12px 24px; border-radius: 13px;
+  background: white; color: #155724;
+  border: 1.5px solid rgba(21,87,36,.25);
+  font-size: .9rem; font-weight: 700; font-family: 'DM Sans', sans-serif;
+  text-decoration: none; transition: all .3s;
+}
+.btn-home:hover { border-color: #155724; background: rgba(21,87,36,.04); color: #155724; transform: translateY(-1px); }
+
+.error-message { font-size: .88rem; color: #6c6c70; line-height: 1.6; margin-bottom: 24px; }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-8 text-center">
-        <div class="card">
-            <div class="card-body py-5">
-                <i class="bi bi-bug" style="font-size: 5rem; color: #dc3545;"></i>
-                <h1 class="display-4 mt-4">500</h1>
-                <h2 class="mb-4">Internal Server Error</h2>
-                <p class="lead mb-4">
-                    Something went wrong on our end. Please try again later.
-                </p>
-                <div class="alert alert-info">
-                    <h5><i class="bi bi-info-circle"></i> Troubleshooting Tips:</h5>
-                    <ul class="text-start">
-                        <li>Refresh the page</li>
-                        <li>Clear your browser cache</li>
-                        <li>Check your internet connection</li>
-                        <li>Contact support if the problem persists</li>
-                    </ul>
-                </div>
-                <div class="d-flex justify-content-center gap-3 flex-wrap">
-                    <button onclick="window.location.reload()" class="btn btn-success btn-lg">
-                        <i class="bi bi-arrow-clockwise"></i> Refresh Page
-                    </button>
-                    <a href="{{ url_for('index') }}" class="btn btn-outline-success btn-lg">
-                        <i class="bi bi-house"></i> Go to Homepage
-                    </a>
-                </div>
-            </div>
-        </div>
+<div class="error-stage">
+  <div class="error-card">
+    <div class="error-visual">
+      <div class="error-icon-ring"><i class="bi bi-bug-fill"></i></div>
+      <div class="error-code">500</div>
+      <div class="error-title-visual">Internal Server Error</div>
+      <div class="error-sub-visual">Something went wrong on our end</div>
     </div>
+    <div class="error-body">
+      <p class="error-message">
+        Our servers encountered an unexpected issue. This is a temporary problem — please try the steps below or come back in a few minutes.
+      </p>
+
+      <div class="troubleshoot-grid">
+        <div class="troubleshoot-item">
+          <div class="troubleshoot-icon"><i class="bi bi-arrow-clockwise"></i></div>
+          <div class="troubleshoot-text">Refresh the page and try again</div>
+        </div>
+        <div class="troubleshoot-item">
+          <div class="troubleshoot-icon"><i class="bi bi-trash3-fill"></i></div>
+          <div class="troubleshoot-text">Clear your browser cache &amp; cookies</div>
+        </div>
+        <div class="troubleshoot-item">
+          <div class="troubleshoot-icon"><i class="bi bi-wifi"></i></div>
+          <div class="troubleshoot-text">Check your internet connection</div>
+        </div>
+        <div class="troubleshoot-item">
+          <div class="troubleshoot-icon"><i class="bi bi-clock-fill"></i></div>
+          <div class="troubleshoot-text">Wait a moment and try again later</div>
+        </div>
+      </div>
+
+      <div class="error-actions">
+        <button onclick="window.location.reload()" class="btn-refresh">
+          <i class="bi bi-arrow-clockwise"></i> Refresh Page
+        </button>
+        <a href="{{ url_for('index') }}" class="btn-home">
+          <i class="bi bi-house-fill"></i> Go Home
+        </a>
+      </div>
+    </div>
+  </div>
 </div>
 {% endblock %}

@@ -3,568 +3,325 @@
 
 {% block extra_css %}
 <style>
-.dash-wrap {
-  display: grid;
-  grid-template-columns: 320px 1fr;
-  gap: 28px;
-  align-items: start;
-}
-
-/* ── Company Sidebar ── */
-.company-card {
-  background: linear-gradient(160deg, #0a1428 0%, #0d1f3c 50%, #0a2247 100%);
-  border-radius: 28px;
-  overflow: hidden;
-  box-shadow: 0 32px 80px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.06);
-  position: sticky; top: 100px;
-  border: 1px solid rgba(255,255,255,.05);
-}
-
-.company-header {
-  padding: 36px 28px 28px;
-  position: relative; text-align: center;
-}
-.company-header::before {
-  content: '';
-  position: absolute; top: -60px; right: -60px;
-  width: 220px; height: 220px; border-radius: 50%;
-  background: radial-gradient(circle, rgba(33,150,243,.15) 0%, transparent 70%);
-  pointer-events: none;
-}
-
-.company-avatar {
-  width: 80px; height: 80px; border-radius: 24px;
-  background: linear-gradient(135deg, #0d47a1, #1976d2, #42a5f5);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 2rem; color: white; margin: 0 auto 18px;
-  box-shadow: 0 12px 40px rgba(33,150,243,.4);
-  animation: pulse-blue 3s ease-in-out infinite;
-}
-@keyframes pulse-blue {
-  0%,100% { box-shadow: 0 12px 40px rgba(33,150,243,.4); }
-  50% { box-shadow: 0 12px 60px rgba(33,150,243,.65); }
-}
-
-.company-name {
-  font-family: 'Playfair Display', serif;
-  font-size: 1.3rem; font-weight: 700;
-  color: white; margin-bottom: 8px; letter-spacing: -.01em;
-}
-
-.enterprise-badge {
-  display: inline-flex; align-items: center; gap: 6px;
-  background: rgba(33,150,243,.15); border: 1px solid rgba(33,150,243,.28);
-  border-radius: 20px; padding: 4px 14px;
-  font-size: .72rem; font-weight: 700; color: #64b5f6;
-  text-transform: uppercase; letter-spacing: .07em;
-}
-
-.company-stats {
-  display: grid; grid-template-columns: 1fr 1fr;
-  gap: 1px; background: rgba(255,255,255,.07);
-  margin-top: 24px; border-top: 1px solid rgba(255,255,255,.07);
-}
-
-.stat-cell {
-  padding: 18px 14px; text-align: center;
-  background: rgba(0,0,0,.25); transition: background .2s;
-}
-.stat-cell:hover { background: rgba(33,150,243,.09); }
-
-.stat-val {
-  font-family: 'Playfair Display', serif;
-  font-size: 1.5rem; font-weight: 700; color: #64b5f6; line-height: 1;
-}
-.stat-lbl {
-  font-size: .65rem; font-weight: 700; color: rgba(255,255,255,.35);
-  text-transform: uppercase; letter-spacing: .07em; margin-top: 5px;
-}
-
-.sidebar-section { padding: 22px 26px; border-top: 1px solid rgba(255,255,255,.06); }
-.section-eyebrow { font-size: .65rem; font-weight: 700; color: rgba(255,255,255,.28); text-transform: uppercase; letter-spacing: .1em; margin-bottom: 14px; }
-
-.esg-history-item {
-  display: flex; align-items: center; gap: 12px;
-  padding: 12px 14px; border-radius: 12px;
-  border: 1px solid rgba(255,255,255,.05); margin-bottom: 8px;
-  background: rgba(255,255,255,.03); transition: all .22s;
-}
-.esg-history-item:hover {
-  background: rgba(33,150,243,.07); border-color: rgba(33,150,243,.18);
-  transform: translateX(4px);
-}
-.hist-score {
-  width: 38px; height: 38px; border-radius: 10px; flex-shrink: 0;
-  display: flex; align-items: center; justify-content: center;
-  font-size: .75rem; font-weight: 800; font-family: 'Playfair Display', serif;
-}
-.hist-info { flex: 1; min-width: 0; }
-.hist-name { font-size: .82rem; font-weight: 600; color: rgba(255,255,255,.82); }
-.hist-sub { font-size: .7rem; color: rgba(255,255,255,.32); margin-top: 2px; }
-
-.risk-chip {
-  font-size: .62rem; font-weight: 700;
-  padding: 3px 9px; border-radius: 8px;
-  text-transform: uppercase; letter-spacing: .05em; flex-shrink: 0;
-}
-.risk-chip.low { background: rgba(46,204,113,.2); color: #2ecc71; border: 1px solid rgba(46,204,113,.3); }
-.risk-chip.medium { background: rgba(255,152,0,.2); color: #ff9800; border: 1px solid rgba(255,152,0,.3); }
-.risk-chip.high { background: rgba(244,67,54,.2); color: #ef5350; border: 1px solid rgba(244,67,54,.3); }
-
-.benefit-item {
-  display: flex; align-items: flex-start; gap: 11px;
-  padding: 9px 0; border-bottom: 1px solid rgba(255,255,255,.04);
-}
-.benefit-item:last-child { border-bottom: none; }
-.benefit-icon {
-  width: 26px; height: 26px; border-radius: 8px;
-  background: rgba(33,150,243,.12); border: 1px solid rgba(33,150,243,.22);
-  display: flex; align-items: center; justify-content: center;
-  font-size: .72rem; color: #64b5f6; flex-shrink: 0; margin-top: 1px;
-}
-.benefit-text { font-size: .78rem; color: rgba(255,255,255,.48); line-height: 1.5; }
-
-/* ── ESG Form ── */
-.esg-shell {
-  background: white; border-radius: 28px; overflow: hidden;
-  box-shadow: 0 8px 40px rgba(0,0,0,.07); border: 1px solid rgba(0,0,0,.05);
-}
-
-.esg-header {
-  background: linear-gradient(135deg, #0a1428, #0d47a1 60%, #1565c0);
-  padding: 32px 36px; position: relative; overflow: hidden;
-}
-.esg-header::after {
-  content: ''; position: absolute; top: -80px; right: -80px;
-  width: 280px; height: 280px; border-radius: 50%;
-  background: radial-gradient(circle, rgba(255,255,255,.05) 0%, transparent 70%);
-}
-.esg-header h2 {
-  font-family: 'Playfair Display', serif;
-  font-size: 1.6rem; font-weight: 700; color: white;
-  margin-bottom: 7px; letter-spacing: -.02em;
-}
-.esg-header p { font-size: .85rem; color: rgba(255,255,255,.48); margin: 0; }
-
-/* ESG Score Preview Pills */
-.esg-pillars {
-  display: flex; gap: 10px; margin-top: 18px; flex-wrap: wrap;
-}
-.esg-pillar {
-  display: flex; align-items: center; gap: 7px;
-  background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.15);
-  border-radius: 20px; padding: 5px 14px;
-  font-size: .72rem; font-weight: 700; color: rgba(255,255,255,.75);
-}
-.pillar-dot { width: 7px; height: 7px; border-radius: 50%; }
-
-.error-banner {
-  background: #fff5f5; border: 1px solid rgba(244,67,54,.15);
-  border-radius: 14px; padding: 16px 20px; margin: 24px 36px 0;
-}
-.error-banner h6 { color: #c62828; font-size: .85rem; font-weight: 700; margin-bottom: 8px; }
-.error-banner ul { margin: 0; padding-left: 18px; color: #d32f2f; font-size: .82rem; }
-
-.form-body { padding: 28px 36px; }
-
-.form-section {
-  background: #fafaf8; border-radius: 18px;
-  border: 1px solid rgba(0,0,0,.06); margin-bottom: 20px;
-  overflow: hidden; transition: box-shadow .3s;
-}
-.form-section:hover { box-shadow: 0 6px 28px rgba(0,0,0,.07); }
-
-.form-section-header {
-  padding: 16px 22px; border-bottom: 1px solid rgba(0,0,0,.05);
-  display: flex; align-items: center; gap: 12px; background: white;
-}
-.section-icon {
-  width: 34px; height: 34px; border-radius: 10px;
-  display: flex; align-items: center; justify-content: center; font-size: .85rem;
-}
-.section-icon.blue { background: rgba(13,71,161,.08); color: #0d47a1; }
-.section-icon.green { background: rgba(21,87,36,.1); color: #155724; }
-.section-icon.amber { background: rgba(255,152,0,.1); color: #e65100; }
-.section-icon.purple { background: rgba(103,58,183,.1); color: #4527a0; }
-
-.form-section-title {
-  font-family: 'Playfair Display', serif;
-  font-size: .95rem; font-weight: 700; color: #0d2818;
-}
-
-.form-grid { padding: 22px; display: grid; gap: 18px; }
-.form-grid-2 { grid-template-columns: 1fr 1fr; }
-
-.field-label {
-  font-size: .7rem; font-weight: 700; color: #6c6c70;
-  text-transform: uppercase; letter-spacing: .07em; margin-bottom: 8px; display: block;
-}
-.field-hint { font-size: .7rem; color: #aeaeb2; margin-top: 4px; }
-
-.dash-input, .dash-select {
-  width: 100%; padding: 11px 15px;
-  border: 1.5px solid rgba(0,0,0,.09); border-radius: 12px;
-  font-size: .88rem; color: #1c1c1e; background: white;
-  font-family: 'DM Sans', sans-serif; transition: all .22s; outline: none;
-  -webkit-appearance: none; appearance: none;
-}
-.dash-input:focus, .dash-select:focus { border-color: #0d47a1; box-shadow: 0 0 0 3px rgba(13,71,161,.1); }
+/* Custom Styles for Form Elements (Tailwind extension) */
 .dash-select {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236c6c70' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
-  background-repeat: no-repeat; background-position: right 13px center;
-  background-size: 15px; padding-right: 40px; cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236c6c70' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 1.2em;
 }
 
-/* Toggle switch for yes/no */
-.toggle-group { display: flex; flex-direction: column; gap: 8px; }
-.toggle-option {
-  display: flex; align-items: center; gap: 11px;
-  padding: 11px 15px; border-radius: 12px;
-  border: 1.5px solid rgba(0,0,0,.08); cursor: pointer;
-  transition: all .2s; background: white;
-}
-.toggle-option:hover { border-color: rgba(13,71,161,.22); background: rgba(13,71,161,.02); }
-.toggle-option input[type="radio"] { display: none; }
-.toggle-option.checked { border-color: #0d47a1; background: rgba(13,71,161,.04); box-shadow: 0 0 0 2px rgba(13,71,161,.1); }
-.toggle-dot {
-  width: 17px; height: 17px; border-radius: 50%;
-  border: 2px solid rgba(0,0,0,.15); flex-shrink: 0;
-  position: relative; transition: all .2s;
-}
-.toggle-option.checked .toggle-dot { border-color: #0d47a1; background: #0d47a1; }
-.toggle-option.checked .toggle-dot::after {
-  content: ''; position: absolute;
-  top: 50%; left: 50%; transform: translate(-50%,-50%);
-  width: 5px; height: 5px; border-radius: 50%; background: white;
-}
-.toggle-label { font-size: .85rem; color: #1c1c1e; font-weight: 500; }
+/* Loading Spinner */
+@keyframes spin { to { transform: rotate(360deg); } }
+.spinner { animation: spin 1s linear infinite; }
 
-/* Methodology info boxes */
-.methodology-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
-.methodology-box {
-  padding: 16px; border-radius: 14px; text-align: center;
-  border: 1px solid rgba(0,0,0,.07);
-}
-.methodology-box.env { background: rgba(21,87,36,.05); border-color: rgba(21,87,36,.12); }
-.methodology-box.soc { background: rgba(33,150,243,.05); border-color: rgba(33,150,243,.12); }
-.methodology-box.gov { background: rgba(103,58,183,.05); border-color: rgba(103,58,183,.12); }
-.methodology-box .pct { font-family: 'Playfair Display', serif; font-size: 1.6rem; font-weight: 700; }
-.methodology-box.env .pct { color: #155724; }
-.methodology-box.soc .pct { color: #0d47a1; }
-.methodology-box.gov .pct { color: #4527a0; }
-.methodology-box h6 { font-size: .75rem; font-weight: 700; margin: 6px 0 4px; }
-.methodology-box p { font-size: .7rem; color: #6c6c70; margin: 0; line-height: 1.4; }
-
-.form-footer {
-  padding: 24px 36px; border-top: 1px solid rgba(0,0,0,.06);
-  display: flex; align-items: center; justify-content: flex-end; gap: 12px;
-  background: #fafaf8;
-}
-.btn-reset {
-  padding: 11px 22px; border-radius: 11px;
-  border: 1.5px solid rgba(0,0,0,.1); background: white;
-  font-size: .87rem; font-weight: 600; color: #6c6c70;
-  font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all .2s;
-}
-.btn-reset:hover { border-color: rgba(0,0,0,.2); color: #1c1c1e; }
-.btn-assess {
-  padding: 12px 28px; border-radius: 12px;
-  background: linear-gradient(135deg, #0a1428, #0d47a1);
-  border: none; color: white; font-size: .9rem; font-weight: 700;
-  font-family: 'DM Sans', sans-serif; cursor: pointer;
-  box-shadow: 0 6px 24px rgba(13,71,161,.3);
-  transition: all .3s; display: flex; align-items: center; gap: 8px;
-}
-.btn-assess:hover { transform: translateY(-2px); box-shadow: 0 10px 32px rgba(13,71,161,.4); }
-.btn-assess.loading { opacity: .7; pointer-events: none; }
-
-.info-card {
-  margin-top: 22px; background: white; border-radius: 20px;
-  border: 1px solid rgba(0,0,0,.05); box-shadow: 0 4px 20px rgba(0,0,0,.04); overflow: hidden;
-}
-.info-card-header {
-  padding: 16px 26px; border-bottom: 1px solid rgba(0,0,0,.06); background: #fafaf8;
-  font-family: 'Playfair Display', serif; font-size: .95rem; font-weight: 700;
-  color: #0d2818; display: flex; align-items: center; gap: 10px;
-}
-.info-card-body { padding: 22px 26px; }
-
-.note-box {
-  background: #f0f6ff; border: 1px solid rgba(13,71,161,.15);
-  border-radius: 12px; padding: 14px 16px; margin-bottom: 14px;
-}
-.note-box p { font-size: .78rem; color: #2c3e75; margin: 0; line-height: 1.6; }
-
-@media (max-width: 1024px) {
-  .dash-wrap { grid-template-columns: 1fr; }
-  .company-card { position: static; }
-  .form-grid-2 { grid-template-columns: 1fr; }
-  .methodology-grid { grid-template-columns: 1fr; }
-}
-@media (max-width: 640px) {
-  .esg-header { padding: 22px 22px; }
-  .form-body { padding: 20px 22px; }
-  .form-footer { flex-direction: column; padding: 18px 22px; }
-  .btn-assess, .btn-reset { width: 100%; justify-content: center; }
+/* Blue Glow for Enterprise */
+.shadow-glow-blue {
+    box-shadow: 0 0 25px rgba(59, 130, 246, 0.4);
 }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="dash-wrap">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-2 pb-8 lg:pt-4 lg:pb-12 relative z-10">
+    <div class="flex flex-col lg:flex-row gap-8 items-start">
 
-  <!-- ─── Sidebar ─── -->
-  <aside>
-    <div class="company-card">
-      <div class="company-header">
-        <div class="company-avatar"><i class="bi bi-building-fill"></i></div>
-        <div class="company-name">{{ user.username }}</div>
-        <div class="enterprise-badge"><i class="bi bi-briefcase-fill"></i>&nbsp; Enterprise</div>
-        <div class="company-stats">
-          <div class="stat-cell">
-            <div class="stat-val">{{ assessments|length }}</div>
-            <div class="stat-lbl">ESG Reports</div>
-          </div>
-          <div class="stat-cell">
-            <div class="stat-val" style="font-size:.85rem;">{{ user.created_at[:7] if user.created_at else '—' }}</div>
-            <div class="stat-lbl">Since</div>
-          </div>
-          {% if assessments %}
-          <div class="stat-cell">
-            <div class="stat-val">{{ assessments[0].esg_score }}</div>
-            <div class="stat-lbl">Latest Score</div>
-          </div>
-          <div class="stat-cell">
-            <div class="stat-val" style="font-size:.85rem;">{{ assessments[0].esg_risk }}</div>
-            <div class="stat-lbl">Risk Level</div>
-          </div>
-          {% else %}
-          <div class="stat-cell"><div class="stat-val">—</div><div class="stat-lbl">Score</div></div>
-          <div class="stat-cell"><div class="stat-val">—</div><div class="stat-lbl">Risk</div></div>
-          {% endif %}
-        </div>
-      </div>
+        <aside class="w-full lg:w-[340px] flex-shrink-0 lg:sticky lg:top-28">
+            <div class="bg-gradient-to-b from-slate-900 via-blue-950 to-blue-900 rounded-[2rem] overflow-hidden shadow-2xl border border-white/10 relative">
+                
+                <div class="absolute -top-20 -right-20 w-56 h-56 bg-blue-500/20 rounded-full blur-3xl pointer-events-none"></div>
 
-      <div class="sidebar-section">
-        <div class="section-eyebrow">ESG Assessment History</div>
-        {% if assessments %}
-          {% for a in assessments %}
-          <div class="esg-history-item">
-            <div class="hist-score" style="background:rgba(33,150,243,.15);color:#64b5f6;font-size:.8rem;">
-              {{ a.esg_score }}
+                <div class="p-8 text-center relative z-10">
+                    <div class="w-24 h-24 mx-auto bg-gradient-to-br from-blue-400 to-blue-600 p-1 rounded-[1.5rem] mb-5 shadow-glow-blue animate-[pulse_3s_ease-in-out_infinite]">
+                        <div class="w-full h-full bg-slate-900 rounded-[1.3rem] flex items-center justify-center text-4xl text-white">
+                            <i class="ph-fill ph-buildings"></i>
+                        </div>
+                    </div>
+                    <h2 class="text-2xl font-bold text-white tracking-tight mb-2">{{ user.username }}</h2>
+                    <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/20 border border-blue-500/30 text-blue-300 text-xs font-bold uppercase tracking-wider">
+                        <i class="ph-fill ph-briefcase text-sm"></i> Enterprise
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-[1px] bg-white/10 border-y border-white/10">
+                    <div class="bg-black/20 p-4 text-center hover:bg-blue-500/10 transition-colors">
+                        <div class="text-2xl font-extrabold text-blue-400 leading-none mb-1">{{ assessments|length }}</div>
+                        <div class="text-[0.65rem] font-bold text-white/40 uppercase tracking-widest">ESG Reports</div>
+                    </div>
+                    <div class="bg-black/20 p-4 text-center hover:bg-blue-500/10 transition-colors">
+                        <div class="text-lg font-bold text-blue-400 leading-none mb-1 pt-1">{{ user.created_at[:7] if user.created_at else '—' }}</div>
+                        <div class="text-[0.65rem] font-bold text-white/40 uppercase tracking-widest">Member Since</div>
+                    </div>
+                    <div class="bg-black/20 p-4 text-center hover:bg-blue-500/10 transition-colors">
+                        <div class="text-xl font-extrabold text-blue-400 leading-none mb-1 pt-0.5">
+                            {% if assessments %}{{ assessments[0].esg_score }}{% else %}—{% endif %}
+                        </div>
+                        <div class="text-[0.65rem] font-bold text-white/40 uppercase tracking-widest">Latest Score</div>
+                    </div>
+                    <div class="bg-black/20 p-4 text-center hover:bg-blue-500/10 transition-colors">
+                        <div class="text-lg font-bold text-blue-400 leading-none mb-1 pt-1">
+                            {% if assessments %}{{ assessments[0].esg_risk }}{% else %}—{% endif %}
+                        </div>
+                        <div class="text-[0.65rem] font-bold text-white/40 uppercase tracking-widest">Risk Level</div>
+                    </div>
+                </div>
+
+                <div class="p-6">
+                    <h3 class="text-xs font-bold text-white/30 uppercase tracking-widest mb-4">ESG Assessment History</h3>
+                    {% if assessments %}
+                        <div class="space-y-2">
+                        {% for a in assessments %}
+                            {% set risk_color = 'bg-brand-500 text-brand-100 border-brand-500/30' if a.esg_risk|lower == 'low' else ('bg-orange-500 text-orange-100 border-orange-500/30' if a.esg_risk|lower == 'medium' else 'bg-red-500 text-red-100 border-red-500/30') %}
+                            
+                            <div class="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 hover:border-blue-500/30 transition-all hover:translate-x-1 cursor-default group">
+                                <div class="w-10 h-10 rounded-lg bg-blue-500/20 text-blue-400 font-bold font-serif flex items-center justify-center flex-shrink-0 border border-blue-500/20">
+                                    {{ a.esg_score }}
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="text-sm font-semibold text-white/90 truncate">{{ a.company_name }}</div>
+                                    <div class="text-[0.7rem] text-white/40">{{ a.created_at[:10] }}</div>
+                                </div>
+                                <span class="text-[0.6rem] font-bold px-2 py-1 rounded-md uppercase tracking-wider bg-opacity-20 border {{ risk_color }}">
+                                    {{ a.esg_risk }}
+                               </span>
+                            </div>
+                        {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-6 text-white/30 text-sm">
+                            <i class="ph-fill ph-trend-up text-3xl opacity-40 mb-2 block"></i>
+                            No ESG history yet
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="p-6 border-t border-white/10 bg-black/10">
+                    <h3 class="text-xs font-bold text-white/30 uppercase tracking-widest mb-4">Benefits of ESG Readiness</h3>
+                    <div class="space-y-3">
+                        <div class="flex items-start gap-3 pb-3 border-b border-white/5">
+                            <div class="w-7 h-7 rounded-lg bg-blue-500/20 border border-blue-500/30 flex items-center justify-center text-blue-400 flex-shrink-0"><i class="ph-fill ph-trend-up"></i></div>
+                            <p class="text-xs text-white/50 leading-relaxed pt-0.5">Improved investor confidence &amp; access to capital</p>
+                        </div>
+                        <div class="flex items-start gap-3 pb-3 border-b border-white/5">
+                            <div class="w-7 h-7 rounded-lg bg-blue-500/20 border border-blue-500/30 flex items-center justify-center text-blue-400 flex-shrink-0"><i class="ph-fill ph-shield-check"></i></div>
+                            <p class="text-xs text-white/50 leading-relaxed pt-0.5">Better risk management &amp; regulatory preparedness</p>
+                        </div>
+                        <div class="flex items-start gap-3 pb-3 border-b border-white/5">
+                            <div class="w-7 h-7 rounded-lg bg-blue-500/20 border border-blue-500/30 flex items-center justify-center text-blue-400 flex-shrink-0"><i class="ph-fill ph-star"></i></div>
+                            <p class="text-xs text-white/50 leading-relaxed pt-0.5">Enhanced brand reputation &amp; stakeholder trust</p>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <div class="w-7 h-7 rounded-lg bg-blue-500/20 border border-blue-500/30 flex items-center justify-center text-blue-400 flex-shrink-0"><i class="ph-fill ph-money"></i></div>
+                            <p class="text-xs text-white/50 leading-relaxed pt-0.5">Operational cost savings through efficiency</p>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="hist-info">
-              <div class="hist-name">{{ a.company_name }}</div>
-              <div class="hist-sub">{{ a.created_at[:10] }}</div>
-            </div>
-            <span class="risk-chip {{ a.esg_risk|lower }}">{{ a.esg_risk }}</span>
-          </div>
-          {% endfor %}
-        {% else %}
-          <div style="text-align:center;padding:20px 0;color:rgba(255,255,255,.28);font-size:.82rem;">
-            <i class="bi bi-graph-up" style="font-size:1.8rem;display:block;margin-bottom:10px;opacity:.4;"></i>
-            No ESG history yet
-          </div>
-        {% endif %}
-      </div>
+        </aside>
 
-      <div class="sidebar-section">
-        <div class="section-eyebrow">Benefits of ESG Readiness</div>
-        <div class="benefit-item"><div class="benefit-icon"><i class="bi bi-graph-up-arrow"></i></div><div class="benefit-text">Improved investor confidence &amp; access to capital</div></div>
-        <div class="benefit-item"><div class="benefit-icon"><i class="bi bi-shield-check"></i></div><div class="benefit-text">Better risk management &amp; regulatory preparedness</div></div>
-        <div class="benefit-item"><div class="benefit-icon"><i class="bi bi-star-fill"></i></div><div class="benefit-text">Enhanced brand reputation &amp; stakeholder trust</div></div>
-        <div class="benefit-item"><div class="benefit-icon"><i class="bi bi-currency-dollar"></i></div><div class="benefit-text">Operational cost savings through efficiency</div></div>
-        <div class="benefit-item"><div class="benefit-icon"><i class="bi bi-trophy-fill"></i></div><div class="benefit-text">Competitive advantage in responsible markets</div></div>
-      </div>
+        <main class="flex-1 w-full space-y-6">
+            
+            <div class="bg-white rounded-[2rem] shadow-xl border border-gray-100 overflow-hidden relative">
+                <div class="bg-gradient-to-r from-slate-900 via-blue-900 to-blue-800 p-8 lg:p-10 relative overflow-hidden">
+                    <div class="absolute -top-24 -right-24 w-64 h-64 bg-white/5 rounded-full blur-2xl"></div>
+                    <h2 class="text-2xl md:text-3xl font-bold text-white mb-2 relative z-10">ESG Readiness Assessment</h2>
+                    <p class="text-blue-100/70 text-sm relative z-10 mb-5">AI-powered evaluation across Environmental, Social &amp; Governance dimensions</p>
+                    
+                    <div class="flex flex-wrap gap-3 relative z-10">
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-white/90 text-xs font-bold">
+                            <span class="w-2 h-2 rounded-full bg-brand-400"></span> Environmental 70%
+                        </span>
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-white/90 text-xs font-bold">
+                            <span class="w-2 h-2 rounded-full bg-blue-400"></span> Social 15%
+                        </span>
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-white/90 text-xs font-bold">
+                            <span class="w-2 h-2 rounded-full bg-purple-400"></span> Governance 15%
+                        </span>
+                    </div>
+                </div>
+
+                {% if errors %}
+                <div class="m-6 bg-red-50 border border-red-200 rounded-xl p-5">
+                    <h6 class="text-red-700 font-bold text-sm mb-2 flex items-center gap-2">
+                        <i class="ph-fill ph-warning-circle text-lg"></i> Please correct the following:
+                    </h6>
+                    <ul class="list-disc list-inside text-red-600 text-sm space-y-1 pl-1">
+                        {% for e in errors %}<li>{{ e }}</li>{% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+
+                <form method="POST" action="{{ url_for('calculate_enterprise') }}" id="esgForm">
+                    <div class="p-6 lg:p-8 space-y-6">
+
+                        <div class="form-section opacity-0 translate-y-4 bg-gray-50 border border-gray-100 rounded-2xl overflow-hidden hover:shadow-md transition-all duration-300">
+                            <div class="flex items-center gap-3 px-6 py-4 bg-white border-b border-gray-100">
+                                <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-lg"><i class="ph-fill ph-buildings"></i></div>
+                                <h3 class="font-bold text-gray-900">Company Information</h3>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-6">
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2" for="company_name">Company Name</label>
+                                    <input type="text" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-sm bg-white text-gray-800 transition-all" id="company_name" name="company_name" placeholder="Your organisation name" required value="{{ form_data.company_name if form_data else '' }}">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2" for="industry">Industry Sector</label>
+                                    <select class="dash-select w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-sm bg-white text-gray-800 transition-all cursor-pointer" id="industry" name="industry" required>
+                                        <option value="">Select industry</option>
+                                        <option value="technology" {% if form_data and form_data.industry=='technology' %}selected{% endif %}>Technology</option>
+                                        <option value="manufacturing" {% if form_data and form_data.industry=='manufacturing' %}selected{% endif %}>Manufacturing</option>
+                                        <option value="finance" {% if form_data and form_data.industry=='finance' %}selected{% endif %}>Finance &amp; Banking</option>
+                                        <option value="healthcare" {% if form_data and form_data.industry=='healthcare' %}selected{% endif %}>Healthcare</option>
+                                        <option value="retail" {% if form_data and form_data.industry=='retail' %}selected{% endif %}>Retail &amp; Commerce</option>
+                                        <option value="energy" {% if form_data and form_data.industry=='energy' %}selected{% endif %}>Energy &amp; Utilities</option>
+                                        <option value="agriculture" {% if form_data and form_data.industry=='agriculture' %}selected{% endif %}>Agriculture</option>
+                                        <option value="other" {% if form_data and form_data.industry=='other' %}selected{% endif %}>Other</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2" for="employees">Number of Employees</label>
+                                    <input type="number" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-sm bg-white text-gray-800 transition-all" id="employees" name="employees" min="1" step="1" placeholder="e.g., 100" value="{{ form_data.employees if form_data else '100' }}" required>
+                                    <p class="text-xs text-gray-400 mt-2">Total full-time employees</p>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2" for="country">Country of Operations</label>
+                                    <select class="dash-select w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 text-sm bg-white text-gray-800 transition-all cursor-pointer" id="country" name="country" required>
+                                        <option value="">Select country</option>
+                                        <option value="India" {% if form_data and form_data.country=='India' %}selected{% endif %}>India</option>
+                                        <option value="USA" {% if form_data and form_data.country=='USA' %}selected{% endif %}>United States</option>
+                                        <option value="UK" {% if form_data and form_data.country=='UK' %}selected{% endif %}>United Kingdom</option>
+                                        <option value="Germany" {% if form_data and form_data.country=='Germany' %}selected{% endif %}>Germany</option>
+                                        <option value="Australia" {% if form_data and form_data.country=='Australia' %}selected{% endif %}>Australia</option>
+                                        <option value="Other" {% if form_data and form_data.country=='Other' %}selected{% endif %}>Other</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-section opacity-0 translate-y-4 bg-gray-50 border border-gray-100 rounded-2xl overflow-hidden hover:shadow-md transition-all duration-300" style="transition-delay: 100ms;">
+                            <div class="flex items-center gap-3 px-6 py-4 bg-white border-b border-gray-100">
+                                <div class="w-10 h-10 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center text-lg"><i class="ph-fill ph-tree"></i></div>
+                                <div>
+                                    <h3 class="font-bold text-gray-900">Environmental Factors</h3>
+                                    <p class="text-[0.65rem] font-bold text-gray-400 uppercase tracking-widest mt-0.5">70% Weight</p>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-6">
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2" for="energy_usage">Monthly Energy Usage (kWh)</label>
+                                    <input type="number" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 text-sm bg-white text-gray-800 transition-all" id="energy_usage" name="energy_usage" min="0" step="100" placeholder="e.g., 10000" value="{{ form_data.energy_usage if form_data else '10000' }}" required>
+                                    <p class="text-xs text-gray-400 mt-2">Total electricity &amp; fuel consumption</p>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2" for="travel_km">Annual Business Travel (km)</label>
+                                    <input type="number" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 text-sm bg-white text-gray-800 transition-all" id="travel_km" name="travel_km" min="0" step="1000" placeholder="e.g., 50000" value="{{ form_data.travel_km if form_data else '50000' }}" required>
+                                    <p class="text-xs text-gray-400 mt-2">Combined distance for all business trips</p>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2" for="waste_management">Waste Management Level</label>
+                                    <select class="dash-select w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 text-sm bg-white text-gray-800 transition-all cursor-pointer" id="waste_management" name="waste_management" required>
+                                        <option value="1" {% if form_data and form_data.waste_management=='1' %}selected{% endif %}>1 — Basic disposal, no recycling</option>
+                                        <option value="2" {% if form_data and form_data.waste_management=='2' %}selected{% endif %}>2 — Some recycling initiatives</option>
+                                        <option value="3" {% if form_data and form_data.waste_management=='3' %}selected{% endif %}>3 — Established recycling program</option>
+                                        <option value="4" {% if form_data and form_data.waste_management=='4' %}selected{% endif %}>4 — Advanced waste reduction</option>
+                                        <option value="5" {% if form_data and form_data.waste_management=='5' %}selected{% endif %}>5 — Circular economy practices</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2" for="cloud_usage">Cloud / Digital Infrastructure</label>
+                                    <select class="dash-select w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 text-sm bg-white text-gray-800 transition-all cursor-pointer" id="cloud_usage" name="cloud_usage" required>
+                                        <option value="yes" {% if not form_data or form_data.cloud_usage=='yes' %}selected{% endif %}>Cloud services (lower footprint)</option>
+                                        <option value="no" {% if form_data and form_data.cloud_usage=='no' %}selected{% endif %}>On-premise infrastructure</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-section opacity-0 translate-y-4 bg-gray-50 border border-gray-100 rounded-2xl overflow-hidden hover:shadow-md transition-all duration-300" style="transition-delay: 200ms;">
+                            <div class="flex items-center gap-3 px-6 py-4 bg-white border-b border-gray-100">
+                                <div class="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center text-lg"><i class="ph-fill ph-users-three"></i></div>
+                                <div>
+                                    <h3 class="font-bold text-gray-900">Social &amp; Governance</h3>
+                                    <p class="text-[0.65rem] font-bold text-gray-400 uppercase tracking-widest mt-0.5">30% Weight Combined</p>
+                                </div>
+                            </div>
+                            <div class="p-6">
+                                <div class="bg-blue-50 border border-blue-100 rounded-xl p-4 flex gap-3 items-start">
+                                    <i class="ph-fill ph-info text-blue-500 text-xl flex-shrink-0 mt-0.5"></i>
+                                    <p class="text-sm text-blue-900 leading-relaxed m-0">Social (15%) and Governance (15%) components are evaluated against industry benchmarks, company size profile, and inferred from your environmental practices. For a full S&amp;G assessment, additional qualitative data would be required.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="bg-gray-50 px-8 py-5 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-end gap-4">
+                        <button type="reset" class="w-full sm:w-auto px-6 py-3 rounded-xl border border-gray-300 bg-white text-gray-700 font-bold text-sm hover:bg-gray-50 hover:text-gray-900 transition-all flex items-center justify-center gap-2">
+                            <i class="ph-bold ph-arrow-counter-clockwise text-lg"></i> Reset
+                        </button>
+                        <button type="submit" class="w-full sm:w-auto px-8 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-md hover:shadow-glow-blue hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2" id="submitBtn">
+                            <i class="ph-bold ph-clipboard-text"></i> Assess ESG Readiness
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden mt-8">
+                <div class="px-6 py-4 border-b border-gray-100 bg-gray-50 flex items-center gap-2">
+                    <i class="ph-fill ph-strategy text-blue-600 text-xl"></i>
+                    <h4 class="font-bold text-gray-900">Assessment Methodology</h4>
+                </div>
+                <div class="p-6">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="p-5 rounded-xl bg-brand-50 border border-brand-100 text-center">
+                            <div class="text-3xl font-extrabold text-brand-700 mb-2">70%</div>
+                            <h6 class="text-sm font-bold text-brand-800 mb-1">Environmental</h6>
+                            <p class="text-xs text-gray-600 leading-relaxed">Energy efficiency, carbon emissions, waste management, resource consumption</p>
+                        </div>
+                        <div class="p-5 rounded-xl bg-blue-50 border border-blue-100 text-center">
+                            <div class="text-3xl font-extrabold text-blue-700 mb-2">15%</div>
+                            <h6 class="text-sm font-bold text-blue-800 mb-1">Social</h6>
+                            <p class="text-xs text-gray-600 leading-relaxed">Employee welfare, community engagement, diversity &amp; inclusion</p>
+                        </div>
+                        <div class="p-5 rounded-xl bg-purple-50 border border-purple-100 text-center">
+                            <div class="text-3xl font-extrabold text-purple-700 mb-2">15%</div>
+                            <h6 class="text-sm font-bold text-purple-800 mb-1">Governance</h6>
+                            <p class="text-xs text-gray-600 leading-relaxed">Leadership accountability, transparency, ethics &amp; risk management</p>
+                        </div>
+                    </div>
+                    <div class="mt-5 p-3 bg-yellow-50 border border-yellow-200 rounded-xl flex items-center gap-3 text-xs text-yellow-800">
+                        <i class="ph-fill ph-warning-circle text-yellow-500 text-xl flex-shrink-0"></i>
+                        ESG readiness indicator only. Not a formal certification or audit. For compliance, engage qualified sustainability professionals.
+                    </div>
+                </div>
+            </div>
+
+        </main>
     </div>
-  </aside>
-
-  <!-- ─── ESG Form ─── -->
-  <div>
-    <div class="esg-shell">
-      <div class="esg-header">
-        <h2>ESG Readiness Assessment</h2>
-        <p>AI-powered evaluation across Environmental, Social &amp; Governance dimensions</p>
-        <div class="esg-pillars">
-          <div class="esg-pillar"><div class="pillar-dot" style="background:#2ecc71;"></div>Environmental 70%</div>
-          <div class="esg-pillar"><div class="pillar-dot" style="background:#64b5f6;"></div>Social 15%</div>
-          <div class="esg-pillar"><div class="pillar-dot" style="background:#ce93d8;"></div>Governance 15%</div>
-        </div>
-      </div>
-
-      {% if errors %}
-      <div class="error-banner">
-        <h6><i class="bi bi-exclamation-triangle-fill me-2"></i>Please correct the following:</h6>
-        <ul>{% for e in errors %}<li>{{ e }}</li>{% endfor %}</ul>
-      </div>
-      {% endif %}
-
-      <form method="POST" action="{{ url_for('calculate_enterprise') }}" id="esgForm">
-        <div class="form-body">
-
-          <!-- Company Info -->
-          <div class="form-section">
-            <div class="form-section-header">
-              <div class="section-icon blue"><i class="bi bi-building-fill"></i></div>
-              <div class="form-section-title">Company Information</div>
-            </div>
-            <div class="form-grid form-grid-2">
-              <div>
-                <label class="field-label" for="company_name">Company Name</label>
-                <input type="text" class="dash-input" id="company_name" name="company_name"
-                       placeholder="Your organisation name" required
-                       value="{{ form_data.company_name if form_data else '' }}">
-              </div>
-              <div>
-                <label class="field-label" for="industry">Industry Sector</label>
-                <select class="dash-select" id="industry" name="industry" required>
-                  <option value="">Select industry</option>
-                  <option value="technology" {% if form_data and form_data.industry=='technology' %}selected{% endif %}>Technology</option>
-                  <option value="manufacturing" {% if form_data and form_data.industry=='manufacturing' %}selected{% endif %}>Manufacturing</option>
-                  <option value="finance" {% if form_data and form_data.industry=='finance' %}selected{% endif %}>Finance &amp; Banking</option>
-                  <option value="healthcare" {% if form_data and form_data.industry=='healthcare' %}selected{% endif %}>Healthcare</option>
-                  <option value="retail" {% if form_data and form_data.industry=='retail' %}selected{% endif %}>Retail &amp; Commerce</option>
-                  <option value="energy" {% if form_data and form_data.industry=='energy' %}selected{% endif %}>Energy &amp; Utilities</option>
-                  <option value="agriculture" {% if form_data and form_data.industry=='agriculture' %}selected{% endif %}>Agriculture</option>
-                  <option value="other" {% if form_data and form_data.industry=='other' %}selected{% endif %}>Other</option>
-                </select>
-              </div>
-              <div>
-                <label class="field-label" for="employees">Number of Employees</label>
-                <input type="number" class="dash-input" id="employees" name="employees"
-                       min="1" step="1" placeholder="e.g., 100"
-                       value="{{ form_data.employees if form_data else '100' }}" required>
-                <div class="field-hint">Total full-time employees</div>
-              </div>
-              <div>
-                <label class="field-label" for="country">Country of Operations</label>
-                <select class="dash-select" id="country" name="country" required>
-                  <option value="">Select country</option>
-                  <option value="India" {% if form_data and form_data.country=='India' %}selected{% endif %}>India</option>
-                  <option value="USA" {% if form_data and form_data.country=='USA' %}selected{% endif %}>United States</option>
-                  <option value="UK" {% if form_data and form_data.country=='UK' %}selected{% endif %}>United Kingdom</option>
-                  <option value="Germany" {% if form_data and form_data.country=='Germany' %}selected{% endif %}>Germany</option>
-                  <option value="Australia" {% if form_data and form_data.country=='Australia' %}selected{% endif %}>Australia</option>
-                  <option value="Other" {% if form_data and form_data.country=='Other' %}selected{% endif %}>Other</option>
-                </select>
-              </div>
-            </div>
-          </div>
-
-          <!-- Environmental -->
-          <div class="form-section">
-            <div class="form-section-header">
-              <div class="section-icon green"><i class="bi bi-tree-fill"></i></div>
-              <div class="form-section-title">Environmental Factors <span style="font-size:.75rem;color:#aeaeb2;font-family:'DM Sans',sans-serif;font-weight:400;">(70% weight)</span></div>
-            </div>
-            <div class="form-grid form-grid-2">
-              <div>
-                <label class="field-label" for="energy_usage">Monthly Energy Usage (kWh)</label>
-                <input type="number" class="dash-input" id="energy_usage" name="energy_usage"
-                       min="0" step="100" placeholder="e.g., 10000"
-                       value="{{ form_data.energy_usage if form_data else '10000' }}" required>
-                <div class="field-hint">Total electricity &amp; fuel consumption</div>
-              </div>
-              <div>
-                <label class="field-label" for="travel_km">Annual Business Travel (km)</label>
-                <input type="number" class="dash-input" id="travel_km" name="travel_km"
-                       min="0" step="1000" placeholder="e.g., 50000"
-                       value="{{ form_data.travel_km if form_data else '50000' }}" required>
-                <div class="field-hint">Combined distance for all business trips</div>
-              </div>
-              <div>
-                <label class="field-label" for="waste_management">Waste Management Level</label>
-                <select class="dash-select" id="waste_management" name="waste_management" required>
-                  <option value="1" {% if form_data and form_data.waste_management=='1' %}selected{% endif %}>1 — Basic disposal, no recycling</option>
-                  <option value="2" {% if form_data and form_data.waste_management=='2' %}selected{% endif %}>2 — Some recycling initiatives</option>
-                  <option value="3" {% if form_data and form_data.waste_management=='3' %}selected{% endif %}>3 — Established recycling program</option>
-                  <option value="4" {% if form_data and form_data.waste_management=='4' %}selected{% endif %}>4 — Advanced waste reduction</option>
-                  <option value="5" {% if form_data and form_data.waste_management=='5' %}selected{% endif %}>5 — Circular economy practices</option>
-                </select>
-              </div>
-              <div>
-                <label class="field-label" for="cloud_usage">Cloud / Digital Infrastructure</label>
-                <select class="dash-select" id="cloud_usage" name="cloud_usage" required>
-                  <option value="yes" {% if not form_data or form_data.cloud_usage=='yes' %}selected{% endif %}>Cloud services (lower footprint)</option>
-                  <option value="no" {% if form_data and form_data.cloud_usage=='no' %}selected{% endif %}>On-premise infrastructure</option>
-                </select>
-              </div>
-            </div>
-          </div>
-
-          <!-- Social & Governance note -->
-          <div class="form-section">
-            <div class="form-section-header">
-              <div class="section-icon purple"><i class="bi bi-people-fill"></i></div>
-              <div class="form-section-title">Social &amp; Governance <span style="font-size:.75rem;color:#aeaeb2;font-family:'DM Sans',sans-serif;font-weight:400;">(30% weight combined)</span></div>
-            </div>
-            <div class="form-grid">
-              <div class="note-box">
-                <p><i class="bi bi-info-circle me-2" style="color:#0d47a1;"></i>Social (15%) and Governance (15%) components are evaluated against industry benchmarks, company size profile, and inferred from your environmental practices. For a full S&amp;G assessment, additional qualitative data would be required.</p>
-              </div>
-            </div>
-          </div>
-
-        </div>
-        <div class="form-footer">
-          <button type="reset" class="btn-reset"><i class="bi bi-arrow-counterclockwise me-2"></i>Reset</button>
-          <button type="submit" class="btn-assess" id="submitBtn">
-            <i class="bi bi-clipboard-data-fill"></i> Assess ESG Readiness
-          </button>
-        </div>
-      </form>
-    </div>
-
-    <!-- Methodology -->
-    <div class="info-card">
-      <div class="info-card-header"><i class="bi bi-diagram-2-fill" style="color:#0d47a1;"></i> Assessment Methodology</div>
-      <div class="info-card-body">
-        <div class="methodology-grid">
-          <div class="methodology-box env">
-            <div class="pct">70%</div>
-            <h6 style="color:#155724;">Environmental</h6>
-            <p>Energy efficiency, carbon emissions, waste management, resource consumption</p>
-          </div>
-          <div class="methodology-box soc">
-            <div class="pct">15%</div>
-            <h6 style="color:#0d47a1;">Social</h6>
-            <p>Employee welfare, community engagement, diversity &amp; inclusion</p>
-          </div>
-          <div class="methodology-box gov">
-            <div class="pct">15%</div>
-            <h6 style="color:#4527a0;">Governance</h6>
-            <p>Leadership accountability, transparency, ethics &amp; risk management</p>
-          </div>
-        </div>
-        <div style="margin-top:14px;padding:11px 15px;background:#fffbf0;border-radius:10px;border:1px solid rgba(255,152,0,.2);font-size:.76rem;color:#6c6c70;">
-          <i class="bi bi-exclamation-triangle me-1" style="color:#ff9800;"></i>
-          ESG readiness indicator only. Not a formal certification or audit. For compliance, engage qualified sustainability professionals.
-        </div>
-      </div>
-    </div>
-  </div>
 </div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
-// Submit state
-document.getElementById('esgForm').addEventListener('submit', function() {
-  const btn = document.getElementById('submitBtn');
-  btn.classList.add('loading');
-  btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status"></span>Assessing…';
+// Form Submission Loader & Validation
+document.getElementById('esgForm').addEventListener('submit', function(e) {
+    const btn = document.getElementById('submitBtn');
+    btn.classList.add('opacity-70', 'pointer-events-none');
+    btn.innerHTML = '<i class="ph-bold ph-spinner-gap spinner text-lg"></i> Assessing…';
 });
 
-// Scroll animations
+// Animate form sections on scroll
 const observer = new IntersectionObserver(entries => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) { entry.target.style.opacity='1'; entry.target.style.transform='translateY(0)'; }
-  });
-}, { threshold: 0.08 });
+    entries.forEach(entry => {
+        if (entry.isIntersecting) { 
+            entry.target.classList.remove('opacity-0', 'translate-y-4');
+        }
+    });
+}, { threshold: 0.1 });
 
-document.querySelectorAll('.form-section').forEach((s, i) => {
-  s.style.cssText = `opacity:0;transform:translateY(18px);transition:opacity .45s ${i*.09}s ease,transform .45s ${i*.09}s ease`;
-  observer.observe(s);
+document.querySelectorAll('.form-section').forEach(s => {
+    observer.observe(s);
 });
 </script>
 {% endblock %}

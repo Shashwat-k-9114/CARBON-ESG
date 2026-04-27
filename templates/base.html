@@ -62,95 +62,68 @@
 </head>
 <body class="bg-brand-50 text-gray-800 overflow-x-hidden flex flex-col min-h-screen">
 
-    <nav class="fixed w-full z-50 glass-nav transition-all duration-300" id="navbar">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-20">
-                
-                <a href="{{ url_for('index') }}" class="flex-shrink-0 flex items-center gap-2 cursor-pointer transition hover:opacity-80">
-                    <div class="w-10 h-10 bg-brand-600 rounded-xl flex items-center justify-center text-white shadow-glow">
-                        <i class="ph-fill ph-tree text-2xl"></i>
-                    </div>
-                    <span class="font-bold text-2xl text-brand-950 tracking-tight">Carbon<span class="text-brand-500">.</span>ESG</span>
-                </a>
-
-                <div class="hidden md:flex items-center space-x-8">
-                    <a href="{{ url_for('index') }}" class="text-gray-600 hover:text-brand-600 font-medium transition flex items-center gap-1.5">
-                        <i class="ph ph-house"></i> Home
-                    </a>
-
-                    {% if session.user_id %}
-                        <a href="{{ url_for('dashboard') }}" class="text-gray-600 hover:text-brand-600 font-medium transition flex items-center gap-1.5">
-                            <i class="ph ph-gauge"></i> Dashboard
-                        </a>
-                        <a href="{{ url_for('view_reports') }}" class="text-gray-600 hover:text-brand-600 font-medium transition flex items-center gap-1.5">
-                            <i class="ph ph-chart-bar"></i> Reports
-                        </a>
-                        <a href="{{ url_for('pricing') }}" class="text-gray-600 hover:text-brand-600 font-medium transition flex items-center gap-1.5">
-                            <i class="ph ph-star"></i> Plans
-                        </a>
-                    {% endif %}
-                </div>
-
-                <div class="hidden md:flex items-center gap-4">
-                    {% if session.user_id %}
-                        <div class="relative group dropdown py-4">
-                            <button class="flex items-center gap-2 text-gray-700 hover:text-brand-600 font-medium focus:outline-none transition">
-                                <span class="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-700 to-brand-500 flex items-center justify-center text-xs text-white font-bold shadow-md">
-                                    {{ session.username[0]|upper }}
-                                </span>
-                                {{ session.username }}
-                                <i class="ph ph-caret-down text-sm"></i>
-                            </button>
-                            <div class="absolute right-0 mt-0 w-48 bg-white rounded-xl shadow-xl border border-brand-100 py-2 dropdown-menu z-50 transform origin-top-right transition-all">
-                                <a href="{{ url_for('dashboard') }}" class="block px-4 py-2.5 text-sm text-gray-700 hover:bg-brand-50 hover:text-brand-600 flex items-center gap-2">
-                                    <i class="ph ph-gauge text-lg"></i> Dashboard
-                                </a>
-                                <hr class="my-1 border-gray-100">
-                                <a href="{{ url_for('logout') }}" class="block px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 flex items-center gap-2 transition-colors">
-                                    <i class="ph ph-sign-out text-lg"></i> Sign Out
-                                </a>
-                            </div>
-                        </div>
-                    {% else %}
-                        <a href="{{ url_for('login') }}" class="text-gray-600 hover:text-brand-600 font-medium transition flex items-center gap-1.5">
-                            <i class="ph ph-sign-in"></i> Sign In
-                        </a>
-                        <a href="{{ url_for('register') }}" class="bg-brand-600 hover:bg-brand-700 text-white px-6 py-2.5 rounded-full font-medium transition-all shadow-md hover:shadow-glow hover:-translate-y-0.5 flex items-center gap-1.5">
-                            <i class="ph ph-user-plus"></i> Get Started
-                        </a>
-                    {% endif %}
-                </div>
-
-                <div class="md:hidden flex items-center">
-                    <button id="mobile-menu-btn" class="text-gray-600 hover:text-brand-600 focus:outline-none transition">
-                        <i class="ph ph-list text-3xl"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-brand-100 px-4 pt-2 pb-4 space-y-1 shadow-lg absolute w-full z-40">
-            <a href="{{ url_for('index') }}" class="block px-3 py-3 rounded-md text-base font-medium text-gray-700 hover:text-brand-600 hover:bg-brand-50 flex items-center gap-2"><i class="ph ph-house"></i> Home</a>
+    <!-- Premium Navbar -->
+<nav class="sticky top-0 z-50 w-full backdrop-blur-md bg-white/80 border-b border-gray-100 shadow-sm transition-all duration-300">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16">
             
-            {% if session.user_id %}
-                <a href="{{ url_for('dashboard') }}" class="block px-3 py-3 rounded-md text-base font-medium text-gray-700 hover:text-brand-600 hover:bg-brand-50 flex items-center gap-2"><i class="ph ph-gauge"></i> Dashboard</a>
-                <a href="{{ url_for('view_reports') }}" class="block px-3 py-3 rounded-md text-base font-medium text-gray-700 hover:text-brand-600 hover:bg-brand-50 flex items-center gap-2"><i class="ph ph-chart-bar"></i> Reports</a>
-                <a href="{{ url_for('pricing') }}" class="block px-3 py-3 rounded-md text-base font-medium text-gray-700 hover:text-brand-600 hover:bg-brand-50 flex items-center gap-2"><i class="ph ph-star"></i> Plans</a>
-                <div class="border-t border-gray-100 my-2"></div>
-                <div class="px-3 py-2 flex items-center gap-3 text-brand-700 font-semibold">
-                    <span class="w-8 h-8 rounded-lg bg-brand-600 flex items-center justify-center text-xs text-white">
-                        {{ session.username[0]|upper }}
-                    </span>
-                    {{ session.username }}
+            <!-- Logo Section -->
+            <a href="{{ url_for('index') }}" class="flex items-center gap-2.5 cursor-pointer group outline-none">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-600 to-brand-400 flex items-center justify-center text-white shadow-md group-hover:shadow-glow transition-all duration-300">
+                    <i class="ph-bold ph-tree text-xl"></i>
                 </div>
-                <a href="{{ url_for('logout') }}" class="block px-3 py-3 rounded-md text-base font-medium text-red-500 hover:bg-red-50 flex items-center gap-2"><i class="ph ph-sign-out"></i> Sign Out</a>
-            {% else %}
-                <div class="border-t border-gray-100 my-2"></div>
-                <a href="{{ url_for('login') }}" class="block px-3 py-3 rounded-md text-base font-medium text-gray-700 hover:text-brand-600 hover:bg-brand-50 flex items-center gap-2"><i class="ph ph-sign-in"></i> Sign In</a>
-                <a href="{{ url_for('register') }}" class="w-full mt-2 bg-brand-600 text-white px-6 py-3 rounded-xl font-medium shadow-md flex items-center justify-center gap-2"><i class="ph ph-user-plus"></i> Get Started</a>
-            {% endif %}
+                <span class="font-extrabold text-xl tracking-tight text-gray-900 group-hover:text-brand-600 transition-colors">
+                    Carbon<span class="text-brand-600">.ESG</span>
+                </span>
+            </a>
+
+            <!-- Desktop Navigation Links -->
+            <div class="hidden md:flex items-center gap-8">
+                <a href="{{ url_for('dashboard') }}" class="text-sm font-bold text-gray-600 hover:text-brand-600 transition-colors flex items-center gap-1.5">
+                    <i class="ph-bold ph-squares-four text-lg"></i> Dashboard
+                </a>
+                <a href="#" class="text-sm font-bold text-gray-600 hover:text-brand-600 transition-colors flex items-center gap-1.5">
+                    <i class="ph-bold ph-clipboard-text text-lg"></i> Assessments
+                </a>
+                <a href="#" class="text-sm font-bold text-gray-600 hover:text-brand-600 transition-colors flex items-center gap-1.5">
+                    <i class="ph-bold ph-chart-line-up text-lg"></i> Reports
+                </a>
+            </div>
+
+            <!-- User Actions / Profile -->
+            <div class="hidden md:flex items-center gap-4">
+                {% if session.get('user_id') or user %}
+                    <div class="flex items-center gap-4 pl-4 border-l border-gray-200">
+                        <div class="text-right">
+                            <p class="text-sm font-bold text-gray-900 leading-none">{{ user.username if user else 'My Profile' }}</p>
+                            <p class="text-[0.65rem] font-bold text-gray-400 uppercase tracking-widest mt-1">Active</p>
+                        </div>
+                        <div class="w-10 h-10 rounded-full bg-brand-50 border border-brand-100 flex items-center justify-center text-brand-600 shadow-sm cursor-pointer hover:bg-brand-100 transition-colors">
+                            <i class="ph-fill ph-user text-xl"></i>
+                        </div>
+                        <a href="{{ url_for('logout') }}" class="ml-1 w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-all" title="Logout">
+                            <i class="ph-bold ph-sign-out text-xl"></i>
+                        </a>
+                    </div>
+                {% else %}
+                    <a href="{{ url_for('login') }}" class="text-sm font-bold text-gray-600 hover:text-brand-600 transition-colors">Sign In</a>
+                    <a href="{{ url_for('register') }}" class="text-sm font-bold text-white bg-brand-600 hover:bg-brand-700 px-5 py-2.5 rounded-xl shadow-md hover:shadow-glow hover:-translate-y-0.5 transition-all">
+                        Get Started
+                    </a>
+                {% endif %}
+            </div>
+
+            <!-- Mobile Menu Toggle -->
+            <div class="md:hidden flex items-center">
+                <button type="button" class="text-gray-500 hover:text-brand-600 focus:outline-none p-2 transition-colors">
+                    <i class="ph-bold ph-list text-2xl"></i>
+                </button>
+            </div>
+            
         </div>
-    </nav>
+    </div>
+</nav>
+
 
     {% set messages = get_flashed_messages(with_categories=true) %}
     

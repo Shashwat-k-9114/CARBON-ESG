@@ -3,156 +3,101 @@
 
 {% block extra_css %}
 <style>
-.error-stage {
-  min-height: calc(100vh - 220px);
-  display: flex; align-items: center; justify-content: center;
-  padding: 60px 20px;
-}
+    /* Text stroke for the modern outline look on the 500 code */
+    .text-stroke-red {
+        color: transparent;
+        -webkit-text-stroke: 2px rgba(255, 255, 255, 0.15);
+    }
 
-.error-card {
-  max-width: 560px; width: 100%; text-align: center;
-  background: white; border-radius: 32px;
-  border: 1px solid rgba(0,0,0,.06);
-  box-shadow: 0 24px 80px rgba(0,0,0,.1);
-  overflow: hidden;
-  animation: slide-up .6s cubic-bezier(.4,0,.2,1) both;
-}
+    /* Bug Shake Animation */
+    @keyframes shake-bug {
+        0%, 90%, 100% { transform: rotate(0deg); }
+        92% { transform: rotate(-6deg); }
+        94% { transform: rotate(6deg); }
+        96% { transform: rotate(-4deg); }
+        98% { transform: rotate(4deg); }
+    }
+    .animate-shake-bug {
+        animation: shake-bug 5s ease-in-out infinite;
+    }
 
-@keyframes slide-up {
-  from { opacity: 0; transform: translateY(32px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.error-visual {
-  background: linear-gradient(160deg, #1a0a0a, #7f1d1d 60%, #991b1b);
-  padding: 52px 44px 44px;
-  position: relative; overflow: hidden;
-}
-
-.error-visual::before {
-  content: ''; position: absolute;
-  top: -60px; right: -60px; width: 240px; height: 240px; border-radius: 50%;
-  background: radial-gradient(circle, rgba(239,68,68,.12) 0%, transparent 70%);
-}
-
-.error-code {
-  font-family: 'Playfair Display', serif;
-  font-size: 7rem; font-weight: 900; line-height: 1;
-  color: transparent;
-  -webkit-text-stroke: 2px rgba(255,255,255,.18);
-  letter-spacing: -.04em; margin-bottom: 8px;
-}
-
-.error-icon-ring {
-  width: 72px; height: 72px; border-radius: 22px;
-  background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.15);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 1.8rem; color: white; margin: 0 auto 20px;
-  animation: shake 5s ease-in-out infinite;
-}
-
-@keyframes shake {
-  0%,90%,100% { transform: rotate(0deg); }
-  92% { transform: rotate(-4deg); }
-  94% { transform: rotate(4deg); }
-  96% { transform: rotate(-3deg); }
-  98% { transform: rotate(3deg); }
-}
-
-.error-title-visual {
-  font-family: 'Playfair Display', serif;
-  font-size: 1.4rem; font-weight: 700; color: white; margin-bottom: 6px;
-}
-.error-sub-visual { font-size: .85rem; color: rgba(255,255,255,.5); margin: 0; }
-
-.error-body { padding: 36px 44px 44px; }
-
-.troubleshoot-grid {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
-  margin-bottom: 28px; text-align: left;
-}
-
-.troubleshoot-item {
-  padding: 14px 16px; border-radius: 12px;
-  background: #fafaf8; border: 1px solid rgba(0,0,0,.06);
-  display: flex; align-items: flex-start; gap: 10px;
-}
-.troubleshoot-icon {
-  width: 28px; height: 28px; border-radius: 8px;
-  background: rgba(21,87,36,.1); color: #155724;
-  display: flex; align-items: center; justify-content: center;
-  font-size: .75rem; flex-shrink: 0; margin-top: 1px;
-}
-.troubleshoot-text { font-size: .78rem; color: #4a4a4a; line-height: 1.5; font-weight: 500; }
-
-.error-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
-
-.btn-refresh {
-  display: inline-flex; align-items: center; gap: 8px;
-  padding: 13px 26px; border-radius: 13px;
-  background: linear-gradient(135deg, #7f1d1d, #991b1b); color: white;
-  font-size: .9rem; font-weight: 700; font-family: 'DM Sans', sans-serif;
-  border: none; cursor: pointer;
-  box-shadow: 0 6px 24px rgba(127,29,29,.3); transition: all .3s;
-}
-.btn-refresh:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(127,29,29,.4); }
-
-.btn-home {
-  display: inline-flex; align-items: center; gap: 8px;
-  padding: 12px 24px; border-radius: 13px;
-  background: white; color: #155724;
-  border: 1.5px solid rgba(21,87,36,.25);
-  font-size: .9rem; font-weight: 700; font-family: 'DM Sans', sans-serif;
-  text-decoration: none; transition: all .3s;
-}
-.btn-home:hover { border-color: #155724; background: rgba(21,87,36,.04); color: #155724; transform: translateY(-1px); }
-
-.error-message { font-size: .88rem; color: #6c6c70; line-height: 1.6; margin-bottom: 24px; }
+    /* Abstract Float Animation */
+    @keyframes float-slow {
+        0%, 100% { transform: translateY(0) scale(1); }
+        50% { transform: translateY(-20px) scale(1.05); }
+    }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="error-stage">
-  <div class="error-card">
-    <div class="error-visual">
-      <div class="error-icon-ring"><i class="bi bi-bug-fill"></i></div>
-      <div class="error-code">500</div>
-      <div class="error-title-visual">Internal Server Error</div>
-      <div class="error-sub-visual">Something went wrong on our end</div>
-    </div>
-    <div class="error-body">
-      <p class="error-message">
-        Our servers encountered an unexpected issue. This is a temporary problem — please try the steps below or come back in a few minutes.
-      </p>
+<div class="min-h-[calc(100vh-200px)] flex items-center justify-center py-12 px-4 relative overflow-hidden">
+    
+    <div class="absolute top-10 left-10 w-80 h-80 bg-red-200 rounded-full mix-blend-multiply filter blur-[100px] opacity-40 animate-[float-slow_8s_ease-in-out_infinite]"></div>
+    <div class="absolute bottom-10 right-10 w-80 h-80 bg-orange-200 rounded-full mix-blend-multiply filter blur-[100px] opacity-40 animate-[float-slow_10s_ease-in-out_infinite_reverse]"></div>
 
-      <div class="troubleshoot-grid">
-        <div class="troubleshoot-item">
-          <div class="troubleshoot-icon"><i class="bi bi-arrow-clockwise"></i></div>
-          <div class="troubleshoot-text">Refresh the page and try again</div>
+    <div class="max-w-2xl w-full bg-white rounded-[2rem] shadow-2xl border border-gray-100 overflow-hidden relative z-10 transform transition-all duration-500 hover:shadow-[0_20px_60px_rgba(0,0,0,0.08)]">
+        
+        <div class="bg-gradient-to-br from-red-950 via-red-900 to-red-800 pt-14 pb-12 px-8 text-center relative overflow-hidden">
+            <div class="absolute -top-24 -right-24 w-64 h-64 bg-red-500/20 rounded-full blur-2xl"></div>
+            <div class="absolute -bottom-10 -left-10 w-32 h-32 bg-white/5 rounded-full blur-xl"></div>
+            
+            <div class="w-20 h-20 mx-auto bg-white/10 border border-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center text-4xl text-white mb-6 shadow-glow animate-shake-bug">
+                <i class="ph-fill ph-bug"></i>
+            </div>
+            
+            <div class="text-8xl font-extrabold text-stroke-red tracking-tighter mb-2">
+                500
+            </div>
+            
+            <h2 class="text-2xl font-bold text-white mb-2 tracking-tight">Internal Server Error</h2>
+            <p class="text-red-200/70 text-sm font-medium">Something went wrong on our end</p>
         </div>
-        <div class="troubleshoot-item">
-          <div class="troubleshoot-icon"><i class="bi bi-trash3-fill"></i></div>
-          <div class="troubleshoot-text">Clear your browser cache &amp; cookies</div>
-        </div>
-        <div class="troubleshoot-item">
-          <div class="troubleshoot-icon"><i class="bi bi-wifi"></i></div>
-          <div class="troubleshoot-text">Check your internet connection</div>
-        </div>
-        <div class="troubleshoot-item">
-          <div class="troubleshoot-icon"><i class="bi bi-clock-fill"></i></div>
-          <div class="troubleshoot-text">Wait a moment and try again later</div>
-        </div>
-      </div>
 
-      <div class="error-actions">
-        <button onclick="window.location.reload()" class="btn-refresh">
-          <i class="bi bi-arrow-clockwise"></i> Refresh Page
-        </button>
-        <a href="{{ url_for('index') }}" class="btn-home">
-          <i class="bi bi-house-fill"></i> Go Home
-        </a>
-      </div>
+        <div class="p-8 lg:p-10">
+            <p class="text-gray-600 text-sm md:text-base leading-relaxed text-center mb-8">
+                Our servers encountered an unexpected issue. This is a temporary problem — please try the steps below or come back in a few minutes.
+            </p>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10">
+                <div class="bg-gray-50 border border-gray-100 rounded-xl p-4 flex items-start gap-3 hover:bg-gray-100 transition-colors">
+                    <div class="w-8 h-8 rounded-lg bg-red-50 text-red-600 flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <i class="ph-bold ph-arrows-clockwise text-lg"></i>
+                    </div>
+                    <div class="text-sm font-semibold text-gray-700 pt-1">Refresh the page and try again</div>
+                </div>
+                
+                <div class="bg-gray-50 border border-gray-100 rounded-xl p-4 flex items-start gap-3 hover:bg-gray-100 transition-colors">
+                    <div class="w-8 h-8 rounded-lg bg-red-50 text-red-600 flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <i class="ph-fill ph-trash text-lg"></i>
+                    </div>
+                    <div class="text-sm font-semibold text-gray-700 pt-1">Clear browser cache &amp; cookies</div>
+                </div>
+                
+                <div class="bg-gray-50 border border-gray-100 rounded-xl p-4 flex items-start gap-3 hover:bg-gray-100 transition-colors">
+                    <div class="w-8 h-8 rounded-lg bg-red-50 text-red-600 flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <i class="ph-fill ph-wifi-high text-lg"></i>
+                    </div>
+                    <div class="text-sm font-semibold text-gray-700 pt-1">Check your internet connection</div>
+                </div>
+                
+                <div class="bg-gray-50 border border-gray-100 rounded-xl p-4 flex items-start gap-3 hover:bg-gray-100 transition-colors">
+                    <div class="w-8 h-8 rounded-lg bg-red-50 text-red-600 flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <i class="ph-fill ph-hourglass-high text-lg"></i>
+                    </div>
+                    <div class="text-sm font-semibold text-gray-700 pt-1">Wait a moment and try again later</div>
+                </div>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <button onclick="window.location.reload()" class="bg-red-900 hover:bg-red-800 text-white px-8 py-3.5 rounded-xl font-bold transition-all shadow-md hover:shadow-[0_0_20px_rgba(153,27,27,0.4)] hover:-translate-y-0.5 flex items-center justify-center gap-2">
+                    <i class="ph-bold ph-arrows-clockwise text-lg"></i> Refresh Page
+                </button>
+                <a href="{{ url_for('index') }}" class="bg-white hover:bg-red-50 text-red-900 border border-red-200 hover:border-red-300 px-8 py-3.5 rounded-xl font-bold transition-all hover:-translate-y-0.5 flex items-center justify-center gap-2">
+                    <i class="ph-bold ph-house text-lg"></i> Go Home
+                </a>
+            </div>
+        </div>
+        
     </div>
-  </div>
 </div>
 {% endblock %}

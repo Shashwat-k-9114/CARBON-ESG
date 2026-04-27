@@ -3,726 +3,509 @@
 
 {% block extra_css %}
 <style>
-.dash-wrap {
-  display: grid;
-  grid-template-columns: 320px 1fr;
-  gap: 28px;
-  align-items: start;
-}
-
-/* ── Profile Sidebar ── */
-.profile-card {
-  background: linear-gradient(160deg, #0a1f0d 0%, #102b14 50%, #0d3318 100%);
-  border-radius: 28px;
-  overflow: hidden;
-  box-shadow: 0 32px 80px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.06);
-  position: sticky;
-  top: 100px;
-  border: 1px solid rgba(255,255,255,.05);
-}
-
-.profile-header {
-  padding: 36px 28px 28px;
-  position: relative;
-  text-align: center;
-}
-
-.profile-header::before {
-  content: '';
-  position: absolute;
-  top: -60px; left: -60px;
-  width: 220px; height: 220px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(46,204,113,.18) 0%, transparent 70%);
-  pointer-events: none;
-}
-
-.avatar-ring {
-  width: 80px; height: 80px;
-  border-radius: 24px;
-  background: linear-gradient(135deg, #1a6b35, #2ecc71, #27ae60);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 2rem; color: white;
-  margin: 0 auto 18px;
-  box-shadow: 0 12px 40px rgba(46,204,113,.4);
-  animation: pulse-glow 3s ease-in-out infinite;
-}
-
-@keyframes pulse-glow {
-  0%,100% { box-shadow: 0 12px 40px rgba(46,204,113,.4); }
-  50% { box-shadow: 0 12px 60px rgba(46,204,113,.65); }
-}
-
-.profile-name {
-  font-family: 'Playfair Display', serif;
-  font-size: 1.35rem; font-weight: 700;
-  color: white; margin-bottom: 8px; letter-spacing: -.01em;
-}
-
-.profile-badge {
-  display: inline-flex; align-items: center; gap: 6px;
-  background: rgba(46,204,113,.15); border: 1px solid rgba(46,204,113,.25);
-  border-radius: 20px; padding: 4px 14px;
-  font-size: .72rem; font-weight: 700; color: #2ecc71;
-  text-transform: uppercase; letter-spacing: .07em;
-}
-
-.profile-stats {
-  display: grid; grid-template-columns: 1fr 1fr;
-  gap: 1px; background: rgba(255,255,255,.07);
-  margin-top: 24px; border-top: 1px solid rgba(255,255,255,.07);
-}
-
-.stat-cell {
-  padding: 18px 14px; text-align: center;
-  background: rgba(0,0,0,.25);
-  transition: background .2s;
-}
-.stat-cell:hover { background: rgba(46,204,113,.09); }
-
-.stat-val {
-  font-family: 'Playfair Display', serif;
-  font-size: 1.5rem; font-weight: 700;
-  color: #2ecc71; line-height: 1;
-}
-
-.stat-lbl {
-  font-size: .65rem; font-weight: 700; color: rgba(255,255,255,.35);
-  text-transform: uppercase; letter-spacing: .07em; margin-top: 5px;
-}
-
-.history-section, .tips-section {
-  padding: 22px 26px;
-  border-top: 1px solid rgba(255,255,255,.06);
-}
-
-.section-eyebrow {
-  font-size: .65rem; font-weight: 700; color: rgba(255,255,255,.28);
-  text-transform: uppercase; letter-spacing: .1em; margin-bottom: 14px;
-}
-
-.history-item {
-  display: flex; align-items: center; gap: 12px;
-  padding: 12px 14px; border-radius: 12px;
-  border: 1px solid rgba(255,255,255,.05);
-  margin-bottom: 8px;
-  background: rgba(255,255,255,.03);
-  transition: all .22s;
-}
-.history-item:hover {
-  background: rgba(46,204,113,.07);
-  border-color: rgba(46,204,113,.18);
-  transform: translateX(4px);
-}
-
-.history-dot {
-  width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
-}
-
-.history-info { flex: 1; min-width: 0; }
-.history-label { font-size: .82rem; font-weight: 600; color: rgba(255,255,255,.82); }
-.history-sub { font-size: .7rem; color: rgba(255,255,255,.32); margin-top: 2px; }
-
-.level-chip {
-  font-size: .62rem; font-weight: 700;
-  padding: 3px 9px; border-radius: 8px;
-  text-transform: uppercase; letter-spacing: .05em; flex-shrink: 0;
-}
-.level-chip.low { background: rgba(46,204,113,.2); color: #2ecc71; border: 1px solid rgba(46,204,113,.3); }
-.level-chip.medium { background: rgba(255,152,0,.2); color: #ff9800; border: 1px solid rgba(255,152,0,.3); }
-.level-chip.high { background: rgba(244,67,54,.2); color: #ef5350; border: 1px solid rgba(244,67,54,.3); }
-
-.tip-item {
-  display: flex; align-items: flex-start; gap: 11px;
-  padding: 9px 0;
-  border-bottom: 1px solid rgba(255,255,255,.04);
-}
-.tip-item:last-child { border-bottom: none; }
-
-.tip-icon {
-  width: 26px; height: 26px; border-radius: 8px;
-  background: rgba(46,204,113,.12); border: 1px solid rgba(46,204,113,.22);
-  display: flex; align-items: center; justify-content: center;
-  font-size: .72rem; color: #2ecc71; flex-shrink: 0; margin-top: 1px;
-}
-
-.tip-text { font-size: .78rem; color: rgba(255,255,255,.48); line-height: 1.5; }
-
-/* ── Calculator Card ── */
-.calc-shell {
-  background: white; border-radius: 28px;
-  overflow: hidden;
-  box-shadow: 0 8px 40px rgba(0,0,0,.07);
-  border: 1px solid rgba(0,0,0,.05);
-}
-
-.calc-header {
-  background: linear-gradient(135deg, #0a1f0d, #155724 60%, #1a6b35);
-  padding: 32px 36px; position: relative; overflow: hidden;
-}
-.calc-header::after {
-  content: ''; position: absolute;
-  top: -80px; right: -80px; width: 280px; height: 280px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(255,255,255,.06) 0%, transparent 70%);
-}
-.calc-header h2 {
-  font-family: 'Playfair Display', serif;
-  font-size: 1.6rem; font-weight: 700; color: white;
-  margin-bottom: 7px; letter-spacing: -.02em;
-}
-.calc-header p { font-size: .85rem; color: rgba(255,255,255,.48); margin: 0; }
-
-.error-banner {
-  background: #fff5f5; border: 1px solid rgba(244,67,54,.15);
-  border-radius: 14px; padding: 16px 20px; margin: 24px 36px 0;
-}
-.error-banner h6 { color: #c62828; font-size: .85rem; font-weight: 700; margin-bottom: 8px; }
-.error-banner ul { margin: 0; padding-left: 18px; color: #d32f2f; font-size: .82rem; }
-
-.form-body { padding: 28px 36px; }
-
-.form-section {
-  background: #fafaf8; border-radius: 18px;
-  border: 1px solid rgba(0,0,0,.06); margin-bottom: 20px;
-  overflow: hidden; transition: box-shadow .3s;
-}
-.form-section:hover { box-shadow: 0 6px 28px rgba(0,0,0,.07); }
-
-.form-section-header {
-  padding: 16px 22px; border-bottom: 1px solid rgba(0,0,0,.05);
-  display: flex; align-items: center; gap: 12px; background: white;
-}
-
-.section-icon {
-  width: 34px; height: 34px; border-radius: 10px;
-  display: flex; align-items: center; justify-content: center; font-size: .85rem;
-}
-.section-icon.green { background: rgba(21,87,36,.1); color: #155724; }
-.section-icon.blue { background: rgba(33,150,243,.08); color: #1976d2; }
-.section-icon.amber { background: rgba(255,152,0,.1); color: #e65100; }
-.section-icon.teal { background: rgba(0,150,136,.1); color: #00796b; }
-
-.form-section-title {
-  font-family: 'Playfair Display', serif;
-  font-size: .95rem; font-weight: 700; color: #0d2818;
-}
-
-.form-grid { padding: 22px; display: grid; gap: 18px; }
-.form-grid-2 { grid-template-columns: 1fr 1fr; }
-
-.field-label {
-  font-size: .7rem; font-weight: 700; color: #6c6c70;
-  text-transform: uppercase; letter-spacing: .07em;
-  margin-bottom: 8px; display: block;
-}
-
-.field-hint { font-size: .7rem; color: #aeaeb2; margin-top: 4px; }
-
-.dash-input, .dash-select {
-  width: 100%; padding: 11px 15px;
-  border: 1.5px solid rgba(0,0,0,.09); border-radius: 12px;
-  font-size: .88rem; color: #1c1c1e; background: white;
-  font-family: 'DM Sans', sans-serif; transition: all .22s; outline: none;
-  -webkit-appearance: none; appearance: none;
-}
-.dash-input:focus, .dash-select:focus {
-  border-color: #155724; box-shadow: 0 0 0 3px rgba(21,87,36,.1);
-}
+/* Custom Styles for Form Elements that are hard to style with just utilities */
 .dash-select {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236c6c70' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
-  background-repeat: no-repeat; background-position: right 13px center;
-  background-size: 15px; padding-right: 40px; cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236c6c70' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 1.2em;
 }
 
-.radio-group { display: flex; flex-direction: column; gap: 8px; }
-
-.radio-option {
-  display: flex; align-items: center; gap: 11px;
-  padding: 11px 15px; border-radius: 12px;
-  border: 1.5px solid rgba(0,0,0,.08); cursor: pointer;
-  transition: all .2s; background: white;
+/* Range Slider Styling */
+.dash-range {
+    -webkit-appearance: none;
+    width: 100%;
+    background: transparent;
 }
-.radio-option:hover { border-color: rgba(21,87,36,.22); background: rgba(21,87,36,.02); }
+.dash-range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    height: 20px;
+    width: 20px;
+    border-radius: 50%;
+    background: #16a34a;
+    cursor: pointer;
+    margin-top: -8px;
+    box-shadow: 0 0 10px rgba(22, 163, 74, 0.4);
+}
+.dash-range::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 6px;
+    cursor: pointer;
+    background: #dcfce7;
+    border-radius: 4px;
+}
+
+/* Custom Radio Group Logic Styles */
 .radio-option input[type="radio"] { display: none; }
-.radio-option.checked { border-color: #155724; background: rgba(21,87,36,.04); box-shadow: 0 0 0 2px rgba(21,87,36,.1); }
-
 .radio-dot {
-  width: 17px; height: 17px; border-radius: 50%;
-  border: 2px solid rgba(0,0,0,.15); flex-shrink: 0;
-  position: relative; transition: all .2s;
+    width: 20px; height: 20px; border-radius: 50%;
+    border: 2px solid #d1d5db; flex-shrink: 0;
+    position: relative; transition: all 0.2s;
 }
-.radio-option.checked .radio-dot { border-color: #155724; background: #155724; }
+.radio-option.checked { 
+    border-color: #16a34a; 
+    background-color: #f0fdf4; 
+    box-shadow: 0 0 0 1px #16a34a; 
+}
+.radio-option.checked .radio-dot { border-color: #16a34a; background: #16a34a; }
 .radio-option.checked .radio-dot::after {
-  content: ''; position: absolute;
-  top: 50%; left: 50%; transform: translate(-50%,-50%);
-  width: 5px; height: 5px; border-radius: 50%; background: white;
-}
-.radio-label { font-size: .85rem; color: #1c1c1e; font-weight: 500; }
-.radio-sub { font-size: .72rem; color: #aeaeb2; margin-top: 1px; }
-
-.form-footer {
-  padding: 24px 36px; border-top: 1px solid rgba(0,0,0,.06);
-  display: flex; align-items: center; justify-content: flex-end; gap: 12px;
-  background: #fafaf8;
+    content: ''; position: absolute;
+    top: 50%; left: 50%; transform: translate(-50%,-50%);
+    width: 6px; height: 6px; border-radius: 50%; background: white;
 }
 
-.btn-reset {
-  padding: 11px 22px; border-radius: 11px;
-  border: 1.5px solid rgba(0,0,0,.1); background: white;
-  font-size: .87rem; font-weight: 600; color: #6c6c70;
-  font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all .2s;
-}
-.btn-reset:hover { border-color: rgba(0,0,0,.2); color: #1c1c1e; }
-
-.btn-calculate {
-  padding: 12px 28px; border-radius: 12px;
-  background: linear-gradient(135deg, #0d2818, #155724);
-  border: none; color: white;
-  font-size: .9rem; font-weight: 700; font-family: 'DM Sans', sans-serif;
-  cursor: pointer; box-shadow: 0 6px 24px rgba(13,40,24,.3);
-  transition: all .3s; display: flex; align-items: center; gap: 8px;
-}
-.btn-calculate:hover { transform: translateY(-2px); box-shadow: 0 10px 32px rgba(13,40,24,.4); }
-.btn-calculate.loading { opacity: .7; pointer-events: none; }
-
-.info-card {
-  margin-top: 22px; background: white; border-radius: 20px;
-  border: 1px solid rgba(0,0,0,.05); box-shadow: 0 4px 20px rgba(0,0,0,.04); overflow: hidden;
-}
-.info-card-header {
-  padding: 16px 26px; border-bottom: 1px solid rgba(0,0,0,.06); background: #fafaf8;
-  font-family: 'Playfair Display', serif; font-size: .95rem; font-weight: 700;
-  color: #0d2818; display: flex; align-items: center; gap: 10px;
-}
-.info-card-body { padding: 22px 26px; }
-.method-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-.method-item { padding: 14px 16px; border-radius: 12px; background: rgba(21,87,36,.04); border: 1px solid rgba(21,87,36,.08); }
-.method-item h6 { font-size: .77rem; font-weight: 700; color: #155724; margin-bottom: 5px; }
-.method-item p { font-size: .75rem; color: #6c6c70; margin: 0; line-height: 1.5; }
-
-@media (max-width: 1024px) {
-  .dash-wrap { grid-template-columns: 1fr; }
-  .profile-card { position: static; }
-  .form-grid-2 { grid-template-columns: 1fr; }
-}
-@media (max-width: 640px) {
-  .calc-header { padding: 22px 22px; }
-  .form-body { padding: 20px 22px; }
-  .form-footer { flex-direction: column; padding: 18px 22px; }
-  .btn-calculate, .btn-reset { width: 100%; justify-content: center; }
-  .method-grid { grid-template-columns: 1fr; }
-}
+/* Loading Spinner */
+@keyframes spin { to { transform: rotate(360deg); } }
+.spinner { animation: spin 1s linear infinite; }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="dash-wrap">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+    <div class="flex flex-col lg:flex-row gap-8 items-start">
 
-  <!-- ─── Sidebar ─── -->
-  <aside>
-    <div class="profile-card">
-      <div class="profile-header">
-        <div class="avatar-ring"><i class="bi bi-person-fill"></i></div>
-        <div class="profile-name">{{ user.username }}</div>
-        <div class="profile-badge"><i class="bi bi-person-check-fill"></i>&nbsp; Individual</div>
-        <div class="profile-stats">
-          <div class="stat-cell">
-            <div class="stat-val">{{ assessments|length }}</div>
-            <div class="stat-lbl">Assessments</div>
-          </div>
-          <div class="stat-cell">
-            <div class="stat-val" style="font-size:.85rem;">{{ user.created_at[:7] if user.created_at else '—' }}</div>
-            <div class="stat-lbl">Member Since</div>
-          </div>
-          <div class="stat-cell">
-            {% if assessments %}
-            <div class="stat-val" style="font-size:1rem;">{{ assessments[0].carbon_footprint|round|int }}</div>
-            <div class="stat-lbl">Latest kg CO₂e</div>
-            {% else %}
-            <div class="stat-val">—</div>
-            <div class="stat-lbl">Latest Score</div>
-            {% endif %}
-          </div>
-          <div class="stat-cell">
-            {% if assessments %}
-            <div class="stat-val" style="font-size:.9rem;">{{ assessments[0].carbon_level }}</div>
-            <div class="stat-lbl">Risk Level</div>
-            {% else %}
-            <div class="stat-val">—</div>
-            <div class="stat-lbl">Risk Level</div>
-            {% endif %}
-          </div>
-        </div>
-      </div>
+        <aside class="w-full lg:w-[340px] flex-shrink-0 lg:sticky lg:top-28">
+            <div class="bg-gradient-to-b from-brand-950 via-brand-900 to-brand-800 rounded-[2rem] overflow-hidden shadow-2xl border border-white/10 relative">
+                
+                <div class="absolute -top-20 -left-20 w-56 h-56 bg-brand-500/20 rounded-full blur-3xl pointer-events-none"></div>
 
-      <div class="history-section">
-        <div class="section-eyebrow">Assessment History</div>
-        {% if assessments %}
-          {% for a in assessments %}
-          <div class="history-item">
-            <div class="history-dot" style="background:{% if a.carbon_level|lower == 'low' %}#2ecc71{% elif a.carbon_level|lower == 'medium' %}#ff9800{% else %}#ef5350{% endif %};"></div>
-            <div class="history-info">
-              <div class="history-label">{{ a.carbon_footprint|round|int }} kg CO₂e</div>
-              <div class="history-sub">{{ a.created_at[:10] }}</div>
-            </div>
-            <span class="level-chip {{ a.carbon_level|lower }}">{{ a.carbon_level }}</span>
-          </div>
-          {% endfor %}
-        {% else %}
-          <div style="text-align:center;padding:20px 0;color:rgba(255,255,255,.28);font-size:.82rem;">
-            <i class="bi bi-clock-history" style="font-size:1.8rem;display:block;margin-bottom:10px;opacity:.4;"></i>
-            No history yet
-          </div>
-        {% endif %}
-      </div>
-
-      <div class="tips-section">
-        <div class="section-eyebrow">Sustainability Tips</div>
-        <div class="tip-item">
-          <div class="tip-icon"><i class="bi bi-lightning-charge-fill"></i></div>
-          <div class="tip-text">LED bulbs save up to 75% energy vs incandescent</div>
-        </div>
-        <div class="tip-item">
-          <div class="tip-icon"><i class="bi bi-car-front-fill"></i></div>
-          <div class="tip-text">Carpooling twice a week cuts transport emissions ~20%</div>
-        </div>
-        <div class="tip-item">
-          <div class="tip-icon"><i class="bi bi-leaf-fill"></i></div>
-          <div class="tip-text">One plant-based day weekly has significant food impact</div>
-        </div>
-        <div class="tip-item">
-          <div class="tip-icon"><i class="bi bi-recycle"></i></div>
-          <div class="tip-text">Consistent recycling reduces household landfill emissions</div>
-        </div>
-      </div>
-    </div>
-  </aside>
-
-  <!-- ─── Calculator ─── -->
-  <div>
-    <div class="calc-shell">
-      <div class="calc-header">
-        <h2>Carbon Footprint Calculator</h2>
-        <p>Complete each section accurately for your personalised AI-powered assessment</p>
-      </div>
-
-      {% if errors %}
-      <div class="error-banner">
-        <h6><i class="bi bi-exclamation-triangle-fill me-2"></i>Please correct the following:</h6>
-        <ul>{% for e in errors %}<li>{{ e }}</li>{% endfor %}</ul>
-      </div>
-      {% endif %}
-
-      <form method="POST" action="{{ url_for('calculate_individual') }}" id="calcForm">
-        <div class="form-body">
-
-          <!-- Location -->
-          <div class="form-section">
-            <div class="form-section-header">
-              <div class="section-icon green"><i class="bi bi-globe-americas"></i></div>
-              <div class="form-section-title">Location &amp; Household</div>
-            </div>
-            <div class="form-grid form-grid-2">
-              <div>
-                <label class="field-label" for="country">Country</label>
-                <select class="dash-select" id="country" name="country" required>
-                  <option value="">Select your country</option>
-                  <option value="India" {% if form_data and form_data.country=='India' %}selected{% endif %}>India</option>
-                  <option value="USA" {% if form_data and form_data.country=='USA' %}selected{% endif %}>United States</option>
-                  <option value="UK" {% if form_data and form_data.country=='UK' %}selected{% endif %}>United Kingdom</option>
-                  <option value="Germany" {% if form_data and form_data.country=='Germany' %}selected{% endif %}>Germany</option>
-                  <option value="Australia" {% if form_data and form_data.country=='Australia' %}selected{% endif %}>Australia</option>
-                  <option value="Canada" {% if form_data and form_data.country=='Canada' %}selected{% endif %}>Canada</option>
-                  <option value="Other" {% if form_data and form_data.country=='Other' %}selected{% endif %}>Other</option>
-                </select>
-              </div>
-              <div>
-                <label class="field-label" for="household_size">Household Size</label>
-                <select class="dash-select" id="household_size" name="household_size" required>
-                  <option value="1" {% if form_data and form_data.household_size=='1' %}selected{% endif %}>1 person</option>
-                  <option value="2" {% if form_data and form_data.household_size=='2' %}selected{% endif %}>2 people</option>
-                  <option value="3" {% if form_data and form_data.household_size=='3' %}selected{% endif %}>3 people</option>
-                  <option value="4" {% if form_data and form_data.household_size=='4' %}selected{% endif %}>4 people</option>
-                  <option value="5" {% if form_data and form_data.household_size=='5' %}selected{% endif %}>5 or more</option>
-                </select>
-              </div>
-            </div>
-          </div>
-
-          <!-- Energy -->
-          <div class="form-section">
-            <div class="form-section-header">
-              <div class="section-icon amber"><i class="bi bi-lightning-charge-fill"></i></div>
-              <div class="form-section-title">Energy Consumption</div>
-            </div>
-            <div class="form-grid form-grid-2">
-              <div>
-                <label class="field-label" for="electricity_kwh">Monthly Electricity (kWh)</label>
-                <input type="number" class="dash-input" id="electricity_kwh" name="electricity_kwh"
-                       min="0" max="5000" step="10"
-                       value="{{ form_data.electricity_kwh if form_data else '300' }}" required>
-                <div class="field-hint">Average home: 200–500 kWh/month</div>
-              </div>
-              <div>
-                <label class="field-label" for="energy_source">Primary Energy Source</label>
-                <select class="dash-select" id="energy_source" name="energy_source" required>
-                  <option value="grid" {% if not form_data or form_data.energy_source=='grid' %}selected{% endif %}>Grid Electricity</option>
-                  <option value="solar" {% if form_data and form_data.energy_source=='solar' %}selected{% endif %}>Solar / Renewable</option>
-                  <option value="mixed" {% if form_data and form_data.energy_source=='mixed' %}selected{% endif %}>Mixed Sources</option>
-                </select>
-              </div>
-            </div>
-          </div>
-
-          <!-- Transport -->
-          <div class="form-section">
-            <div class="form-section-header">
-              <div class="section-icon blue"><i class="bi bi-car-front-fill"></i></div>
-              <div class="form-section-title">Transportation</div>
-            </div>
-            <div class="form-grid form-grid-2">
-              <div>
-                <label class="field-label" for="vehicle_type">Vehicle Type</label>
-                <select class="dash-select" id="vehicle_type" name="vehicle_type" required>
-                  <option value="none" {% if form_data and form_data.vehicle_type=='none' %}selected{% endif %}>No vehicle</option>
-                  <option value="petrol" {% if form_data and form_data.vehicle_type=='petrol' %}selected{% endif %}>Petrol / Gasoline</option>
-                  <option value="diesel" {% if form_data and form_data.vehicle_type=='diesel' %}selected{% endif %}>Diesel</option>
-                  <option value="hybrid" {% if form_data and form_data.vehicle_type=='hybrid' %}selected{% endif %}>Hybrid</option>
-                  <option value="electric" {% if form_data and form_data.vehicle_type=='electric' %}selected{% endif %}>Electric (EV)</option>
-                </select>
-              </div>
-              <div>
-                <label class="field-label" for="vehicle_km">Monthly Distance (km)</label>
-                <input type="number" class="dash-input" id="vehicle_km" name="vehicle_km"
-                       min="0" max="10000" step="50"
-                       value="{{ form_data.vehicle_km if form_data else '500' }}">
-                <div class="field-hint">Set 0 if no vehicle selected</div>
-              </div>
-              <div id="fuel_eff_div">
-                <label class="field-label" for="vehicle_efficiency">Vehicle Fuel Efficiency (km/L)</label>
-                <input type="number" class="dash-input" id="vehicle_efficiency" name="vehicle_efficiency"
-                      min="4" max="40" step="0.5"
-                      value="{{ form_data.vehicle_efficiency if form_data else '15' }}">
-                <div class="field-hint">Typical petrol car: 12–18 km/L</div>
-              </div>
-
-              <div>
-                <label class="field-label" for="flights_per_year">Flights per Year</label>
-                <select class="dash-select" id="flights_per_year" name="flights_per_year" required>
-                  <option value="0" {% if form_data and form_data.flights_per_year=='0' %}selected{% endif %}>None</option>
-                  <option value="1" {% if form_data and form_data.flights_per_year=='1' %}selected{% endif %}>1–2 short-haul</option>
-                  <option value="2" {% if form_data and form_data.flights_per_year=='2' %}selected{% endif %}>3–5 flights</option>
-                  <option value="3" {% if form_data and form_data.flights_per_year=='3' %}selected{% endif %}>6+ or long-haul</option>
-                </select>
-              </div>
-              <div>
-                <label class="field-label" for="public_transport">Public Transport Use</label>
-                <select class="dash-select" id="public_transport" name="public_transport" required>
-                  <option value="never" {% if form_data and form_data.public_transport=='never' %}selected{% endif %}>Rarely / Never</option>
-                  <option value="sometimes" {% if form_data and form_data.public_transport=='sometimes' %}selected{% endif %}>Sometimes</option>
-                  <option value="often" {% if form_data and form_data.public_transport=='often' %}selected{% endif %}>Often</option>
-                  <option value="always" {% if form_data and form_data.public_transport=='always' %}selected{% endif %}>Primary mode</option>
-                </select>
-              </div>
-            </div>
-          </div>
-      <!-- Home & Heating Section -->
-      <div class="form-section">
-        <div class="section-header">
-          <span class="section-icon">🏠</span>
-          <h3 class="section-title">Home & Heating</h3>
-        </div>
-        <div class="form-grid form-grid-2">
-          <div>
-            <label class="field-label" for="home_type">Home Type</label>
-            <select class="dash-select" id="home_type" name="home_type" required>
-              <option value="apartment" {% if form_data and form_data.home_type=='apartment' %}selected{% endif %}>Apartment / Flat</option>
-              <option value="house" {% if not form_data or form_data.home_type=='house' %}selected{% endif %}>Independent House</option>
-              <option value="shared" {% if form_data and form_data.home_type=='shared' %}selected{% endif %}>Shared Accommodation / PG</option>
-            </select>
-          </div>
-          <div>
-            <label class="field-label" for="heating_source">Heating / Cooling Source</label>
-            <select class="dash-select" id="heating_source" name="heating_source" required>
-              <option value="electric" {% if not form_data or form_data.heating_source=='electric' %}selected{% endif %}>Electric (AC/Heater)</option>
-              <option value="gas" {% if form_data and form_data.heating_source=='gas' %}selected{% endif %}>Natural Gas</option>
-              <option value="oil" {% if form_data and form_data.heating_source=='oil' %}selected{% endif %}>Oil / LPG</option>
-              <option value="heatpump" {% if form_data and form_data.heating_source=='heatpump' %}selected{% endif %}>Heat Pump</option>
-              <option value="none" {% if form_data and form_data.heating_source=='none' %}selected{% endif %}>None / Fan only</option>
-            </select>
-          </div>
-          <div>
-            <label class="field-label" for="renewable_percent">Home Renewable Energy % <span style="color:#888;font-size:.85rem">(if grid/mixed)</span></label>
-            <input type="range" class="dash-input" id="renewable_percent" name="renewable_percent"
-                  min="0" max="100" step="5"
-                  value="{{ form_data.renewable_percent if form_data else '0' }}"
-                  oninput="document.getElementById('ren_val').textContent=this.value+'%'">
-            <div class="field-hint">Solar panels / green tariff: <span id="ren_val">0%</span></div>
-          </div>
-          <div>
-            <label class="field-label" for="food_waste">Food Waste Habit</label>
-            <select class="dash-select" id="food_waste" name="food_waste" required>
-              <option value="rarely" {% if not form_data or form_data.food_waste=='rarely' %}selected{% endif %}>Rarely — I finish most food</option>
-              <option value="sometimes" {% if form_data and form_data.food_waste=='sometimes' %}selected{% endif %}>Sometimes — some waste</option>
-              <option value="often" {% if form_data and form_data.food_waste=='often' %}selected{% endif %}>Often — significant waste</option>
-            </select>
-          </div>
-        </div>
-      </div>
-
-          <!-- Lifestyle -->
-          <div class="form-section">
-            <div class="form-section-header">
-              <div class="section-icon teal"><i class="bi bi-heart-pulse-fill"></i></div>
-              <div class="form-section-title">Lifestyle &amp; Consumption</div>
-            </div>
-            <div class="form-grid form-grid-2">
-              <div>
-                <label class="field-label">Diet Type</label>
-                <div class="radio-group">
-                  <label class="radio-option {% if not form_data or form_data.diet_type=='veg' %}checked{% endif %}">
-                    <input type="radio" name="diet_type" value="veg" {% if not form_data or form_data.diet_type=='veg' %}checked{% endif %}>
-                    <div class="radio-dot"></div>
-                    <div><div class="radio-label">Vegetarian / Vegan</div><div class="radio-sub">Plant-based diet</div></div>
-                  </label>
-                  <label class="radio-option {% if form_data and form_data.diet_type=='mixed' %}checked{% endif %}">
-                    <input type="radio" name="diet_type" value="mixed" {% if form_data and form_data.diet_type=='mixed' %}checked{% endif %}>
-                    <div class="radio-dot"></div>
-                    <div><div class="radio-label">Mixed Diet</div><div class="radio-sub">Meat occasionally</div></div>
-                  </label>
-                  <label class="radio-option {% if form_data and form_data.diet_type=='non-veg' %}checked{% endif %}">
-                    <input type="radio" name="diet_type" value="non-veg" {% if form_data and form_data.diet_type=='non-veg' %}checked{% endif %}>
-                    <div class="radio-dot"></div>
-                    <div><div class="radio-label">Non-Vegetarian</div><div class="radio-sub">Regular meat consumption</div></div>
-                  </label>
-                </div>
-                <div>
-                  <label class="field-label" for="meat_frequency">Meat Meals per Week <span style="color:#888;font-size:.85rem">(0 = none)</span></label>
-                  <input type="range" class="dash-input" id="meat_frequency" name="meat_frequency"
-                        min="0" max="7" step="1"
-                        value="{{ form_data.meat_frequency if form_data else '3' }}"
-                        oninput="document.getElementById('meat_val').textContent=this.value+' days/week'">
-                  <div class="field-hint">Days per week you eat meat: <span id="meat_val">3 days/week</span></div>
+                <div class="p-8 text-center relative z-10">
+                    <div class="w-24 h-24 mx-auto bg-gradient-to-br from-brand-400 to-brand-600 p-1 rounded-[1.5rem] mb-5 shadow-glow animate-[pulse_3s_ease-in-out_infinite]">
+                        <div class="w-full h-full bg-brand-900 rounded-[1.3rem] flex items-center justify-center text-4xl text-white">
+                            <i class="ph-fill ph-user"></i>
+                        </div>
+                    </div>
+                    <h2 class="text-2xl font-bold text-white tracking-tight mb-2">{{ user.username }}</h2>
+                    <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-500/20 border border-brand-500/30 text-brand-300 text-xs font-bold uppercase tracking-wider">
+                        <i class="ph-fill ph-user-circle-check text-sm"></i> Individual
+                    </div>
                 </div>
 
-              </div>
-              <div>
-                <label class="field-label" for="shopping_freq">Shopping Frequency</label>
-                <select class="dash-select" id="shopping_freq" name="shopping_freq" required>
-                  <option value="low" {% if form_data and form_data.shopping_freq=='low' %}selected{% endif %}>Low — minimal</option>
-                  <option value="medium" {% if not form_data or form_data.shopping_freq=='medium' %}selected{% endif %}>Medium — average</option>
-                  <option value="high" {% if form_data and form_data.shopping_freq=='high' %}selected{% endif %}>High — frequent</option>
-                </select>
-                <div style="margin-top:16px;">
-                  <label class="field-label">Recycling Practice</label>
-                  <div class="radio-group">
-                    <label class="radio-option {% if not form_data or form_data.recycling=='yes' %}checked{% endif %}">
-                      <input type="radio" name="recycling" value="yes" {% if not form_data or form_data.recycling=='yes' %}checked{% endif %}>
-                      <div class="radio-dot"></div>
-                      <div class="radio-label">Yes, I recycle regularly</div>
-                    </label>
-                    <label class="radio-option {% if form_data and form_data.recycling=='no' %}checked{% endif %}">
-                      <input type="radio" name="recycling" value="no" {% if form_data and form_data.recycling=='no' %}checked{% endif %}>
-                      <div class="radio-dot"></div>
-                      <div class="radio-label">No, I don't recycle regularly</div>
-                    </label>
-                  </div>
+                <div class="grid grid-cols-2 gap-[1px] bg-white/10 border-y border-white/10">
+                    <div class="bg-black/20 p-4 text-center hover:bg-brand-500/10 transition-colors">
+                        <div class="text-2xl font-extrabold text-brand-400 leading-none mb-1">{{ assessments|length }}</div>
+                        <div class="text-[0.65rem] font-bold text-white/40 uppercase tracking-widest">Assessments</div>
+                    </div>
+                    <div class="bg-black/20 p-4 text-center hover:bg-brand-500/10 transition-colors">
+                        <div class="text-lg font-bold text-brand-400 leading-none mb-1 pt-1">{{ user.created_at[:7] if user.created_at else '—' }}</div>
+                        <div class="text-[0.65rem] font-bold text-white/40 uppercase tracking-widest">Member Since</div>
+                    </div>
+                    <div class="bg-black/20 p-4 text-center hover:bg-brand-500/10 transition-colors">
+                        <div class="text-xl font-extrabold text-brand-400 leading-none mb-1 pt-0.5">
+                            {% if assessments %}{{ assessments[0].carbon_footprint|round|int }}{% else %}—{% endif %}
+                        </div>
+                        <div class="text-[0.65rem] font-bold text-white/40 uppercase tracking-widest">Latest kg CO₂e</div>
+                    </div>
+                    <div class="bg-black/20 p-4 text-center hover:bg-brand-500/10 transition-colors">
+                        <div class="text-lg font-bold text-brand-400 leading-none mb-1 pt-1">
+                            {% if assessments %}{{ assessments[0].carbon_level }}{% else %}—{% endif %}
+                        </div>
+                        <div class="text-[0.65rem] font-bold text-white/40 uppercase tracking-widest">Risk Level</div>
+                    </div>
                 </div>
-              </div>
+
+                <div class="p-6">
+                    <h3 class="text-xs font-bold text-white/30 uppercase tracking-widest mb-4">Assessment History</h3>
+                    {% if assessments %}
+                        <div class="space-y-2">
+                        {% for a in assessments %}
+                            {% set risk_color = 'bg-brand-500 text-brand-100 border-brand-500/30' if a.carbon_level|lower == 'low' else ('bg-orange-500 text-orange-100 border-orange-500/30' if a.carbon_level|lower == 'medium' else 'bg-red-500 text-red-100 border-red-500/30') %}
+                            {% set dot_color = 'bg-brand-400' if a.carbon_level|lower == 'low' else ('bg-orange-400' if a.carbon_level|lower == 'medium' else 'bg-red-400') %}
+                            
+                            <div class="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 hover:border-brand-500/30 transition-all hover:translate-x-1 cursor-default group">
+                                <div class="w-2 h-2 rounded-full {{ dot_color }} flex-shrink-0 group-hover:scale-125 transition-transform"></div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="text-sm font-semibold text-white/90 truncate">{{ a.carbon_footprint|round|int }} kg CO₂e</div>
+                                    <div class="text-[0.7rem] text-white/40">{{ a.created_at[:10] }}</div>
+                                </div>
+                                <span class="text-[0.6rem] font-bold px-2 py-1 rounded-md uppercase tracking-wider bg-opacity-20 border {{ risk_color }}">
+                                    {{ a.carbon_level }}
+                               </span>
+                            </div>
+                        {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-6 text-white/30 text-sm">
+                            <i class="ph-fill ph-clock-counter-clockwise text-3xl opacity-40 mb-2 block"></i>
+                            No history yet
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="p-6 border-t border-white/10 bg-black/10">
+                    <h3 class="text-xs font-bold text-white/30 uppercase tracking-widest mb-4">Sustainability Tips</h3>
+                    <div class="space-y-3">
+                        <div class="flex items-start gap-3 pb-3 border-b border-white/5">
+                            <div class="w-7 h-7 rounded-lg bg-brand-500/20 border border-brand-500/30 flex items-center justify-center text-brand-400 flex-shrink-0"><i class="ph-fill ph-lightning"></i></div>
+                            <p class="text-xs text-white/50 leading-relaxed pt-0.5">LED bulbs save up to 75% energy vs incandescent.</p>
+                        </div>
+                        <div class="flex items-start gap-3 pb-3 border-b border-white/5">
+                            <div class="w-7 h-7 rounded-lg bg-brand-500/20 border border-brand-500/30 flex items-center justify-center text-brand-400 flex-shrink-0"><i class="ph-fill ph-car-profile"></i></div>
+                            <p class="text-xs text-white/50 leading-relaxed pt-0.5">Carpooling twice a week cuts transport emissions ~20%.</p>
+                        </div>
+                        <div class="flex items-start gap-3 pb-3 border-b border-white/5">
+                            <div class="w-7 h-7 rounded-lg bg-brand-500/20 border border-brand-500/30 flex items-center justify-center text-brand-400 flex-shrink-0"><i class="ph-fill ph-leaf"></i></div>
+                            <p class="text-xs text-white/50 leading-relaxed pt-0.5">One plant-based day weekly has a significant impact.</p>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <div class="w-7 h-7 rounded-lg bg-brand-500/20 border border-brand-500/30 flex items-center justify-center text-brand-400 flex-shrink-0"><i class="ph-fill ph-recycle"></i></div>
+                            <p class="text-xs text-white/50 leading-relaxed pt-0.5">Consistent recycling reduces household landfill emissions.</p>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
+        </aside>
 
-        </div>
-        <div class="form-footer">
-          <button type="reset" class="btn-reset"><i class="bi bi-arrow-counterclockwise me-2"></i>Reset</button>
-          <button type="submit" class="btn-calculate" id="submitBtn">
-            <i class="bi bi-calculator-fill"></i> Calculate My Footprint
-          </button>
-        </div>
-      </form>
-    </div>
+        <main class="flex-1 w-full space-y-6">
+            
+            <div class="bg-white rounded-[2rem] shadow-xl border border-gray-100 overflow-hidden relative">
+                <div class="bg-gradient-to-r from-brand-900 to-brand-800 p-8 lg:p-10 relative overflow-hidden">
+                    <div class="absolute -top-24 -right-24 w-64 h-64 bg-white/5 rounded-full blur-2xl"></div>
+                    <h2 class="text-2xl md:text-3xl font-bold text-white mb-2 relative z-10">Carbon Footprint Calculator</h2>
+                    <p class="text-brand-100/70 text-sm relative z-10">Complete each section accurately for your personalised AI-powered assessment.</p>
+                </div>
 
-    <div class="info-card">
-      <div class="info-card-header"><i class="bi bi-cpu-fill" style="color:#155724;"></i> Methodology</div>
-      <div class="info-card-body">
-        <div class="method-grid">
-          <div class="method-item">
-            <h6><i class="bi bi-bar-chart-fill me-1"></i>DEFRA Emission Factors</h6>
-            <p>Industry-standard UK government conversion factors for accurate emissions quantification.</p>
-          </div>
-          <div class="method-item">
-            <h6><i class="bi bi-tree-fill me-1"></i>Random Forest ML</h6>
-            <p>Machine learning model trained on consumption patterns for personalised accuracy.</p>
-          </div>
-          <div class="method-item">
-            <h6><i class="bi bi-layers-fill me-1"></i>Hybrid Approach</h6>
-            <p>Combines rule-based calculations with AI inference for comprehensive results.</p>
-          </div>
-          <div class="method-item">
-            <h6><i class="bi bi-person-fill me-1"></i>Personalisation</h6>
-            <p>Tailored recommendations based on your specific lifestyle inputs and regional data.</p>
-          </div>
-        </div>
-        <div style="margin-top:14px;padding:11px 15px;background:#fffbf0;border-radius:10px;border:1px solid rgba(255,152,0,.2);font-size:.76rem;color:#6c6c70;">
-          <i class="bi bi-info-circle me-1" style="color:#ff9800;"></i>
-          Estimates for educational awareness only. Not suitable for regulatory reporting.
-        </div>
-      </div>
+                {% if errors %}
+                <div class="m-6 bg-red-50 border border-red-200 rounded-xl p-5">
+                    <h6 class="text-red-700 font-bold text-sm mb-2 flex items-center gap-2">
+                        <i class="ph-fill ph-warning-circle text-lg"></i> Please correct the following:
+                    </h6>
+                    <ul class="list-disc list-inside text-red-600 text-sm space-y-1 pl-1">
+                        {% for e in errors %}<li>{{ e }}</li>{% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+
+                <form method="POST" action="{{ url_for('calculate_individual') }}" id="calcForm">
+                    <div class="p-6 lg:p-8 space-y-6">
+
+                        <div class="form-section opacity-0 translate-y-4 bg-gray-50 border border-gray-100 rounded-2xl overflow-hidden hover:shadow-md transition-all duration-300">
+                            <div class="flex items-center gap-3 px-6 py-4 bg-white border-b border-gray-100">
+                                <div class="w-10 h-10 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center text-lg"><i class="ph-fill ph-globe-hemisphere-west"></i></div>
+                                <h3 class="font-bold text-gray-900">Location &amp; Household</h3>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-6">
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2" for="country">Country</label>
+                                    <select class="dash-select w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 text-sm bg-white text-gray-800 transition-all cursor-pointer" id="country" name="country" required>
+                                        <option value="">Select your country</option>
+                                        <option value="India" {% if form_data and form_data.country=='India' %}selected{% endif %}>India</option>
+                                        <option value="USA" {% if form_data and form_data.country=='USA' %}selected{% endif %}>United States</option>
+                                        <option value="UK" {% if form_data and form_data.country=='UK' %}selected{% endif %}>United Kingdom</option>
+                                        <option value="Germany" {% if form_data and form_data.country=='Germany' %}selected{% endif %}>Germany</option>
+                                        <option value="Australia" {% if form_data and form_data.country=='Australia' %}selected{% endif %}>Australia</option>
+                                        <option value="Canada" {% if form_data and form_data.country=='Canada' %}selected{% endif %}>Canada</option>
+                                        <option value="Other" {% if form_data and form_data.country=='Other' %}selected{% endif %}>Other</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2" for="household_size">Household Size</label>
+                                    <select class="dash-select w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 text-sm bg-white text-gray-800 transition-all cursor-pointer" id="household_size" name="household_size" required>
+                                        <option value="1" {% if form_data and form_data.household_size=='1' %}selected{% endif %}>1 person</option>
+                                        <option value="2" {% if form_data and form_data.household_size=='2' %}selected{% endif %}>2 people</option>
+                                        <option value="3" {% if form_data and form_data.household_size=='3' %}selected{% endif %}>3 people</option>
+                                        <option value="4" {% if form_data and form_data.household_size=='4' %}selected{% endif %}>4 people</option>
+                                        <option value="5" {% if form_data and form_data.household_size=='5' %}selected{% endif %}>5 or more</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-section opacity-0 translate-y-4 bg-gray-50 border border-gray-100 rounded-2xl overflow-hidden hover:shadow-md transition-all duration-300" style="transition-delay: 100ms;">
+                            <div class="flex items-center gap-3 px-6 py-4 bg-white border-b border-gray-100">
+                                <div class="w-10 h-10 rounded-xl bg-yellow-50 text-yellow-600 flex items-center justify-center text-lg"><i class="ph-fill ph-lightning"></i></div>
+                                <h3 class="font-bold text-gray-900">Energy Consumption</h3>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-6">
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2" for="electricity_kwh">Monthly Electricity (kWh)</label>
+                                    <input type="number" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 text-sm bg-white text-gray-800 transition-all" id="electricity_kwh" name="electricity_kwh" min="0" max="5000" step="10" value="{{ form_data.electricity_kwh if form_data else '300' }}" required>
+                                    <p class="text-xs text-gray-400 mt-2">Average home: 200–500 kWh/month</p>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2" for="energy_source">Primary Energy Source</label>
+                                    <select class="dash-select w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 text-sm bg-white text-gray-800 transition-all cursor-pointer" id="energy_source" name="energy_source" required>
+                                        <option value="grid" {% if not form_data or form_data.energy_source=='grid' %}selected{% endif %}>Grid Electricity</option>
+                                        <option value="solar" {% if form_data and form_data.energy_source=='solar' %}selected{% endif %}>Solar / Renewable</option>
+                                        <option value="mixed" {% if form_data and form_data.energy_source=='mixed' %}selected{% endif %}>Mixed Sources</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-section opacity-0 translate-y-4 bg-gray-50 border border-gray-100 rounded-2xl overflow-hidden hover:shadow-md transition-all duration-300" style="transition-delay: 200ms;">
+                            <div class="flex items-center gap-3 px-6 py-4 bg-white border-b border-gray-100">
+                                <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-lg"><i class="ph-fill ph-car-profile"></i></div>
+                                <h3 class="font-bold text-gray-900">Transportation</h3>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-6">
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2" for="vehicle_type">Vehicle Type</label>
+                                    <select class="dash-select w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 text-sm bg-white text-gray-800 transition-all cursor-pointer" id="vehicle_type" name="vehicle_type" required>
+                                        <option value="none" {% if form_data and form_data.vehicle_type=='none' %}selected{% endif %}>No vehicle</option>
+                                        <option value="petrol" {% if form_data and form_data.vehicle_type=='petrol' %}selected{% endif %}>Petrol / Gasoline</option>
+                                        <option value="diesel" {% if form_data and form_data.vehicle_type=='diesel' %}selected{% endif %}>Diesel</option>
+                                        <option value="hybrid" {% if form_data and form_data.vehicle_type=='hybrid' %}selected{% endif %}>Hybrid</option>
+                                        <option value="electric" {% if form_data and form_data.vehicle_type=='electric' %}selected{% endif %}>Electric (EV)</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2" for="vehicle_km">Monthly Distance (km)</label>
+                                    <input type="number" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 text-sm bg-white text-gray-800 transition-all disabled:bg-gray-100 disabled:opacity-60" id="vehicle_km" name="vehicle_km" min="0" max="10000" step="50" value="{{ form_data.vehicle_km if form_data else '500' }}">
+                                    <p class="text-xs text-gray-400 mt-2">Set 0 if no vehicle selected</p>
+                                </div>
+                                <div id="fuel_eff_div">
+                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2" for="vehicle_efficiency">Vehicle Fuel Efficiency (km/L)</label>
+                                    <input type="number" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 text-sm bg-white text-gray-800 transition-all" id="vehicle_efficiency" name="vehicle_efficiency" min="4" max="40" step="0.5" value="{{ form_data.vehicle_efficiency if form_data else '15' }}">
+                                    <p class="text-xs text-gray-400 mt-2">Typical petrol car: 12–18 km/L</p>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2" for="flights_per_year">Flights per Year</label>
+                                    <select class="dash-select w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 text-sm bg-white text-gray-800 transition-all cursor-pointer" id="flights_per_year" name="flights_per_year" required>
+                                        <option value="0" {% if form_data and form_data.flights_per_year=='0' %}selected{% endif %}>None</option>
+                                        <option value="1" {% if form_data and form_data.flights_per_year=='1' %}selected{% endif %}>1–2 short-haul</option>
+                                        <option value="2" {% if form_data and form_data.flights_per_year=='2' %}selected{% endif %}>3–5 flights</option>
+                                        <option value="3" {% if form_data and form_data.flights_per_year=='3' %}selected{% endif %}>6+ or long-haul</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2" for="public_transport">Public Transport Use</label>
+                                    <select class="dash-select w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 text-sm bg-white text-gray-800 transition-all cursor-pointer" id="public_transport" name="public_transport" required>
+                                        <option value="never" {% if form_data and form_data.public_transport=='never' %}selected{% endif %}>Rarely / Never</option>
+                                        <option value="sometimes" {% if form_data and form_data.public_transport=='sometimes' %}selected{% endif %}>Sometimes</option>
+                                        <option value="often" {% if form_data and form_data.public_transport=='often' %}selected{% endif %}>Often</option>
+                                        <option value="always" {% if form_data and form_data.public_transport=='always' %}selected{% endif %}>Primary mode</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-section opacity-0 translate-y-4 bg-gray-50 border border-gray-100 rounded-2xl overflow-hidden hover:shadow-md transition-all duration-300" style="transition-delay: 300ms;">
+                            <div class="flex items-center gap-3 px-6 py-4 bg-white border-b border-gray-100">
+                                <div class="w-10 h-10 rounded-xl bg-orange-50 text-orange-600 flex items-center justify-center text-lg"><i class="ph-fill ph-house"></i></div>
+                                <h3 class="font-bold text-gray-900">Home &amp; Heating</h3>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-6">
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2" for="home_type">Home Type</label>
+                                    <select class="dash-select w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 text-sm bg-white text-gray-800 transition-all cursor-pointer" id="home_type" name="home_type" required>
+                                        <option value="apartment" {% if form_data and form_data.home_type=='apartment' %}selected{% endif %}>Apartment / Flat</option>
+                                        <option value="house" {% if not form_data or form_data.home_type=='house' %}selected{% endif %}>Independent House</option>
+                                        <option value="shared" {% if form_data and form_data.home_type=='shared' %}selected{% endif %}>Shared Accommodation / PG</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2" for="heating_source">Heating / Cooling Source</label>
+                                    <select class="dash-select w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 text-sm bg-white text-gray-800 transition-all cursor-pointer" id="heating_source" name="heating_source" required>
+                                        <option value="electric" {% if not form_data or form_data.heating_source=='electric' %}selected{% endif %}>Electric (AC/Heater)</option>
+                                        <option value="gas" {% if form_data and form_data.heating_source=='gas' %}selected{% endif %}>Natural Gas</option>
+                                        <option value="oil" {% if form_data and form_data.heating_source=='oil' %}selected{% endif %}>Oil / LPG</option>
+                                        <option value="heatpump" {% if form_data and form_data.heating_source=='heatpump' %}selected{% endif %}>Heat Pump</option>
+                                        <option value="none" {% if form_data and form_data.heating_source=='none' %}selected{% endif %}>None / Fan only</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2" for="renewable_percent">Home Renewable Energy % <span class="text-gray-400 font-normal lowercase">(if grid/mixed)</span></label>
+                                    <input type="range" class="dash-range" id="renewable_percent" name="renewable_percent" min="0" max="100" step="5" value="{{ form_data.renewable_percent if form_data else '0' }}" oninput="document.getElementById('ren_val').textContent=this.value+'%'">
+                                    <p class="text-xs text-gray-400 mt-2">Solar panels / green tariff: <span id="ren_val" class="font-bold text-brand-600">{{ form_data.renewable_percent if form_data else '0' }}%</span></p>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2" for="food_waste">Food Waste Habit</label>
+                                    <select class="dash-select w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 text-sm bg-white text-gray-800 transition-all cursor-pointer" id="food_waste" name="food_waste" required>
+                                        <option value="rarely" {% if not form_data or form_data.food_waste=='rarely' %}selected{% endif %}>Rarely — I finish most food</option>
+                                        <option value="sometimes" {% if form_data and form_data.food_waste=='sometimes' %}selected{% endif %}>Sometimes — some waste</option>
+                                        <option value="often" {% if form_data and form_data.food_waste=='often' %}selected{% endif %}>Often — significant waste</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-section opacity-0 translate-y-4 bg-gray-50 border border-gray-100 rounded-2xl overflow-hidden hover:shadow-md transition-all duration-300" style="transition-delay: 400ms;">
+                            <div class="flex items-center gap-3 px-6 py-4 bg-white border-b border-gray-100">
+                                <div class="w-10 h-10 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center text-lg"><i class="ph-fill ph-heartbeat"></i></div>
+                                <h3 class="font-bold text-gray-900">Lifestyle &amp; Consumption</h3>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 p-6">
+                                <div class="space-y-6">
+                                    <div>
+                                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Diet Type</label>
+                                        <div class="radio-group space-y-2">
+                                            <label class="radio-option flex items-center gap-3 p-3 rounded-xl border border-gray-200 bg-white cursor-pointer hover:border-brand-300 transition-all {% if not form_data or form_data.diet_type=='veg' %}checked{% endif %}">
+                                                <input type="radio" name="diet_type" value="veg" {% if not form_data or form_data.diet_type=='veg' %}checked{% endif %}>
+                                                <div class="radio-dot"></div>
+                                                <div>
+                                                    <div class="text-sm font-semibold text-gray-900">Vegetarian / Vegan</div>
+                                                    <div class="text-xs text-gray-500">Plant-based diet</div>
+                                                </div>
+                                            </label>
+                                            <label class="radio-option flex items-center gap-3 p-3 rounded-xl border border-gray-200 bg-white cursor-pointer hover:border-brand-300 transition-all {% if form_data and form_data.diet_type=='mixed' %}checked{% endif %}">
+                                                <input type="radio" name="diet_type" value="mixed" {% if form_data and form_data.diet_type=='mixed' %}checked{% endif %}>
+                                                <div class="radio-dot"></div>
+                                                <div>
+                                                    <div class="text-sm font-semibold text-gray-900">Mixed Diet</div>
+                                                    <div class="text-xs text-gray-500">Meat occasionally</div>
+                                                </div>
+                                            </label>
+                                            <label class="radio-option flex items-center gap-3 p-3 rounded-xl border border-gray-200 bg-white cursor-pointer hover:border-brand-300 transition-all {% if form_data and form_data.diet_type=='non-veg' %}checked{% endif %}">
+                                                <input type="radio" name="diet_type" value="non-veg" {% if form_data and form_data.diet_type=='non-veg' %}checked{% endif %}>
+                                                <div class="radio-dot"></div>
+                                                <div>
+                                                    <div class="text-sm font-semibold text-gray-900">Non-Vegetarian</div>
+                                                    <div class="text-xs text-gray-500">Regular meat consumption</div>
+                                                </div>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2" for="meat_frequency">Meat Meals per Week <span class="text-gray-400 font-normal lowercase">(0 = none)</span></label>
+                                        <input type="range" class="dash-range" id="meat_frequency" name="meat_frequency" min="0" max="7" step="1" value="{{ form_data.meat_frequency if form_data else '3' }}" oninput="document.getElementById('meat_val').textContent=this.value+' days/week'">
+                                        <p class="text-xs text-gray-400 mt-2">Days per week you eat meat: <span id="meat_val" class="font-bold text-brand-600">{{ form_data.meat_frequency if form_data else '3' }} days/week</span></p>
+                                    </div>
+                                </div>
+                                <div class="space-y-6">
+                                    <div>
+                                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2" for="shopping_freq">Shopping Frequency</label>
+                                        <select class="dash-select w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 text-sm bg-white text-gray-800 transition-all cursor-pointer" id="shopping_freq" name="shopping_freq" required>
+                                            <option value="low" {% if form_data and form_data.shopping_freq=='low' %}selected{% endif %}>Low — minimal</option>
+                                            <option value="medium" {% if not form_data or form_data.shopping_freq=='medium' %}selected{% endif %}>Medium — average</option>
+                                            <option value="high" {% if form_data and form_data.shopping_freq=='high' %}selected{% endif %}>High — frequent</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Recycling Practice</label>
+                                        <div class="radio-group space-y-2">
+                                            <label class="radio-option flex items-center gap-3 p-3 rounded-xl border border-gray-200 bg-white cursor-pointer hover:border-brand-300 transition-all {% if not form_data or form_data.recycling=='yes' %}checked{% endif %}">
+                                                <input type="radio" name="recycling" value="yes" {% if not form_data or form_data.recycling=='yes' %}checked{% endif %}>
+                                                <div class="radio-dot"></div>
+                                                <div class="text-sm font-semibold text-gray-900">Yes, I recycle regularly</div>
+                                            </label>
+                                            <label class="radio-option flex items-center gap-3 p-3 rounded-xl border border-gray-200 bg-white cursor-pointer hover:border-brand-300 transition-all {% if form_data and form_data.recycling=='no' %}checked{% endif %}">
+                                                <input type="radio" name="recycling" value="no" {% if form_data and form_data.recycling=='no' %}checked{% endif %}>
+                                                <div class="radio-dot"></div>
+                                                <div class="text-sm font-semibold text-gray-900">No, I don't recycle regularly</div>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="bg-gray-50 px-8 py-5 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-end gap-4">
+                        <button type="reset" class="w-full sm:w-auto px-6 py-3 rounded-xl border border-gray-300 bg-white text-gray-700 font-bold text-sm hover:bg-gray-50 hover:text-gray-900 transition-all flex items-center justify-center gap-2">
+                            <i class="ph-bold ph-arrow-counter-clockwise text-lg"></i> Reset
+                        </button>
+                        <button type="submit" class="w-full sm:w-auto px-8 py-3 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-sm shadow-md hover:shadow-glow hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2" id="submitBtn">
+                            <i class="ph-bold ph-calculator"></i> Calculate Footprint
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden mt-8">
+                <div class="px-6 py-4 border-b border-gray-100 bg-gray-50 flex items-center gap-2">
+                    <i class="ph-fill ph-cpu text-brand-600 text-xl"></i>
+                    <h4 class="font-bold text-gray-900">Methodology</h4>
+                </div>
+                <div class="p-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="p-4 rounded-xl bg-brand-50/50 border border-brand-100/50">
+                            <h6 class="text-sm font-bold text-brand-700 mb-1 flex items-center gap-2"><i class="ph-fill ph-chart-bar"></i> DEFRA Emission Factors</h6>
+                            <p class="text-xs text-gray-600 leading-relaxed">Industry-standard UK government conversion factors for accurate emissions quantification.</p>
+                        </div>
+                        <div class="p-4 rounded-xl bg-brand-50/50 border border-brand-100/50">
+                            <h6 class="text-sm font-bold text-brand-700 mb-1 flex items-center gap-2"><i class="ph-fill ph-tree"></i> Random Forest ML</h6>
+                            <p class="text-xs text-gray-600 leading-relaxed">Machine learning model trained on consumption patterns for personalised accuracy.</p>
+                        </div>
+                        <div class="p-4 rounded-xl bg-brand-50/50 border border-brand-100/50">
+                            <h6 class="text-sm font-bold text-brand-700 mb-1 flex items-center gap-2"><i class="ph-fill ph-stack"></i> Hybrid Approach</h6>
+                            <p class="text-xs text-gray-600 leading-relaxed">Combines rule-based calculations with AI inference for comprehensive results.</p>
+                        </div>
+                        <div class="p-4 rounded-xl bg-brand-50/50 border border-brand-100/50">
+                            <h6 class="text-sm font-bold text-brand-700 mb-1 flex items-center gap-2"><i class="ph-fill ph-user"></i> Personalisation</h6>
+                            <p class="text-xs text-gray-600 leading-relaxed">Tailored recommendations based on your specific lifestyle inputs and regional data.</p>
+                        </div>
+                    </div>
+                    <div class="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-xl flex items-center gap-2 text-xs text-gray-600">
+                        <i class="ph-fill ph-info text-yellow-500 text-lg"></i>
+                        Estimates for educational awareness only. Not suitable for regulatory reporting.
+                    </div>
+                </div>
+            </div>
+
+        </main>
     </div>
-  </div>
 </div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
+// Radio Group selection logic (retained & updated for Tailwind classes)
 document.querySelectorAll('.radio-group').forEach(group => {
-  group.querySelectorAll('.radio-option').forEach(opt => {
-    opt.addEventListener('click', () => {
-      group.querySelectorAll('.radio-option').forEach(o => o.classList.remove('checked'));
-      opt.classList.add('checked');
-      opt.querySelector('input').checked = true;
+    group.querySelectorAll('.radio-option').forEach(opt => {
+        opt.addEventListener('click', () => {
+            group.querySelectorAll('.radio-option').forEach(o => o.classList.remove('checked'));
+            opt.classList.add('checked');
+            opt.querySelector('input').checked = true;
+        });
     });
-  });
 });
 
+// Vehicle Sync logic
 const vt = document.getElementById('vehicle_type');
 const vk = document.getElementById('vehicle_km');
 function syncVehicle() {
-  if (vt.value === 'none') { vk.value='0'; vk.disabled=true; vk.style.opacity='.45'; }
-  else { vk.disabled=false; vk.style.opacity='1'; if (!vk.value||vk.value==='0') vk.value='500'; }
+    if (vt.value === 'none') { 
+        vk.value = '0'; 
+        vk.disabled = true; 
+    } else { 
+        vk.disabled = false; 
+        if (!vk.value || vk.value === '0') vk.value = '500'; 
+    }
 }
-vt.addEventListener('change', syncVehicle);
-syncVehicle();
+if(vt) {
+    vt.addEventListener('change', syncVehicle);
+    syncVehicle();
+}
 
-document.getElementById('calcForm').addEventListener('submit', function(e) {
-  const el = document.getElementById('electricity_kwh');
-  if (!el.value || parseFloat(el.value) < 0) { e.preventDefault(); alert('Enter a valid electricity figure.'); return; }
-  const btn = document.getElementById('submitBtn');
-  btn.classList.add('loading');
-  btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status"></span>Calculating…';
-});
-
-// Animate sections on scroll
-const observer = new IntersectionObserver(entries => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) { entry.target.style.opacity='1'; entry.target.style.transform='translateY(0)'; }
-  });
-}, { threshold: 0.08 });
-
-document.querySelectorAll('.form-section').forEach((s, i) => {
-  s.style.cssText = `opacity:0;transform:translateY(18px);transition:opacity .45s ${i*.09}s ease,transform .45s ${i*.09}s ease`;
-  observer.observe(s);
-});
-
+// Fuel Efficiency field logic
 function syncFuelEff() {
-  const vt = document.getElementById('vehicle_type').value;
-  const fd = document.getElementById('fuel_eff_div');
-  if (vt === 'none') { fd.style.display = 'none'; }
-  else { fd.style.display = 'block'; }
+    const vt_val = document.getElementById('vehicle_type').value;
+    const fd = document.getElementById('fuel_eff_div');
+    if (vt_val === 'none') { fd.style.display = 'none'; }
+    else { fd.style.display = 'block'; }
 }
-document.getElementById('vehicle_type').addEventListener('change', syncFuelEff);
-syncFuelEff();
+if(document.getElementById('vehicle_type')) {
+    document.getElementById('vehicle_type').addEventListener('change', syncFuelEff);
+    syncFuelEff();
+}
 
+// Form Submission Loader & Validation
+document.getElementById('calcForm').addEventListener('submit', function(e) {
+    const el = document.getElementById('electricity_kwh');
+    if (!el.value || parseFloat(el.value) < 0) { 
+        e.preventDefault(); 
+        alert('Enter a valid electricity figure.'); 
+        return; 
+    }
+    const btn = document.getElementById('submitBtn');
+    btn.classList.add('opacity-70', 'pointer-events-none');
+    btn.innerHTML = '<i class="ph-bold ph-spinner-gap spinner text-lg"></i> Calculating…';
+});
+
+// Animate form sections on scroll
+const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) { 
+            entry.target.classList.remove('opacity-0', 'translate-y-4');
+        }
+    });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.form-section').forEach(s => {
+    observer.observe(s);
+});
 </script>
 {% endblock %}

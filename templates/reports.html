@@ -1,388 +1,192 @@
 {% extends "base.html" %}
 {% block title %}My Reports{% endblock %}
 
-{% block extra_css %}
-<style>
-/* ── Reports Hero ── */
-.reports-hero {
-  background: linear-gradient(135deg, #0a1f0d, #155724 60%, #1a6b35);
-  border-radius: 24px; padding: 40px 44px; margin-bottom: 28px;
-  position: relative; overflow: hidden;
-  box-shadow: 0 16px 60px rgba(0,0,0,.18);
-}
-.reports-hero::before {
-  content: ''; position: absolute;
-  top: -80px; right: -80px; width: 320px; height: 320px; border-radius: 50%;
-  background: radial-gradient(circle, rgba(255,255,255,.05) 0%, transparent 70%);
-}
-.reports-hero::after {
-  content: ''; position: absolute;
-  bottom: -40px; left: -40px; width: 180px; height: 180px; border-radius: 50%;
-  background: rgba(46,204,113,.06);
-}
-.reports-hero h1 {
-  font-family: 'Playfair Display', serif;
-  font-size: 2rem; font-weight: 700; color: white;
-  margin-bottom: 8px; letter-spacing: -.02em;
-}
-.reports-hero p { font-size: .9rem; color: rgba(255,255,255,.5); margin: 0; max-width: 440px; }
-
-.hero-stats { display: flex; gap: 28px; margin-top: 24px; flex-wrap: wrap; }
-.hero-stat { text-align: left; }
-.hero-stat-val {
-  font-family: 'Playfair Display', serif;
-  font-size: 1.8rem; font-weight: 700; color: #2ecc71; line-height: 1;
-}
-.hero-stat-lbl { font-size: .72rem; font-weight: 700; color: rgba(255,255,255,.35); text-transform: uppercase; letter-spacing: .07em; margin-top: 4px; }
-
-/* ── Generate Cards ── */
-.generate-grid {
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
-  margin-bottom: 28px;
-}
-
-.gen-card {
-  background: white; border-radius: 20px;
-  border: 1px solid rgba(0,0,0,.06);
-  box-shadow: 0 4px 20px rgba(0,0,0,.05);
-  overflow: hidden; transition: all .3s;
-  display: flex; flex-direction: column;
-}
-.gen-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 16px 50px rgba(0,0,0,.1);
-}
-
-.gen-card-top {
-  padding: 28px 24px 22px; flex: 1;
-  position: relative;
-}
-.gen-card-top::before {
-  content: ''; position: absolute;
-  top: 0; left: 0; right: 0; height: 4px;
-}
-.gen-card.carbon .gen-card-top::before { background: linear-gradient(90deg, #1a6b35, #2ecc71); }
-.gen-card.esg .gen-card-top::before { background: linear-gradient(90deg, #0d47a1, #42a5f5); }
-.gen-card.cert .gen-card-top::before { background: linear-gradient(90deg, #b7791f, #f6d860); }
-
-.gen-icon {
-  width: 52px; height: 52px; border-radius: 16px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 1.3rem; margin-bottom: 16px;
-}
-.gen-card.carbon .gen-icon { background: rgba(21,87,36,.1); color: #155724; }
-.gen-card.esg .gen-icon { background: rgba(13,71,161,.08); color: #0d47a1; }
-.gen-card.cert .gen-icon { background: rgba(183,121,31,.1); color: #b7791f; }
-
-.gen-title {
-  font-family: 'Playfair Display', serif;
-  font-size: 1.05rem; font-weight: 700; color: #0d2818; margin-bottom: 8px;
-}
-.gen-desc { font-size: .8rem; color: #6c6c70; line-height: 1.6; margin: 0; }
-
-.gen-card-footer { padding: 16px 24px; border-top: 1px solid rgba(0,0,0,.06); background: #fafaf8; }
-
-.btn-generate {
-  width: 100%; padding: 11px 16px; border-radius: 11px;
-  font-size: .85rem; font-weight: 700; font-family: 'DM Sans', sans-serif;
-  cursor: pointer; border: none; transition: all .25s;
-  display: flex; align-items: center; justify-content: center; gap: 8px;
-}
-.btn-generate.carbon {
-  background: linear-gradient(135deg, #0d2818, #155724); color: white;
-  box-shadow: 0 4px 16px rgba(13,40,24,.25);
-}
-.btn-generate.carbon:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(13,40,24,.35); }
-.btn-generate.esg {
-  background: linear-gradient(135deg, #0a1428, #0d47a1); color: white;
-  box-shadow: 0 4px 16px rgba(13,71,161,.25);
-}
-.btn-generate.esg:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(13,71,161,.35); }
-.btn-generate.cert {
-  background: linear-gradient(135deg, #7d5a1e, #b7791f); color: white;
-  box-shadow: 0 4px 16px rgba(183,121,31,.25);
-}
-.btn-generate.cert:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(183,121,31,.35); }
-.btn-generate:disabled {
-  background: #f0f0f0; color: #aeaeb2; cursor: not-allowed;
-  box-shadow: none; transform: none;
-}
-.btn-generate:disabled:hover { transform: none; box-shadow: none; }
-
-/* ── Reports Table ── */
-.reports-table-card {
-  background: white; border-radius: 24px;
-  border: 1px solid rgba(0,0,0,.06);
-  box-shadow: 0 4px 24px rgba(0,0,0,.05);
-  overflow: hidden; margin-bottom: 20px;
-}
-
-.table-header {
-  padding: 24px 32px; border-bottom: 1px solid rgba(0,0,0,.06);
-  display: flex; align-items: center; justify-content: space-between;
-  background: white;
-}
-.table-header-title {
-  font-family: 'Playfair Display', serif;
-  font-size: 1.1rem; font-weight: 700; color: #0d2818;
-  display: flex; align-items: center; gap: 10px;
-}
-.reports-count {
-  background: rgba(21,87,36,.1); color: #155724;
-  border: 1px solid rgba(21,87,36,.15);
-  font-size: .7rem; font-weight: 700; padding: 3px 10px;
-  border-radius: 10px; text-transform: uppercase; letter-spacing: .06em;
-}
-
-.reports-table { width: 100%; border-collapse: collapse; }
-.reports-table thead tr {
-  background: #fafaf8; border-bottom: 1px solid rgba(0,0,0,.06);
-}
-.reports-table th {
-  padding: 12px 20px 12px 32px;
-  font-size: .68rem; font-weight: 700; color: #aeaeb2;
-  text-transform: uppercase; letter-spacing: .08em; text-align: left;
-}
-.reports-table td {
-  padding: 16px 20px 16px 32px;
-  border-bottom: 1px solid rgba(0,0,0,.04);
-  vertical-align: middle;
-}
-.reports-table tbody tr:hover { background: #fafaf8; }
-.reports-table tbody tr:last-child td { border-bottom: none; }
-
-.report-type-badge {
-  display: inline-flex; align-items: center; gap: 7px;
-  padding: 5px 12px; border-radius: 10px;
-  font-size: .73rem; font-weight: 700;
-}
-.type-carbon { background: rgba(21,87,36,.1); color: #155724; border: 1px solid rgba(21,87,36,.15); }
-.type-esg { background: rgba(13,71,161,.08); color: #0d47a1; border: 1px solid rgba(13,71,161,.15); }
-.type-cert { background: rgba(183,121,31,.1); color: #b7791f; border: 1px solid rgba(183,121,31,.15); }
-
-.report-date { font-size: .83rem; color: #6c6c70; font-family: 'DM Mono', monospace; }
-
-.report-filename {
-  font-size: .78rem; color: #aeaeb2; font-family: 'DM Mono', monospace;
-  background: #f4f4f4; border-radius: 6px; padding: 3px 8px;
-  display: inline-block; max-width: 200px;
-  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-}
-
-.btn-download {
-  display: inline-flex; align-items: center; gap: 7px;
-  padding: 8px 16px; border-radius: 10px;
-  background: white; border: 1.5px solid rgba(0,0,0,.1);
-  font-size: .8rem; font-weight: 700; color: #1c1c1e;
-  font-family: 'DM Sans', sans-serif; text-decoration: none;
-  transition: all .22s;
-}
-.btn-download:hover {
-  border-color: #155724; color: #155724;
-  background: rgba(21,87,36,.04);
-  transform: translateY(-1px);
-}
-
-/* ── Empty State ── */
-.empty-state {
-  padding: 70px 40px; text-align: center;
-}
-.empty-icon {
-  width: 80px; height: 80px; border-radius: 24px;
-  background: rgba(0,0,0,.04); border: 1px solid rgba(0,0,0,.07);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 1.8rem; color: #c5c5c5; margin: 0 auto 20px;
-}
-.empty-state h4 {
-  font-family: 'Playfair Display', serif;
-  font-size: 1.2rem; font-weight: 700; color: #1c1c1e; margin-bottom: 10px;
-}
-.empty-state p { font-size: .88rem; color: #aeaeb2; margin-bottom: 24px; }
-.btn-go-dash {
-  display: inline-flex; align-items: center; gap: 8px;
-  padding: 12px 24px; border-radius: 12px;
-  background: linear-gradient(135deg, #0d2818, #155724); color: white;
-  font-size: .9rem; font-weight: 700; font-family: 'DM Sans', sans-serif;
-  text-decoration: none; box-shadow: 0 6px 24px rgba(13,40,24,.3);
-  transition: all .3s;
-}
-.btn-go-dash:hover { transform: translateY(-2px); box-shadow: 0 12px 36px rgba(13,40,24,.4); color: white; }
-
-/* ── Disclaimer ── */
-.disclaimer-card {
-  background: #fffbf0; border: 1px solid rgba(255,152,0,.2);
-  border-radius: 16px; padding: 20px 24px;
-}
-.disclaimer-card h6 {
-  font-size: .82rem; font-weight: 700; color: #7d4a00; margin-bottom: 8px;
-  display: flex; align-items: center; gap: 8px;
-}
-.disclaimer-card p { font-size: .78rem; color: #8c6b2e; margin: 0; line-height: 1.7; }
-
-@media (max-width: 900px) {
-  .generate-grid { grid-template-columns: 1fr; }
-  .reports-hero { padding: 28px 24px; }
-  .reports-hero h1 { font-size: 1.5rem; }
-}
-@media (max-width: 640px) {
-  .reports-table th:nth-child(3), .reports-table td:nth-child(3) { display: none; }
-}
-</style>
-{% endblock %}
-
 {% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-2 pb-12 lg:pt-4 lg:pb-16 relative z-10 space-y-8">
 
-<!-- ─── Hero ─── -->
-<div class="reports-hero">
-  <h1>Reports &amp; Certificates</h1>
-  <p>All your generated assessments and documents, available to download at any time.</p>
-  <div class="hero-stats">
-    <div class="hero-stat">
-      <div class="hero-stat-val">{{ reports|length if reports else 0 }}</div>
-      <div class="hero-stat-lbl">Total Reports</div>
+    <div class="bg-gradient-to-br from-brand-950 via-brand-900 to-brand-800 rounded-[2rem] p-8 lg:p-12 relative overflow-hidden shadow-2xl border border-white/10">
+        <div class="absolute -top-32 -right-32 w-80 h-80 bg-white/5 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -bottom-20 -left-20 w-56 h-56 bg-brand-500/20 rounded-full blur-2xl pointer-events-none"></div>
+        
+        <div class="relative z-10">
+            <h1 class="text-3xl lg:text-4xl font-extrabold text-white mb-3 tracking-tight">Reports &amp; Certificates</h1>
+            <p class="text-brand-100/70 text-sm md:text-base max-w-lg mb-8">All your generated assessments and documents, available to download at any time.</p>
+            
+            <div class="flex flex-wrap gap-8 lg:gap-12 pt-6 border-t border-white/10">
+                <div>
+                    <div class="text-4xl font-extrabold text-brand-400 mb-1 leading-none">{{ reports|length if reports else 0 }}</div>
+                    <div class="text-xs font-bold text-white/50 uppercase tracking-widest">Total Reports</div>
+                </div>
+                <div class="w-px bg-white/10 hidden sm:block"></div>
+                <div>
+                    <div class="text-4xl font-extrabold text-brand-400 mb-1 leading-none">{{ reports|selectattr('report_type','equalto','individual')|list|length if reports else 0 }}</div>
+                    <div class="text-xs font-bold text-white/50 uppercase tracking-widest">Carbon Reports</div>
+                </div>
+                <div class="w-px bg-white/10 hidden sm:block"></div>
+                <div>
+                    <div class="text-4xl font-extrabold text-brand-400 mb-1 leading-none">{{ reports|selectattr('report_type','equalto','enterprise')|list|length if reports else 0 }}</div>
+                    <div class="text-xs font-bold text-white/50 uppercase tracking-widest">ESG Reports</div>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="hero-stat" style="border-left:1px solid rgba(255,255,255,.1);padding-left:28px;">
-      <div class="hero-stat-val">{{ reports|selectattr('report_type','equalto','individual')|list|length if reports else 0 }}</div>
-      <div class="hero-stat-lbl">Carbon Reports</div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+        <div class="bg-white rounded-[2rem] border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col relative overflow-hidden group">
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-brand-600 to-brand-400"></div>
+            <div class="p-8 flex-1">
+                <div class="w-14 h-14 rounded-2xl bg-brand-50 text-brand-600 flex items-center justify-center text-3xl mb-6 group-hover:scale-110 group-hover:rotate-3 transition-transform">
+                    <i class="ph-fill ph-tree"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-3">Carbon Report</h3>
+                <p class="text-gray-500 text-sm leading-relaxed">Detailed analysis of your personal carbon footprint with category breakdown and personalised reduction recommendations.</p>
+            </div>
+            <div class="p-6 bg-gray-50 border-t border-gray-100">
+                {% if session.last_calculation %}
+                <a href="{{ url_for('generate_report', report_type='individual') }}" class="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-brand-800 to-brand-600 hover:from-brand-900 hover:to-brand-700 text-white py-3 rounded-xl font-bold text-sm shadow-md hover:shadow-glow transition-all hover:-translate-y-0.5">
+                    <i class="ph-fill ph-file-pdf text-lg"></i> Generate Report
+                </a>
+                {% else %}
+                <button disabled class="w-full flex items-center justify-center gap-2 bg-gray-200 text-gray-400 py-3 rounded-xl font-bold text-sm cursor-not-allowed">
+                    <i class="ph-fill ph-lock-key text-lg"></i> Complete assessment first
+                </button>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="bg-white rounded-[2rem] border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col relative overflow-hidden group">
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-700 to-blue-400"></div>
+            <div class="p-8 flex-1">
+                <div class="w-14 h-14 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-3xl mb-6 group-hover:scale-110 group-hover:rotate-3 transition-transform">
+                    <i class="ph-fill ph-buildings"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-3">ESG Report</h3>
+                <p class="text-gray-500 text-sm leading-relaxed">Comprehensive ESG readiness assessment for your organisation including risk analysis and actionable improvement roadmap.</p>
+            </div>
+            <div class="p-6 bg-gray-50 border-t border-gray-100">
+                {% if session.last_esg_calculation %}
+                <a href="{{ url_for('generate_report', report_type='enterprise') }}" class="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-blue-900 to-blue-700 hover:from-blue-950 hover:to-blue-800 text-white py-3 rounded-xl font-bold text-sm shadow-md shadow-blue-900/20 transition-all hover:-translate-y-0.5">
+                    <i class="ph-fill ph-file-pdf text-lg"></i> Generate Report
+                </a>
+                {% else %}
+                <button disabled class="w-full flex items-center justify-center gap-2 bg-gray-200 text-gray-400 py-3 rounded-xl font-bold text-sm cursor-not-allowed">
+                    <i class="ph-fill ph-lock-key text-lg"></i> Complete assessment first
+                </button>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="bg-white rounded-[2rem] border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col relative overflow-hidden group">
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-yellow-600 to-yellow-400"></div>
+            <div class="p-8 flex-1">
+                <div class="w-14 h-14 rounded-2xl bg-yellow-50 text-yellow-600 flex items-center justify-center text-3xl mb-6 group-hover:scale-110 group-hover:-rotate-3 transition-transform">
+                    <i class="ph-fill ph-medal"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-3">Certificate</h3>
+                <p class="text-gray-500 text-sm leading-relaxed">Professional participation certificate acknowledging your sustainability assessment — suitable for portfolios.</p>
+            </div>
+            <div class="p-6 bg-gray-50 border-t border-gray-100">
+                {% if session.last_calculation or session.last_esg_calculation %}
+                <a href="{{ url_for('generate_report', report_type='certificate') }}" class="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-yellow-700 to-yellow-500 hover:from-yellow-800 hover:to-yellow-600 text-white py-3 rounded-xl font-bold text-sm shadow-md shadow-yellow-700/20 transition-all hover:-translate-y-0.5">
+                    <i class="ph-bold ph-medal text-lg"></i> Get Certificate
+                </a>
+                {% else %}
+                <button disabled class="w-full flex items-center justify-center gap-2 bg-gray-200 text-gray-400 py-3 rounded-xl font-bold text-sm cursor-not-allowed">
+                    <i class="ph-fill ph-lock-key text-lg"></i> Complete an assessment first
+                </button>
+                {% endif %}
+            </div>
+        </div>
+
     </div>
-    <div class="hero-stat" style="border-left:1px solid rgba(255,255,255,.1);padding-left:28px;">
-      <div class="hero-stat-val">{{ reports|selectattr('report_type','equalto','enterprise')|list|length if reports else 0 }}</div>
-      <div class="hero-stat-lbl">ESG Reports</div>
+
+    <div class="bg-white rounded-[2rem] border border-gray-100 shadow-sm overflow-hidden">
+        <div class="px-8 py-6 border-b border-gray-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center text-xl">
+                    <i class="ph-fill ph-files"></i>
+                </div>
+                <h2 class="text-xl font-bold text-gray-900">Generated Reports</h2>
+            </div>
+            {% if reports %}
+            <span class="bg-brand-50 text-brand-700 border border-brand-200/60 text-xs font-bold px-3 py-1.5 rounded-full uppercase tracking-wider">
+                {{ reports|length }} Total
+            </span>
+            {% endif %}
+        </div>
+
+        {% if reports %}
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-gray-50/50 border-b border-gray-100">
+                        <th class="px-8 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider">Report Type</th>
+                        <th class="px-8 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider">Generated</th>
+                        <th class="px-8 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider hidden sm:table-cell">Filename</th>
+                        <th class="px-8 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider text-right">Action</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-50">
+                    {% for report in reports %}
+                    <tr class="hover:bg-gray-50/50 transition-colors group">
+                        <td class="px-8 py-5">
+                            {% if report.report_type == 'individual' %}
+                            <span class="inline-flex items-center gap-1.5 bg-brand-50 border border-brand-200/60 text-brand-700 text-xs font-bold px-3 py-1.5 rounded-lg">
+                                <i class="ph-fill ph-tree"></i> Carbon Report
+                            </span>
+                            {% elif report.report_type == 'enterprise' %}
+                            <span class="inline-flex items-center gap-1.5 bg-blue-50 border border-blue-200/60 text-blue-700 text-xs font-bold px-3 py-1.5 rounded-lg">
+                                <i class="ph-fill ph-buildings"></i> ESG Report
+                            </span>
+                            {% else %}
+                            <span class="inline-flex items-center gap-1.5 bg-yellow-50 border border-yellow-200/60 text-yellow-700 text-xs font-bold px-3 py-1.5 rounded-lg">
+                                <i class="ph-fill ph-medal"></i> Certificate
+                            </span>
+                            {% endif %}
+                        </td>
+                        <td class="px-8 py-5 text-sm text-gray-500 font-medium font-mono">{{ report.generated_at }}</td>
+                        <td class="px-8 py-5 hidden sm:table-cell">
+                            <span class="bg-gray-100 text-gray-500 text-xs font-mono px-2 py-1 rounded truncate max-w-[200px] inline-block" title="{{ report.file_path.split('/')[-1] }}">
+                                {{ report.file_path.split('/')[-1] }}
+                            </span>
+                        </td>
+                        <td class="px-8 py-5 text-right">
+                            <a href="{{ url_for('static', filename='reports/' + report.file_path.split('/')[-1]) }}" 
+                               class="inline-flex items-center gap-2 bg-white hover:bg-brand-50 border border-gray-200 hover:border-brand-300 text-gray-700 hover:text-brand-700 text-sm font-bold py-2 px-4 rounded-xl transition-all hover:-translate-y-0.5" download>
+                                <i class="ph-bold ph-download-simple text-lg"></i> <span class="hidden md:inline">Download</span>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="px-8 py-20 text-center">
+            <div class="w-20 h-20 mx-auto bg-gray-50 rounded-[1.5rem] flex items-center justify-center text-4xl text-gray-300 mb-4 border border-gray-100">
+                <i class="ph-fill ph-file-x"></i>
+            </div>
+            <h4 class="text-xl font-bold text-gray-900 mb-2">No Reports Generated Yet</h4>
+            <p class="text-gray-500 text-sm max-w-md mx-auto mb-8">Complete an assessment from your dashboard to generate your first detailed report or certificate.</p>
+            <a href="{{ url_for('dashboard') }}" class="inline-flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white font-bold py-3 px-6 rounded-xl shadow-md hover:-translate-y-0.5 transition-all">
+                <i class="ph-bold ph-gauge text-lg"></i> Go to Dashboard
+            </a>
+        </div>
+        {% endif %}
     </div>
-  </div>
+
+    <div class="bg-yellow-50 border border-yellow-200/60 rounded-2xl p-6 flex flex-col md:flex-row gap-4 items-start">
+        <div class="w-10 h-10 rounded-xl bg-yellow-100 text-yellow-600 flex items-center justify-center text-xl flex-shrink-0">
+            <i class="ph-fill ph-warning-circle"></i>
+        </div>
+        <div>
+            <h6 class="text-yellow-800 font-bold text-sm mb-1">Important Disclaimer</h6>
+            <p class="text-yellow-700/80 text-xs leading-relaxed max-w-5xl">
+                All reports generated by this platform are for educational and awareness purposes only. They do not constitute formal certification, regulatory compliance documentation, or investment advice. The calculations are estimates based on AI models and provided inputs. For formal environmental assessments or ESG certification, please consult with qualified professionals.
+            </p>
+        </div>
+    </div>
+
 </div>
-
-<!-- ─── Generate Section ─── -->
-<div class="generate-grid">
-
-  <!-- Carbon Report -->
-  <div class="gen-card carbon">
-    <div class="gen-card-top">
-      <div class="gen-icon"><i class="bi bi-tree-fill"></i></div>
-      <div class="gen-title">Carbon Report</div>
-      <p class="gen-desc">Detailed analysis of your personal carbon footprint with category breakdown and personalised reduction recommendations.</p>
-    </div>
-    <div class="gen-card-footer">
-      {% if session.last_calculation %}
-      <a href="{{ url_for('generate_report', report_type='individual') }}" class="btn-generate carbon">
-        <i class="bi bi-file-earmark-pdf-fill"></i> Generate Report
-      </a>
-      {% else %}
-      <button class="btn-generate" disabled>
-        <i class="bi bi-lock-fill"></i> Complete assessment first
-      </button>
-      {% endif %}
-    </div>
-  </div>
-
-  <!-- ESG Report -->
-  <div class="gen-card esg">
-    <div class="gen-card-top">
-      <div class="gen-icon"><i class="bi bi-building-fill"></i></div>
-      <div class="gen-title">ESG Report</div>
-      <p class="gen-desc">Comprehensive ESG readiness assessment for your organisation including risk analysis and actionable improvement roadmap.</p>
-    </div>
-    <div class="gen-card-footer">
-      {% if session.last_esg_calculation %}
-      <a href="{{ url_for('generate_report', report_type='enterprise') }}" class="btn-generate esg">
-        <i class="bi bi-file-earmark-pdf-fill"></i> Generate Report
-      </a>
-      {% else %}
-      <button class="btn-generate" disabled>
-        <i class="bi bi-lock-fill"></i> Complete ESG assessment first
-      </button>
-      {% endif %}
-    </div>
-  </div>
-
-  <!-- Certificate -->
-  <div class="gen-card cert">
-    <div class="gen-card-top">
-      <div class="gen-icon"><i class="bi bi-award-fill"></i></div>
-      <div class="gen-title">Certificate</div>
-      <p class="gen-desc">Professional participation certificate acknowledging your sustainability assessment — suitable for professional portfolios.</p>
-    </div>
-    <div class="gen-card-footer">
-      {% if session.last_calculation or session.last_esg_calculation %}
-      <a href="{{ url_for('generate_report', report_type='certificate') }}" class="btn-generate cert">
-        <i class="bi bi-award-fill"></i> Get Certificate
-      </a>
-      {% else %}
-      <button class="btn-generate" disabled>
-        <i class="bi bi-lock-fill"></i> Complete an assessment first
-      </button>
-      {% endif %}
-    </div>
-  </div>
-
-</div>
-
-<!-- ─── Reports Table ─── -->
-<div class="reports-table-card">
-  <div class="table-header">
-    <div class="table-header-title">
-      <i class="bi bi-file-earmark-text" style="color:#155724;"></i>
-      Generated Reports
-      {% if reports %}<span class="reports-count">{{ reports|length }} total</span>{% endif %}
-    </div>
-  </div>
-
-  {% if reports %}
-  <table class="reports-table">
-    <thead>
-      <tr>
-        <th>Report Type</th>
-        <th>Generated</th>
-        <th>Filename</th>
-        <th>Action</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for report in reports %}
-      <tr>
-        <td>
-          {% if report.report_type == 'individual' %}
-          <span class="report-type-badge type-carbon">
-            <i class="bi bi-tree-fill"></i> Carbon Report
-          </span>
-          {% elif report.report_type == 'enterprise' %}
-          <span class="report-type-badge type-esg">
-            <i class="bi bi-building-fill"></i> ESG Report
-          </span>
-          {% else %}
-          <span class="report-type-badge type-cert">
-            <i class="bi bi-award-fill"></i> Certificate
-          </span>
-          {% endif %}
-        </td>
-        <td class="report-date">{{ report.generated_at }}</td>
-        <td><span class="report-filename">{{ report.file_path.split('/')[-1] }}</span></td>
-        <td>
-          <a href="{{ url_for('static', filename='reports/' + report.file_path.split('/')[-1]) }}"
-             class="btn-download" download>
-            <i class="bi bi-download"></i> Download
-          </a>
-        </td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-  {% else %}
-  <div class="empty-state">
-    <div class="empty-icon"><i class="bi bi-file-earmark-x"></i></div>
-    <h4>No Reports Generated Yet</h4>
-    <p>Complete an assessment above to generate your first report or certificate.</p>
-    <a href="{{ url_for('dashboard') }}" class="btn-go-dash">
-      <i class="bi bi-speedometer2"></i> Go to Dashboard
-    </a>
-  </div>
-  {% endif %}
-</div>
-
-<!-- ─── Disclaimer ─── -->
-<div class="disclaimer-card">
-  <h6><i class="bi bi-exclamation-triangle-fill"></i> Important Disclaimer</h6>
-  <p>All reports generated by this platform are for educational and awareness purposes only. They do not constitute formal certification, regulatory compliance documentation, or investment advice. The calculations are estimates based on AI models and provided inputs. For formal environmental assessments or ESG certification, please consult with qualified professionals.</p>
-</div>
-
 {% endblock %}

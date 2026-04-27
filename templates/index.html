@@ -1,909 +1,473 @@
 {% extends "base.html" %}
 
-{% block title %}Carbon ESG Platform{% endblock %}
+{% block title %}Home{% endblock %}
 
 {% block extra_css %}
 <style>
-.hero-wrap {
-  background: linear-gradient(150deg, #0D2818 0%, #155724 50%, #1a6b35 100%);
-  padding: 90px 0 80px;
-  min-height: 90vh;
-  display: flex;
-  align-items: center;
-  position: relative;
-  overflow: hidden;
+/* Abstract Background Blobs for Hero */
+.blob {
+    position: absolute;
+    filter: blur(80px);
+    z-index: -1;
+    opacity: 0.4;
+    animation: float 10s infinite ease-in-out alternate;
+}
+@keyframes float {
+    0% { transform: translate(0px, 0px) scale(1); }
+    50% { transform: translate(30px, -50px) scale(1.1); }
+    100% { transform: translate(-20px, 20px) scale(0.9); }
 }
 
-.hero-wrap::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(ellipse 70% 50% at 10% 90%, rgba(46,204,113,.12) 0%, transparent 60%),
-    radial-gradient(ellipse 50% 70% at 90% 10%, rgba(168,230,195,.06) 0%, transparent 60%);
-}
-
-/* Animated grid lines */
-.hero-grid {
-  position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(rgba(46,204,113,.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(46,204,113,.05) 1px, transparent 1px);
-  background-size: 60px 60px;
-  mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
-  -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
-}
-
-.hero-content-wrap {
-  position: relative;
-  z-index: 2;
-}
-
-/* Floating orb */
+/* Floating Orb Animation Adapted for Light Theme */
 .orb-container {
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 420px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 420px;
 }
 
 .orb-main {
-  width: 320px;
-  height: 320px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 35% 35%,
-    rgba(46,204,113,.35) 0%,
-    rgba(21,87,36,.55) 40%,
-    rgba(13,40,24,.95) 100%
-  );
-  box-shadow:
-    0 0 0 1px rgba(46,204,113,.25),
-    0 0 60px rgba(46,204,113,.12),
-    0 40px 80px rgba(0,0,0,.4);
-  position: relative;
-  animation: orb-breathe 6s ease-in-out infinite;
+    width: 280px;
+    height: 280px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%,
+        #4ade80 0%,
+        #22c55e 40%,
+        #15803d 100%
+    );
+    box-shadow:
+        0 0 0 1px rgba(34,197,94,.25),
+        0 0 60px rgba(34,197,94,.3),
+        0 40px 80px rgba(0,0,0,.15);
+    position: relative;
+    animation: orb-breathe 6s ease-in-out infinite;
 }
 
 @keyframes orb-breathe {
-  0%, 100% { transform: scale(1) translateY(0); box-shadow: 0 0 0 1px rgba(46,204,113,.25), 0 0 60px rgba(46,204,113,.12), 0 40px 80px rgba(0,0,0,.4); }
-  50% { transform: scale(1.03) translateY(-8px); box-shadow: 0 0 0 1px rgba(46,204,113,.4), 0 0 80px rgba(46,204,113,.2), 0 60px 100px rgba(0,0,0,.5); }
+    0%, 100% { transform: scale(1) translateY(0); box-shadow: 0 0 0 1px rgba(34,197,94,.25), 0 0 60px rgba(34,197,94,.3), 0 40px 80px rgba(0,0,0,.15); }
+    50% { transform: scale(1.03) translateY(-8px); box-shadow: 0 0 0 1px rgba(34,197,94,.4), 0 0 80px rgba(34,197,94,.4), 0 60px 100px rgba(0,0,0,.2); }
 }
 
 .orb-ring-1 {
-  position: absolute;
-  width: 380px;
-  height: 380px;
-  border-radius: 50%;
-  border: 1px solid rgba(46,204,113,.15);
-  animation: ring-spin-1 30s linear infinite;
+    position: absolute;
+    width: 340px;
+    height: 340px;
+    border-radius: 50%;
+    border: 1px solid rgba(34,197,94,.2);
+    animation: ring-spin-1 30s linear infinite;
 }
 
 .orb-ring-2 {
-  position: absolute;
-  width: 440px;
-  height: 440px;
-  border-radius: 50%;
-  border: 1px solid rgba(46,204,113,.08);
-  animation: ring-spin-2 45s linear infinite reverse;
+    position: absolute;
+    width: 400px;
+    height: 400px;
+    border-radius: 50%;
+    border: 1px solid rgba(34,197,94,.1);
+    animation: ring-spin-2 45s linear infinite reverse;
 }
 
-.orb-ring-3 {
-  position: absolute;
-  width: 500px;
-  height: 500px;
-  border-radius: 50%;
-  border: 1px dashed rgba(46,204,113,.05);
-  animation: ring-spin-1 60s linear infinite;
-}
+@keyframes ring-spin-1 { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+@keyframes ring-spin-2 { from { transform: rotate(0deg) scaleX(1.1); } to { transform: rotate(-360deg) scaleX(1.1); } }
 
-@keyframes ring-spin-1 {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-@keyframes ring-spin-2 {
-  from { transform: rotate(0deg) scaleX(1.2); }
-  to { transform: rotate(-360deg) scaleX(1.2); }
-}
-
-.orb-icon {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 5rem;
-  color: rgba(168,230,195,.85);
-}
-
-/* Floating chips */
+/* Floating Chips */
 .chip {
-  position: absolute;
-  background: rgba(255,255,255,.94);
-  backdrop-filter: blur(16px);
-  border-radius: 100px;
-  padding: 9px 18px;
-  font-size: .78rem;
-  font-weight: 700;
-  color: #1c1c1e;
-  box-shadow: 0 8px 30px rgba(0,0,0,.15);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  white-space: nowrap;
-  animation: chip-float 5s ease-in-out infinite;
-}
-
-.chip .chip-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  flex-shrink: 0;
+    position: absolute;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(12px);
+    border-radius: 100px;
+    padding: 8px 16px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #1f2937;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+    animation: chip-float 5s ease-in-out infinite;
+    border: 1px solid rgba(220, 252, 231, 0.8);
 }
 
 @keyframes chip-float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
 }
 
-.chip-1 { top: 30px; left: -20px; animation-delay: 0s; }
-.chip-2 { top: 120px; right: -10px; animation-delay: 1.2s; }
-.chip-3 { bottom: 80px; left: -30px; animation-delay: 2.4s; }
-.chip-4 { bottom: 30px; right: 20px; animation-delay: 0.8s; }
+.chip-1 { top: 40px; left: -40px; animation-delay: 0s; }
+.chip-2 { top: 100px; right: -30px; animation-delay: 1.2s; }
+.chip-3 { bottom: 60px; left: -20px; animation-delay: 2.4s; }
 
-/* Stats row in hero */
-.hero-stats {
-  display: flex;
-  gap: 32px;
-  padding-top: 40px;
-  margin-top: 40px;
-  border-top: 1px solid rgba(255,255,255,.1);
+/* Scroll Reveal classes */
+.reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.8s ease-out;
 }
-
-.hero-stat {
-  display: flex;
-  flex-direction: column;
-}
-
-.hero-stat-num {
-  font-family: 'Playfair Display', serif;
-  font-size: 1.8rem;
-  font-weight: 700;
-  color: white;
-  letter-spacing: -.03em;
-  line-height: 1;
-}
-
-.hero-stat-label {
-  font-size: .75rem;
-  color: rgba(255,255,255,.45);
-  font-weight: 500;
-  margin-top: 4px;
-  text-transform: uppercase;
-  letter-spacing: .06em;
-}
-
-/* Feature section */
-.features-bg {
-  background: #f0ede8;
-  padding: 100px 0;
-}
-
-.fcard {
-  background: white;
-  border-radius: 24px;
-  padding: 36px 32px;
-  border: 1px solid rgba(0,0,0,.06);
-  box-shadow: 0 4px 16px rgba(0,0,0,.06);
-  height: 100%;
-  transition: all .35s cubic-bezier(.4,0,.2,1);
-  position: relative;
-  overflow: hidden;
-}
-
-.fcard::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, #155724, #2ecc71);
-  transform: scaleX(0);
-  transform-origin: center;
-  transition: transform .35s cubic-bezier(.4,0,.2,1);
-}
-
-.fcard:hover {
-  box-shadow: 0 20px 60px rgba(0,0,0,.12);
-  transform: translateY(-8px);
-  border-color: rgba(21,87,36,.15);
-}
-
-.fcard:hover::after { transform: scaleX(1); }
-
-.fcard-icon {
-  width: 68px;
-  height: 68px;
-  border-radius: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.7rem;
-  margin-bottom: 24px;
-  transition: all .35s;
-}
-
-.fcard:hover .fcard-icon {
-  transform: scale(1.08) rotate(5deg);
-}
-
-.fcard-icon-green {
-  background: linear-gradient(135deg, rgba(21,87,36,.08), rgba(46,204,113,.15));
-  color: #155724;
-}
-
-.fcard-icon-teal {
-  background: linear-gradient(135deg, rgba(0,110,110,.08), rgba(0,188,188,.15));
-  color: #006666;
-}
-
-.fcard-icon-gold {
-  background: linear-gradient(135deg, rgba(120,80,0,.08), rgba(201,168,76,.2));
-  color: #7a5000;
-}
-
-.fcard h4 {
-  font-family: 'Playfair Display', serif;
-  font-size: 1.2rem;
-  font-weight: 700;
-  color: #0D2818;
-  margin-bottom: 12px;
-}
-
-.fcard p {
-  color: #6c6c70;
-  font-size: .9rem;
-  line-height: 1.7;
-  margin-bottom: 20px;
-}
-
-.fcard-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.fcard-list li {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 7px 0;
-  font-size: .86rem;
-  color: #2c2c2e;
-  border-bottom: 1px solid rgba(0,0,0,.04);
-}
-
-.fcard-list li:last-child { border: none; }
-
-.li-check {
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #155724, #2ecc71);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-size: .5rem;
-  flex-shrink: 0;
-}
-
-/* How it works */
-.steps-bg {
-  background: white;
-  padding: 100px 0;
-}
-
-.step-row {
-  display: flex;
-  gap: 24px;
-  align-items: flex-start;
-  padding: 28px;
-  border-radius: 20px;
-  background: #f8f5f0;
-  border: 1px solid rgba(0,0,0,.05);
-  margin-bottom: 20px;
-  transition: all .3s cubic-bezier(.4,0,.2,1);
-}
-
-.step-row:hover {
-  background: white;
-  box-shadow: 0 12px 40px rgba(0,0,0,.1);
-  transform: translateX(8px);
-  border-color: rgba(46,204,113,.2);
-}
-
-.step-num {
-  width: 54px;
-  height: 54px;
-  border-radius: 16px;
-  background: linear-gradient(135deg, #0D2818, #155724);
-  color: white;
-  font-family: 'Playfair Display', serif;
-  font-size: 1.4rem;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  box-shadow: 0 6px 20px rgba(13,40,24,.3);
-}
-
-.step-text h4 {
-  font-family: 'Playfair Display', serif;
-  font-size: 1.1rem;
-  color: #0D2818;
-  margin-bottom: 6px;
-  font-weight: 700;
-}
-
-.step-text p {
-  color: #6c6c70;
-  font-size: .9rem;
-  margin: 0;
-  line-height: 1.6;
-}
-
-/* ML Models section */
-.models-bg {
-  background: #0D2818;
-  padding: 100px 0;
-  position: relative;
-  overflow: hidden;
-}
-
-.models-bg::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(rgba(46,204,113,.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(46,204,113,.04) 1px, transparent 1px);
-  background-size: 50px 50px;
-}
-
-.model-glass-card {
-  background: rgba(255,255,255,.04);
-  border: 1px solid rgba(255,255,255,.08);
-  border-radius: 24px;
-  padding: 36px;
-  backdrop-filter: blur(10px);
-  transition: all .35s;
-  height: 100%;
-}
-
-.model-glass-card:hover {
-  background: rgba(255,255,255,.07);
-  border-color: rgba(46,204,113,.25);
-  transform: translateY(-5px);
-}
-
-.model-accuracy-badge {
-  display: inline-flex;
-  align-items: center;
-  background: rgba(46,204,113,.15);
-  border: 1px solid rgba(46,204,113,.3);
-  border-radius: 100px;
-  padding: 8px 20px;
-  gap: 10px;
-  margin-bottom: 20px;
-}
-
-.accuracy-num {
-  font-family: 'Playfair Display', serif;
-  font-size: 1.6rem;
-  font-weight: 700;
-  color: #2ecc71;
-  line-height: 1;
-}
-
-.accuracy-label {
-  font-size: .75rem;
-  color: rgba(168,230,195,.7);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: .06em;
-}
-
-.model-title {
-  font-family: 'Playfair Display', serif;
-  font-size: 1.3rem;
-  color: white;
-  font-weight: 700;
-  margin-bottom: 8px;
-}
-
-.model-subtitle {
-  font-size: .85rem;
-  color: rgba(255,255,255,.4);
-  margin-bottom: 24px;
-}
-
-.metric-pill {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 0;
-  border-bottom: 1px solid rgba(255,255,255,.05);
-}
-
-.metric-pill:last-child { border: none; }
-
-.metric-pill-label {
-  font-size: .82rem;
-  color: rgba(255,255,255,.5);
-}
-
-.metric-pill-value {
-  font-size: .88rem;
-  font-weight: 700;
-  color: #2ecc71;
-}
-
-/* CTA section */
-.cta-bg {
-  background: linear-gradient(135deg, #0D2818, #155724);
-  padding: 100px 0;
-  position: relative;
-  overflow: hidden;
-}
-
-.cta-bg::before {
-  content: '';
-  position: absolute;
-  top: -100px;
-  right: -100px;
-  width: 500px;
-  height: 500px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(46,204,113,.08) 0%, transparent 70%);
-}
-
-/* Section labels */
-.section-kicker {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-size: .72rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: .12em;
-  color: #1a6b35;
-  margin-bottom: 12px;
-}
-
-.section-kicker::before, .section-kicker::after {
-  content: '';
-  width: 24px;
-  height: 1px;
-  background: currentColor;
-}
-
-.section-title-xl {
-  font-family: 'Playfair Display', serif;
-  font-size: clamp(2rem, 4vw, 3rem);
-  font-weight: 700;
-  color: #0D2818;
-  letter-spacing: -.03em;
-  margin-bottom: 16px;
-}
-
-.section-title-xl-light {
-  color: white;
-}
-
-.section-desc {
-  color: #6c6c70;
-  font-size: 1rem;
-  line-height: 1.75;
-  max-width: 520px;
-}
+.reveal.active { opacity: 1; transform: translateY(0); }
+.delay-100 { transition-delay: 100ms; }
+.delay-200 { transition-delay: 200ms; }
+.delay-300 { transition-delay: 300ms; }
 </style>
 {% endblock %}
 
 {% block content %}
 
-<!-- ── HERO ── -->
-<div class="hero-wrap" style="margin:-1.5rem -12px 0; padding-left:12px; padding-right:12px; width:calc(100% + 24px);">
-  <div class="hero-grid"></div>
-  <div class="container hero-content-wrap">
-    <div class="row align-items-center g-5">
-      <!-- Left -->
-      <div class="col-lg-6">
-        <div class="hero-eyebrow animate-fade-up" style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);padding:6px 16px;border-radius:100px;font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#a8e6c3;margin-bottom:28px;">
-          <span style="width:6px;height:6px;background:#2ecc71;border-radius:50%;animation:pulse-dot 2s ease-in-out infinite;"></span>
-          AI-Powered Sustainability Platform
+<section class="relative pt-2 pb-20 lg:pt-6 lg:pb-32 overflow-hidden w-full">
+    <div class="blob bg-brand-200 w-96 h-96 rounded-full top-[-5%] left-[-10%]"></div>
+    <div class="blob bg-brand-100 w-[30rem] h-[30rem] rounded-full bottom-[-10%] right-[-5%]" style="animation-delay: -2s;"></div>
+    
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-8 items-center">
+            
+            <div class="max-w-2xl reveal active">
+                <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-100 text-brand-700 font-semibold text-sm mb-6 border border-brand-200 shadow-sm mt-4 lg:mt-0">
+                    <span class="relative flex h-2 w-2">
+                      <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-400 opacity-75"></span>
+                      <span class="relative inline-flex rounded-full h-2 w-2 bg-brand-500"></span>
+                    </span>
+                    AI-Powered Sustainability Platform
+                </div>
+
+                <h1 class="text-5xl lg:text-6xl font-extrabold text-gray-900 leading-[1.1] mb-6">
+                    Measure.<br>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-emerald-400">
+                        Understand.
+                    </span><br>
+                    Improve.
+                </h1>
+
+                <p class="text-lg text-gray-600 mb-8 leading-relaxed max-w-lg">
+                    Calculate your carbon footprint and assess ESG readiness with machine-learning precision. Trusted by individuals and enterprises.
+                </p>
+
+                <div class="flex flex-col sm:flex-row gap-4 mb-12">
+                    {% if not session.user_id %}
+                    <a href="{{ url_for('register') }}" class="bg-brand-600 hover:bg-brand-700 text-white px-8 py-3.5 rounded-full font-semibold text-lg transition-all shadow-glow hover:shadow-glow-lg hover:-translate-y-1 flex items-center justify-center gap-2">
+                        Start Free Assessment <i class="ph-bold ph-arrow-right"></i>
+                    </a>
+                    <a href="{{ url_for('login') }}" class="bg-white hover:bg-gray-50 text-gray-800 border border-gray-200 px-8 py-3.5 rounded-full font-semibold text-lg transition-all hover:border-brand-300 flex items-center justify-center gap-2">
+                        <i class="ph-bold ph-sign-in"></i> Sign In
+                    </a>
+                    {% else %}
+                    <a href="{{ url_for('dashboard') }}" class="bg-brand-600 hover:bg-brand-700 text-white px-8 py-3.5 rounded-full font-semibold text-lg transition-all shadow-glow hover:shadow-glow-lg hover:-translate-y-1 flex items-center justify-center gap-2">
+                        <i class="ph-bold ph-gauge"></i> Go to Dashboard
+                    </a>
+                    <a href="{{ url_for('view_reports') }}" class="bg-white hover:bg-gray-50 text-gray-800 border border-gray-200 px-8 py-3.5 rounded-full font-semibold text-lg transition-all hover:border-brand-300 flex items-center justify-center gap-2">
+                        <i class="ph-bold ph-chart-bar"></i> My Reports
+                    </a>
+                    {% endif %}
+                </div>
+
+                <div class="flex flex-wrap items-center gap-8 pt-6 border-t border-brand-200/60">
+                    <div>
+                        <p class="text-3xl font-extrabold text-brand-600">97.6%</p>
+                        <p class="text-xs font-bold text-gray-500 uppercase tracking-wider mt-1">Model Accuracy</p>
+                    </div>
+                    <div class="w-px h-10 bg-brand-200"></div>
+                    <div>
+                        <p class="text-3xl font-extrabold text-brand-600">10K+</p>
+                        <p class="text-xs font-bold text-gray-500 uppercase tracking-wider mt-1">Training Samples</p>
+                    </div>
+                    <div class="w-px h-10 bg-brand-200"></div>
+                    <div>
+                        <p class="text-3xl font-extrabold text-brand-600">3</p>
+                        <p class="text-xs font-bold text-gray-500 uppercase tracking-wider mt-1">Report Types</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="hidden lg:flex justify-center relative reveal delay-200 active">
+                <div class="orb-container">
+                    <div class="orb-ring-2"></div>
+                    <div class="orb-ring-1"></div>
+                    <div class="orb-main flex items-center justify-center">
+                        <i class="ph-fill ph-tree text-white text-7xl opacity-90 drop-shadow-lg"></i>
+                    </div>
+
+                    <div class="chip chip-1">
+                        <span class="w-2 h-2 rounded-full bg-brand-500"></span>
+                        <i class="ph-fill ph-lightning text-brand-500"></i> Live AI Scoring
+                    </div>
+                    <div class="chip chip-2">
+                        <span class="w-2 h-2 rounded-full bg-yellow-500"></span>
+                        <i class="ph-fill ph-medal text-yellow-500"></i> ESG Certified
+                    </div>
+                    <div class="chip chip-3">
+                        <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+                        <i class="ph-fill ph-file-pdf text-blue-500"></i> PDF Reports
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</section>
+
+<section class="py-24 bg-white relative border-y border-brand-100">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center max-w-3xl mx-auto mb-16 reveal active">
+            <h2 class="text-brand-600 font-bold tracking-wide uppercase text-sm mb-2">Core Capabilities</h2>
+            <h3 class="text-3xl md:text-4xl font-extrabold text-gray-900 mb-4">Everything you need to lead on sustainability</h3>
+            <p class="text-gray-600 text-lg">From individual carbon tracking to enterprise ESG assessments — comprehensive tools powered by advanced machine learning.</p>
         </div>
 
-        <h1 class="animate-fade-up-delay-1" style="font-family:'Playfair Display',serif;font-size:clamp(2.8rem,5vw,4.8rem);font-weight:900;color:white;letter-spacing:-.04em;line-height:1.0;margin-bottom:24px;">
-          Measure.<br>
-          <span style="background:linear-gradient(90deg,#a8e6c3,#2ecc71);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Understand.</span><br>
-          Improve.
-        </h1>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300 reveal delay-100 group relative overflow-hidden">
+                <div class="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-brand-400 to-brand-600 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300"></div>
+                <div class="w-14 h-14 bg-brand-50 text-brand-600 rounded-2xl flex items-center justify-center text-3xl mb-6 group-hover:scale-110 group-hover:rotate-3 transition-all">
+                    <i class="ph-fill ph-user-circle"></i>
+                </div>
+                <h4 class="text-xl font-bold text-gray-900 mb-3">Individual Tracker</h4>
+                <p class="text-gray-600 leading-relaxed mb-6 text-sm">Calculate your personal carbon footprint with precision using lifestyle data and ML-powered analysis.</p>
+                <ul class="space-y-3">
+                    <li class="flex items-center gap-3 text-sm text-gray-700"><i class="ph-fill ph-check-circle text-brand-500"></i> Monthly electricity usage</li>
+                    <li class="flex items-center gap-3 text-sm text-gray-700"><i class="ph-fill ph-check-circle text-brand-500"></i> Vehicle & transport analysis</li>
+                    <li class="flex items-center gap-3 text-sm text-gray-700"><i class="ph-fill ph-check-circle text-brand-500"></i> Diet & consumption patterns</li>
+                </ul>
+            </div>
 
-        <p class="animate-fade-up-delay-2" style="font-size:1.05rem;color:rgba(255,255,255,.65);line-height:1.75;max-width:460px;margin-bottom:36px;">
-          Calculate your carbon footprint and assess ESG readiness with machine-learning precision. Trusted by individuals and enterprises.
+            <div class="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300 reveal delay-200 group relative overflow-hidden">
+                <div class="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-teal-400 to-teal-600 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300"></div>
+                <div class="w-14 h-14 bg-teal-50 text-teal-600 rounded-2xl flex items-center justify-center text-3xl mb-6 group-hover:scale-110 group-hover:rotate-3 transition-all">
+                    <i class="ph-fill ph-buildings"></i>
+                </div>
+                <h4 class="text-xl font-bold text-gray-900 mb-3">Enterprise ESG</h4>
+                <p class="text-gray-600 leading-relaxed mb-6 text-sm">Evaluate organisational ESG readiness across environmental, social, and governance dimensions.</p>
+                <ul class="space-y-3">
+                    <li class="flex items-center gap-3 text-sm text-gray-700"><i class="ph-fill ph-check-circle text-teal-500"></i> Multi-pillar risk scoring</li>
+                    <li class="flex items-center gap-3 text-sm text-gray-700"><i class="ph-fill ph-check-circle text-teal-500"></i> Industry benchmarking</li>
+                    <li class="flex items-center gap-3 text-sm text-gray-700"><i class="ph-fill ph-check-circle text-teal-500"></i> Governance metrics</li>
+                </ul>
+            </div>
+
+            <div class="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300 reveal delay-300 group relative overflow-hidden">
+                <div class="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-yellow-400 to-yellow-600 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300"></div>
+                <div class="w-14 h-14 bg-yellow-50 text-yellow-600 rounded-2xl flex items-center justify-center text-3xl mb-6 group-hover:scale-110 group-hover:rotate-3 transition-all">
+                    <i class="ph-fill ph-file-text"></i>
+                </div>
+                <h4 class="text-xl font-bold text-gray-900 mb-3">Professional Reports</h4>
+                <p class="text-gray-600 leading-relaxed mb-6 text-sm">Generate beautiful, comprehensive reports with insights, charts, and actionable recommendations.</p>
+                <ul class="space-y-3">
+                    <li class="flex items-center gap-3 text-sm text-gray-700"><i class="ph-fill ph-check-circle text-yellow-500"></i> Footprint analysis</li>
+                    <li class="flex items-center gap-3 text-sm text-gray-700"><i class="ph-fill ph-check-circle text-yellow-500"></i> ESG readiness scores</li>
+                    <li class="flex items-center gap-3 text-sm text-gray-700"><i class="ph-fill ph-check-circle text-yellow-500"></i> Downloadable anytime</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-24 bg-brand-50 relative">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-col lg:flex-row gap-16 items-center">
+            
+            <div class="lg:w-5/12 reveal active">
+                <h2 class="text-brand-600 font-bold tracking-wide uppercase text-sm mb-2">Simple Process</h2>
+                <h3 class="text-3xl md:text-4xl font-extrabold text-gray-900 mb-6">Four steps to sustainability clarity</h3>
+                <p class="text-gray-600 text-lg leading-relaxed mb-8">Our streamlined process takes you from data input to professional insights in minutes. No complex setups required.</p>
+                
+                <div class="hidden lg:block bg-white p-6 rounded-2xl shadow-sm border border-brand-100">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-brand-100 rounded-full flex items-center justify-center text-brand-600 text-xl"><i class="ph-fill ph-clock-countdown"></i></div>
+                        <div>
+                            <p class="font-bold text-gray-900">Takes less than 5 mins</p>
+                            <p class="text-sm text-gray-500">Instant AI generation</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:w-7/12 space-y-4 w-full">
+                <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-brand-200 transition-all flex items-start gap-6 reveal active delay-100">
+                    <div class="w-14 h-14 flex-shrink-0 bg-brand-600 text-white rounded-xl flex items-center justify-center font-bold text-xl shadow-glow">01</div>
+                    <div>
+                        <h4 class="text-xl font-bold text-gray-900 mb-2">Create Your Account</h4>
+                        <p class="text-gray-600 text-sm leading-relaxed">Register as an Individual or Enterprise user. The platform adapts the entire experience to your profile type.</p>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-brand-200 transition-all flex items-start gap-6 reveal active delay-200">
+                    <div class="w-14 h-14 flex-shrink-0 bg-brand-600 text-white rounded-xl flex items-center justify-center font-bold text-xl shadow-glow">02</div>
+                    <div>
+                        <h4 class="text-xl font-bold text-gray-900 mb-2">Input Your Data</h4>
+                        <p class="text-gray-600 text-sm leading-relaxed">Complete our guided assessment form with your consumption patterns, lifestyle data, or business operations.</p>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-brand-200 transition-all flex items-start gap-6 reveal active delay-300">
+                    <div class="w-14 h-14 flex-shrink-0 bg-brand-600 text-white rounded-xl flex items-center justify-center font-bold text-xl shadow-glow">03</div>
+                    <div>
+                        <h4 class="text-xl font-bold text-gray-900 mb-2">AI Analysis</h4>
+                        <p class="text-gray-600 text-sm leading-relaxed">Our Random Forest and Decision Tree models analyse your inputs against thousands of training samples for precise classification.</p>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-brand-200 transition-all flex items-start gap-6 reveal active delay-400">
+                    <div class="w-14 h-14 flex-shrink-0 bg-brand-600 text-white rounded-xl flex items-center justify-center font-bold text-xl shadow-glow">04</div>
+                    <div>
+                        <h4 class="text-xl font-bold text-gray-900 mb-2">Download Reports</h4>
+                        <p class="text-gray-600 text-sm leading-relaxed">Receive beautiful PDF reports with breakdowns, visualisations, benchmarks, and a personalised improvement roadmap.</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<section class="py-24 bg-brand-950 relative overflow-hidden">
+    <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#4ade80_1px,transparent_1px)] [background-size:40px_40px]"></div>
+    <div class="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-brand-800 rounded-full blur-[120px] opacity-30"></div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div class="text-center max-w-2xl mx-auto mb-16 reveal active">
+            <div class="inline-flex items-center justify-center gap-2 px-3 py-1 bg-brand-900 text-brand-400 border border-brand-800 rounded-full text-xs font-bold uppercase tracking-wider mb-4">
+                Under the Hood
+            </div>
+            <h2 class="text-3xl md:text-4xl font-extrabold text-white mb-4">Machine learning at the core</h2>
+            <p class="text-brand-100 opacity-80 text-lg">Two production-grade ML models, validated on thousands of real-world samples.</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+            <div class="bg-white/5 border border-white/10 backdrop-blur-lg rounded-3xl p-8 hover:bg-white/10 hover:border-brand-500/50 transition-all reveal active delay-100">
+                <div class="inline-flex items-center gap-4 bg-brand-500/10 border border-brand-500/30 rounded-full px-5 py-2 mb-8">
+                    <div>
+                        <span class="text-2xl font-extrabold text-brand-400">97.6%</span>
+                        <span class="text-xs text-brand-200 uppercase font-bold ml-1">Accuracy</span>
+                    </div>
+                    <div class="w-px h-8 bg-brand-500/30"></div>
+                    <div class="text-sm">
+                        <p class="text-white font-semibold leading-tight">Random Forest</p>
+                        <p class="text-brand-200/60 text-xs">Carbon Regression</p>
+                    </div>
+                </div>
+
+                <h4 class="text-2xl font-bold text-white mb-2">Carbon Estimator</h4>
+                <p class="text-brand-200/60 text-sm mb-8">Regression model trained on 10,000+ lifestyle samples</p>
+
+                <div class="space-y-3 mb-8">
+                    <div class="flex justify-between items-center border-b border-white/5 pb-2">
+                        <span class="text-brand-100/70 text-sm flex items-center gap-2"><i class="ph-fill ph-tree-structure"></i> Estimators</span>
+                        <span class="text-brand-400 font-bold text-sm">100 Trees</span>
+                    </div>
+                    <div class="flex justify-between items-center border-b border-white/5 pb-2">
+                        <span class="text-brand-100/70 text-sm flex items-center gap-2"><i class="ph-fill ph-activity"></i> R² Score</span>
+                        <span class="text-brand-400 font-bold text-sm">0.969</span>
+                    </div>
+                    <div class="flex justify-between items-center border-b border-white/5 pb-2">
+                        <span class="text-brand-100/70 text-sm flex items-center gap-2"><i class="ph-fill ph-shield-check"></i> Cross-Validation</span>
+                        <span class="text-brand-400 font-bold text-sm">0.923 ±0.002</span>
+                    </div>
+                </div>
+
+                <div class="bg-black/20 rounded-xl p-4 border border-white/5">
+                    <p class="text-xs text-brand-200/50 uppercase font-bold mb-3 tracking-wider">Features Assessed</p>
+                    <div class="flex flex-wrap gap-2">
+                        {% for feat in ['Electricity','Transport','Diet','Travel','Shopping'] %}
+                        <span class="bg-white/5 border border-white/10 px-2.5 py-1 rounded-md text-xs text-brand-100/80">{{ feat }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white/5 border border-white/10 backdrop-blur-lg rounded-3xl p-8 hover:bg-white/10 hover:border-brand-500/50 transition-all reveal active delay-200">
+                <div class="inline-flex items-center gap-4 bg-teal-500/10 border border-teal-500/30 rounded-full px-5 py-2 mb-8">
+                    <div>
+                        <span class="text-2xl font-extrabold text-teal-400">90.3%</span>
+                        <span class="text-xs text-teal-200 uppercase font-bold ml-1">Accuracy</span>
+                    </div>
+                    <div class="w-px h-8 bg-teal-500/30"></div>
+                    <div class="text-sm">
+                        <p class="text-white font-semibold leading-tight">Decision Tree</p>
+                        <p class="text-teal-200/60 text-xs">ESG Classifier</p>
+                    </div>
+                </div>
+
+                <h4 class="text-2xl font-bold text-white mb-2">ESG Risk Classifier</h4>
+                <p class="text-teal-200/60 text-sm mb-8">Classification model trained on 2,000 enterprise samples</p>
+
+                <div class="space-y-3 mb-8">
+                    <div class="flex justify-between items-center border-b border-white/5 pb-2">
+                        <span class="text-brand-100/70 text-sm flex items-center gap-2"><i class="ph-fill ph-target"></i> Precision (Low)</span>
+                        <span class="text-teal-400 font-bold text-sm">93%</span>
+                    </div>
+                    <div class="flex justify-between items-center border-b border-white/5 pb-2">
+                        <span class="text-brand-100/70 text-sm flex items-center gap-2"><i class="ph-fill ph-arrows-out-line-vertical"></i> Recall (Low)</span>
+                        <span class="text-teal-400 font-bold text-sm">96%</span>
+                    </div>
+                    <div class="flex justify-between items-center border-b border-white/5 pb-2">
+                        <span class="text-brand-100/70 text-sm flex items-center gap-2"><i class="ph-fill ph-shield-check"></i> 5-Fold CV Score</span>
+                        <span class="text-teal-400 font-bold text-sm">89%</span>
+                    </div>
+                </div>
+
+                <div class="bg-black/20 rounded-xl p-4 border border-white/5">
+                    <p class="text-xs text-teal-200/50 uppercase font-bold mb-3 tracking-wider">Pillars Analyzed</p>
+                    <div class="flex flex-wrap gap-2">
+                        {% for feat in ['Energy','Waste','Governance','Employees','Industry'] %}
+                        <span class="bg-white/5 border border-white/10 px-2.5 py-1 rounded-md text-xs text-teal-100/80">{{ feat }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-24 bg-brand-600 relative overflow-hidden">
+    <div class="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white via-transparent to-transparent"></div>
+    
+    <div class="max-w-4xl mx-auto px-4 text-center relative z-10 reveal active">
+        <h2 class="text-4xl md:text-5xl font-extrabold text-white mb-6">Your sustainability journey starts now.</h2>
+        <p class="text-brand-100 text-lg md:text-xl mb-10 max-w-2xl mx-auto">Join the platform calculating real environmental impact with AI-grade precision. Free to start.</p>
+        
+        <div class="flex flex-col sm:flex-row justify-center gap-4">
+            {% if not session.user_id %}
+            <a href="{{ url_for('register') }}" class="bg-white text-brand-700 hover:bg-gray-50 px-8 py-4 rounded-full font-bold text-lg transition-all shadow-xl hover:-translate-y-1 flex items-center justify-center gap-2">
+                <i class="ph-bold ph-user-plus"></i> Create Free Account
+            </a>
+            <a href="{{ url_for('login') }}" class="bg-brand-700 text-white hover:bg-brand-800 border border-brand-500 px-8 py-4 rounded-full font-bold text-lg transition-all hover:-translate-y-1 flex items-center justify-center gap-2">
+                <i class="ph-bold ph-sign-in"></i> Sign In
+            </a>
+            {% else %}
+            <a href="{{ url_for('dashboard') }}" class="bg-white text-brand-700 hover:bg-gray-50 px-8 py-4 rounded-full font-bold text-lg transition-all shadow-xl hover:-translate-y-1 flex items-center justify-center gap-2">
+                <i class="ph-bold ph-gauge"></i> Go to Dashboard
+            </a>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<div class="bg-brand-50 border-t border-brand-100 py-6">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <p class="text-xs text-gray-500 leading-relaxed flex items-center justify-center gap-2 flex-wrap">
+            <i class="ph-fill ph-warning-circle text-yellow-500 text-lg"></i>
+            This platform is developed as a final year engineering project for academic purposes. All calculations are AI-based estimates only — not for regulatory compliance, formal certification, or investment decisions.
         </p>
-
-        <div class="hero-cta-group animate-fade-up-delay-3">
-          {% if not session.user_id %}
-          <a href="{{ url_for('register') }}" class="btn btn-hero-primary">
-            <i class="bi bi-arrow-right-circle me-2"></i> Start Free Assessment
-          </a>
-          <a href="{{ url_for('login') }}" class="btn btn-hero-outline">
-            <i class="bi bi-box-arrow-in-right me-2"></i> Sign In
-          </a>
-          {% else %}
-          <a href="{{ url_for('dashboard') }}" class="btn btn-hero-primary">
-            <i class="bi bi-speedometer2 me-2"></i> Go to Dashboard
-          </a>
-          <a href="{{ url_for('view_reports') }}" class="btn btn-hero-outline">
-            <i class="bi bi-file-earmark-bar-graph me-2"></i> My Reports
-          </a>
-          {% endif %}
-        </div>
-
-        <div class="hero-stats animate-fade-up-delay-4">
-          <div class="hero-stat">
-            <span class="hero-stat-num">97.6%</span>
-            <span class="hero-stat-label">Model Accuracy</span>
-          </div>
-          <div style="width:1px;background:rgba(255,255,255,.1);"></div>
-          <div class="hero-stat">
-            <span class="hero-stat-num">10K+</span>
-            <span class="hero-stat-label">Training Samples</span>
-          </div>
-          <div style="width:1px;background:rgba(255,255,255,.1);"></div>
-          <div class="hero-stat">
-            <span class="hero-stat-num">3</span>
-            <span class="hero-stat-label">Report Types</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Right: 3D Orb -->
-      <div class="col-lg-6 d-none d-lg-flex justify-content-center">
-        <div class="orb-container animate-fade-in">
-          <div class="orb-ring-3"></div>
-          <div class="orb-ring-2"></div>
-          <div class="orb-ring-1"></div>
-          <div class="orb-main">
-            <div class="orb-icon"><i class="bi bi-tree-fill"></i></div>
-          </div>
-
-          <!-- Floating chips -->
-          <div class="chip chip-1">
-            <span class="chip-dot" style="background:#2ecc71;"></span>
-            <i class="bi bi-lightning-charge-fill" style="color:#2ecc71;font-size:.8rem;"></i>
-            Live AI Scoring
-          </div>
-          <div class="chip chip-2">
-            <span class="chip-dot" style="background:#c9a84c;"></span>
-            <i class="bi bi-award-fill" style="color:#c9a84c;font-size:.8rem;"></i>
-            ESG Certified
-          </div>
-          <div class="chip chip-3">
-            <span class="chip-dot" style="background:#56cfe1;"></span>
-            <i class="bi bi-file-earmark-pdf-fill" style="color:#56cfe1;font-size:.8rem;"></i>
-            PDF Reports
-          </div>
-          <div class="chip chip-4">
-            <span class="chip-dot" style="background:#ff9f43;"></span>
-            <i class="bi bi-graph-up-arrow" style="color:#ff9f43;font-size:.8rem;"></i>
-            Track Progress
-          </div>
-        </div>
-      </div>
     </div>
-  </div>
-</div>
-
-
-<!-- ── FEATURES ── -->
-<section class="features-bg" style="margin:0 -12px;padding-left:12px;padding-right:12px;">
-  <div class="container">
-    <div class="text-center mb-5">
-      <div class="section-kicker">Core Capabilities</div>
-      <h2 class="section-title-xl">Everything you need to<br>lead on sustainability</h2>
-      <p class="section-desc mx-auto" style="color:#6c6c70;">From individual carbon tracking to enterprise ESG assessments — comprehensive tools powered by advanced machine learning.</p>
-    </div>
-
-    <div class="row g-4">
-      <div class="col-lg-4 animate-fade-up-delay-1">
-        <div class="fcard">
-          <div class="fcard-icon fcard-icon-green">
-            <i class="bi bi-person-circle"></i>
-          </div>
-          <h4>Individual Carbon Tracker</h4>
-          <p>Calculate your personal carbon footprint with precision using lifestyle data and ML-powered analysis.</p>
-          <ul class="fcard-list">
-            <li><span class="li-check"><i class="bi bi-check2"></i></span> Monthly electricity usage</li>
-            <li><span class="li-check"><i class="bi bi-check2"></i></span> Vehicle & transport analysis</li>
-            <li><span class="li-check"><i class="bi bi-check2"></i></span> Diet & consumption patterns</li>
-            <li><span class="li-check"><i class="bi bi-check2"></i></span> Personalised reduction roadmap</li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="col-lg-4 animate-fade-up-delay-2">
-        <div class="fcard">
-          <div class="fcard-icon fcard-icon-teal">
-            <i class="bi bi-building-check"></i>
-          </div>
-          <h4>Enterprise ESG Assessment</h4>
-          <p>Evaluate organisational ESG readiness across environmental, social, and governance dimensions.</p>
-          <ul class="fcard-list">
-            <li><span class="li-check"><i class="bi bi-check2"></i></span> Multi-pillar risk scoring</li>
-            <li><span class="li-check"><i class="bi bi-check2"></i></span> Industry benchmarking</li>
-            <li><span class="li-check"><i class="bi bi-check2"></i></span> Governance metrics</li>
-            <li><span class="li-check"><i class="bi bi-check2"></i></span> Strategic action planning</li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="col-lg-4 animate-fade-up-delay-3">
-        <div class="fcard">
-          <div class="fcard-icon fcard-icon-gold">
-            <i class="bi bi-file-earmark-ruled"></i>
-          </div>
-          <h4>Professional PDF Reports</h4>
-          <p>Generate beautiful, comprehensive reports with insights, charts, and actionable recommendations.</p>
-          <ul class="fcard-list">
-            <li><span class="li-check"><i class="bi bi-check2"></i></span> Carbon footprint analysis</li>
-            <li><span class="li-check"><i class="bi bi-check2"></i></span> ESG readiness assessment</li>
-            <li><span class="li-check"><i class="bi bi-check2"></i></span> Progress certificates</li>
-            <li><span class="li-check"><i class="bi bi-check2"></i></span> Downloadable anytime</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-
-<!-- ── HOW IT WORKS ── -->
-<section class="steps-bg" style="margin:0 -12px;padding-left:12px;padding-right:12px;">
-  <div class="container">
-    <div class="row align-items-center g-5">
-      <div class="col-lg-5">
-        <div class="section-kicker">Simple Process</div>
-        <h2 class="section-title-xl">Four steps to sustainability clarity</h2>
-        <p style="color:#6c6c70;font-size:1rem;line-height:1.75;">Our streamlined process takes you from data input to professional insights in minutes.</p>
-      </div>
-      <div class="col-lg-7">
-        <div class="step-row animate-fade-up-delay-1">
-          <div class="step-num">01</div>
-          <div class="step-text">
-            <h4>Create Your Account</h4>
-            <p>Register as an Individual or Enterprise user. The platform adapts the entire experience to your profile type.</p>
-          </div>
-        </div>
-        <div class="step-row animate-fade-up-delay-2">
-          <div class="step-num">02</div>
-          <div class="step-text">
-            <h4>Input Your Data</h4>
-            <p>Complete our guided assessment form with your consumption patterns, lifestyle data, or business operations.</p>
-          </div>
-        </div>
-        <div class="step-row animate-fade-up-delay-3">
-          <div class="step-num">03</div>
-          <div class="step-text">
-            <h4>AI Analysis</h4>
-            <p>Our Random Forest and Decision Tree models analyse your inputs against thousands of training samples for precise classification.</p>
-          </div>
-        </div>
-        <div class="step-row animate-fade-up-delay-4">
-          <div class="step-num">04</div>
-          <div class="step-text">
-            <h4>Download Reports</h4>
-            <p>Receive beautiful PDF reports with breakdowns, visualisations, benchmarks, and a personalised improvement roadmap.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-
-<!-- ── ML MODELS ── -->
-<section class="models-bg" style="margin:0 -12px;padding-left:12px;padding-right:12px;">
-  <div class="container">
-    <div class="text-center mb-5">
-      <div class="section-kicker" style="color:#2ecc71;">
-        <span style="background:#2ecc71;"></span>
-        Under the Hood
-        <span style="background:#2ecc71;"></span>
-      </div>
-      <h2 class="section-title-xl section-title-xl-light mb-3">Machine learning<br>at the core</h2>
-      <p style="color:rgba(255,255,255,.45);font-size:1rem;max-width:460px;margin:0 auto;">Two production-grade ML models, validated on thousands of real-world samples.</p>
-    </div>
-
-    <div class="row g-4 mb-5">
-      <!-- Carbon Model -->
-      <div class="col-lg-6">
-        <div class="model-glass-card">
-          <div class="model-accuracy-badge">
-            <div>
-              <div class="accuracy-num">97.6%</div>
-              <div class="accuracy-label">Accuracy</div>
-            </div>
-            <div style="width:1px;height:40px;background:rgba(46,204,113,.2);"></div>
-            <div>
-              <div style="font-size:.8rem;color:rgba(168,230,195,.8);font-weight:600;">Random Forest</div>
-              <div style="font-size:.72rem;color:rgba(255,255,255,.35);margin-top:2px;">Carbon Regression</div>
-            </div>
-          </div>
-
-          <div class="model-title">Carbon Footprint Estimator</div>
-          <div class="model-subtitle">Regression model trained on 10,000+ lifestyle samples</div>
-
-          <div class="metric-pill">
-            <span class="metric-pill-label"><i class="bi bi-diagram-3 me-2"></i>Estimators</span>
-            <span class="metric-pill-value">100 Trees</span>
-          </div>
-          <div class="metric-pill">
-            <span class="metric-pill-label"><i class="bi bi-activity me-2"></i>R² Score</span>
-            <span class="metric-pill-value">0.969</span>
-          </div>
-          <div class="metric-pill">
-            <span class="metric-pill-label"><i class="bi bi-shield-check me-2"></i>Cross-Validation</span>
-            <span class="metric-pill-value">0.923 ±0.002</span>
-          </div>
-          <div class="metric-pill">
-            <span class="metric-pill-label"><i class="bi bi-bullseye me-2"></i>RMSE</span>
-            <span class="metric-pill-value">77.3 kg CO₂e</span>
-          </div>
-
-          <div style="margin-top:20px;padding:16px;background:rgba(46,204,113,.06);border-radius:12px;border:1px solid rgba(46,204,113,.12);">
-            <div style="font-size:.8rem;color:rgba(168,230,195,.7);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;">Features Used</div>
-            <div style="display:flex;flex-wrap:wrap;gap:6px;">
-              {% for feat in ['Electricity','Transport','Diet','Travel','Shopping','Recycling','Country'] %}
-              <span style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:3px 10px;font-size:.72rem;color:rgba(255,255,255,.6);font-weight:500;">{{ feat }}</span>
-              {% endfor %}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ESG Model -->
-      <div class="col-lg-6">
-        <div class="model-glass-card">
-          <div class="model-accuracy-badge">
-            <div>
-              <div class="accuracy-num">90.3%</div>
-              <div class="accuracy-label">Accuracy</div>
-            </div>
-            <div style="width:1px;height:40px;background:rgba(46,204,113,.2);"></div>
-            <div>
-              <div style="font-size:.8rem;color:rgba(168,230,195,.8);font-weight:600;">Decision Tree</div>
-              <div style="font-size:.72rem;color:rgba(255,255,255,.35);margin-top:2px;">ESG Classifier</div>
-            </div>
-          </div>
-
-          <div class="model-title">ESG Risk Classifier</div>
-          <div class="model-subtitle">Classification model trained on 2,000 enterprise samples</div>
-
-          <div class="metric-pill">
-            <span class="metric-pill-label"><i class="bi bi-layers me-2"></i>Max Depth</span>
-            <span class="metric-pill-value">Optimised</span>
-          </div>
-          <div class="metric-pill">
-            <span class="metric-pill-label"><i class="bi bi-bullseye me-2"></i>Precision (Low Risk)</span>
-            <span class="metric-pill-value">93%</span>
-          </div>
-          <div class="metric-pill">
-            <span class="metric-pill-label"><i class="bi bi-activity me-2"></i>Recall (Low Risk)</span>
-            <span class="metric-pill-value">96%</span>
-          </div>
-          <div class="metric-pill">
-            <span class="metric-pill-label"><i class="bi bi-shield-check me-2"></i>5-Fold CV Score</span>
-            <span class="metric-pill-value">89%</span>
-          </div>
-
-          <div style="margin-top:20px;padding:16px;background:rgba(46,204,113,.06);border-radius:12px;border:1px solid rgba(46,204,113,.12);">
-            <div style="font-size:.8rem;color:rgba(168,230,195,.7);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;">ESG Pillars Assessed</div>
-            <div style="display:flex;flex-wrap:wrap;gap:6px;">
-              {% for feat in ['Energy Use','Travel','Waste','Renewable','Cloud','Employees','Industry','Recycling'] %}
-              <span style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:3px 10px;font-size:.72rem;color:rgba(255,255,255,.6);font-weight:500;">{{ feat }}</span>
-              {% endfor %}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Performance summary bar -->
-    <div style="background:rgba(46,204,113,.06);border:1px solid rgba(46,204,113,.15);border-radius:20px;padding:28px 40px;text-align:center;">
-      <div style="display:flex;justify-content:center;gap:48px;flex-wrap:wrap;">
-        <div>
-          <div style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;color:#2ecc71;line-height:1;">97.6%</div>
-          <div style="font-size:.75rem;color:rgba(255,255,255,.4);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-top:4px;">Peak Accuracy</div>
-        </div>
-        <div style="width:1px;background:rgba(255,255,255,.08);"></div>
-        <div>
-          <div style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;color:#2ecc71;line-height:1;">5.5%</div>
-          <div style="font-size:.75rem;color:rgba(255,255,255,.4);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-top:4px;">Prediction Error</div>
-        </div>
-        <div style="width:1px;background:rgba(255,255,255,.08);"></div>
-        <div>
-          <div style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;color:#2ecc71;line-height:1;">10K+</div>
-          <div style="font-size:.75rem;color:rgba(255,255,255,.4);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-top:4px;">Training Samples</div>
-        </div>
-        <div style="width:1px;background:rgba(255,255,255,.08);"></div>
-        <div>
-          <div style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;color:#2ecc71;line-height:1;">2</div>
-          <div style="font-size:.75rem;color:rgba(255,255,255,.4);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-top:4px;">AI Models</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-
-<!-- ── CTA ── -->
-<section class="cta-bg" style="margin:0 -12px;padding-left:12px;padding-right:12px;">
-  <div class="container text-center" style="position:relative;z-index:2;">
-    <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:32px;padding:70px 60px;max-width:700px;margin:0 auto;">
-      <div class="section-kicker" style="color:#2ecc71;justify-content:center;margin-bottom:16px;">
-        <span style="background:#2ecc71;"></span>
-        Get Started Today
-        <span style="background:#2ecc71;"></span>
-      </div>
-      <h2 style="font-family:'Playfair Display',serif;font-size:clamp(2rem,4vw,3rem);font-weight:700;color:white;letter-spacing:-.03em;margin-bottom:16px;">
-        Your sustainability<br>journey starts now.
-      </h2>
-      <p style="color:rgba(255,255,255,.5);font-size:1rem;line-height:1.7;margin-bottom:36px;">
-        Join the platform calculating real environmental impact with AI-grade precision. Free to start.
-      </p>
-      {% if not session.user_id %}
-      <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;">
-        <a href="{{ url_for('register') }}" class="btn" style="background:white;color:#0D2818;font-weight:700;padding:16px 36px;border-radius:14px;font-size:1rem;box-shadow:0 8px 30px rgba(0,0,0,.2);">
-          <i class="bi bi-person-plus me-2"></i> Create Free Account
-        </a>
-        <a href="{{ url_for('login') }}" class="btn" style="background:transparent;color:white;border:2px solid rgba(255,255,255,.25);padding:16px 36px;border-radius:14px;font-size:1rem;font-weight:600;">
-          <i class="bi bi-box-arrow-in-right me-2"></i> Sign In
-        </a>
-      </div>
-      {% else %}
-      <a href="{{ url_for('dashboard') }}" class="btn" style="background:white;color:#0D2818;font-weight:700;padding:16px 40px;border-radius:14px;font-size:1rem;box-shadow:0 8px 30px rgba(0,0,0,.2);">
-        <i class="bi bi-speedometer2 me-2"></i> Go to Dashboard
-      </a>
-      {% endif %}
-    </div>
-  </div>
-</section>
-
-
-<!-- ── DISCLAIMER ── -->
-<div style="background:#f8f5f0;border-top:1px solid rgba(0,0,0,.06);padding:24px 0;">
-  <div class="container">
-    <p style="font-size:.8rem;color:#aeaeb2;text-align:center;margin:0;line-height:1.7;">
-      <i class="bi bi-exclamation-triangle me-1" style="color:#c9a84c;"></i>
-      This platform is developed as a final year engineering project for academic purposes. All calculations are AI-based estimates only — not for regulatory compliance, formal certification, or investment decisions.
-    </p>
-  </div>
 </div>
 
 {% endblock %}
 
 {% block extra_js %}
-<style>
-@keyframes pulse-dot {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: .5; transform: scale(.7); }
-}
-</style>
+<script>
+    // Initialize reveal animations (if not already handled in base.html)
+    document.addEventListener("DOMContentLoaded", () => {
+        const reveals = document.querySelectorAll('.reveal');
+        
+        const revealOnScroll = () => {
+            const windowHeight = window.innerHeight;
+            const elementVisible = 150;
+            
+            reveals.forEach(reveal => {
+                const elementTop = reveal.getBoundingClientRect().top;
+                if (elementTop < windowHeight - elementVisible) {
+                    reveal.classList.add('active');
+                }
+            });
+        };
+        
+        window.addEventListener('scroll', revealOnScroll);
+        // Trigger once on load
+        setTimeout(revealOnScroll, 100);
+    });
+</script>
 {% endblock %}

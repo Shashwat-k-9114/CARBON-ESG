@@ -2,6 +2,7 @@ import joblib
 import numpy as np
 import pandas as pd
 import os
+import json
 
 
 class CarbonCalculator:
@@ -296,13 +297,46 @@ class CarbonCalculator:
             "carbon_level": carbon_level,
             "breakdown": breakdown,
             "ml_prediction": round(ml_prediction, 2),
-            "rule_based": round(rule_based_total, 2)
+            "rule_based": round(rule_based_total, 2),
+            "suggestions": self.generate_suggestions(inputs, final_footprint, carbon_level)
         }
     # ============================================================
     # SUGGESTIONS
     # ============================================================
 
     def generate_suggestions(self, inputs, footprint, level):
+        groq_api_key = os.environ.get("GROQ_API_KEY")
+        if groq_api_key:
+            try:
+                from groq import Groq
+                client = Groq(api_key=groq_api_key)
+                
+                prompt = f"""
+                Analyze this user's carbon footprint profile:
+                - Country: {inputs.get('country')}
+                - Electricity: {inputs.get('electricity_kwh')} kWh/mo
+                - Vehicle: {inputs.get('vehicle_type')} ({inputs.get('vehicle_km')} km/mo)
+                - Diet: {inputs.get('diet_type')}
+                - Total Footprint: {footprint} kg CO2e ({level})
+
+                Provide 5 highly personalized, practical, and short actionable tips to reduce their emissions.
+                """
+                completion = client.chat.completions.create(
+                    messages=[
+                        {"role": "system", "content": "You are an expert environmental consultant. Always output valid JSON with a single key 'suggestions' containing a list of 5 short string sentences. Do not use markdown outside of the JSON."},
+                        {"role": "user", "content": prompt}
+                    ],
+                    model="llama3-8b-8192",
+                    response_format={"type": "json_object"},
+                    temperature=0.7
+                )
+                
+                response_json = json.loads(completion.choices[0].message.content)
+                if "suggestions" in response_json and isinstance(response_json["suggestions"], list):
+                    return response_json["suggestions"][:6]
+            except Exception as e:
+                print(f"Groq API Error (Individual): {e}")
+
         suggestions = []
 
         if footprint > 12000:
@@ -508,6 +542,40 @@ class ESGCalculator:
     # ============================================================
 
     def generate_esg_recommendations(self, inputs, risk, score):
+        groq_api_key = os.environ.get("GROQ_API_KEY")
+        if groq_api_key:
+            try:
+                from groq import Groq
+                client = Groq(api_key=groq_api_key)
+                
+                prompt = f"""
+                Analyze this company's ESG profile:
+                - Company: {inputs.get('company_name')}
+                - Industry: {inputs.get('industry')}
+                - Employees: {inputs.get('employees')}
+                - Energy Usage: {inputs.get('energy_usage')} kWh/mo
+                - Cloud Infrastructure: {inputs.get('cloud_usage')}
+                - Waste Management Level: {inputs.get('waste_management')}/5
+                - Overall ESG Risk: {risk}
+                - Overall ESG Score: {score}/100
+
+                Provide 5 highly personalized, strategic corporate recommendations to improve their ESG standing.
+                """
+                completion = client.chat.completions.create(
+                    messages=[
+                        {"role": "system", "content": "You are an expert corporate ESG consultant. Always output valid JSON with a single key 'recommendations' containing a list of 5 short string sentences. Do not use markdown outside of the JSON."},
+                        {"role": "user", "content": prompt}
+                    ],
+                    model="llama3-8b-8192",
+                    response_format={"type": "json_object"},
+                    temperature=0.7
+                )
+                
+                response_json = json.loads(completion.choices[0].message.content)
+                if "recommendations" in response_json and isinstance(response_json["recommendations"], list):
+                    return response_json["recommendations"][:6]
+            except Exception as e:
+                print(f"Groq API Error (Enterprise): {e}")
 
         recommendations = []
 

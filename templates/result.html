@@ -1,558 +1,237 @@
 {% extends "base.html" %}
-
 {% block title %}Assessment Results{% endblock %}
 
-{% block extra_css %}
-<style>
-    .result-badge {
-        font-size: 1.3rem;
-        padding: 10px 25px;
-        border-radius: 25px;
-        font-weight: bold;
-    }
-    .result-high {
-        background-color: #f8d7da;
-        color: #721c24;
-        border: 2px solid #f5c6cb;
-    }
-    .result-medium {
-        background-color: #fff3cd;
-        color: #856404;
-        border: 2px solid #ffeaa7;
-    }
-    .result-low {
-        background-color: #d4edda;
-        color: #155724;
-        border: 2px solid #c3e6cb;
-    }
-    .metric-card {
-        transition: transform 0.3s;
-    }
-    .metric-card:hover {
-        transform: translateY(-5px);
-    }
-    .chart-container {
-        height: 250px;
-        margin: 20px 0;
-    }
-</style>
-{% endblock %}
-
 {% block content %}
-<div class="row">
-    <div class="col-12">
-        <div class="card mb-4">
-            <div class="card-header text-center">
-                <h3 class="mb-0">
-                    {% if is_esg %}
-                    <i class="bi bi-clipboard-check"></i> ESG Assessment Results
-                    {% else %}
-                    <i class="bi bi-tree"></i> Carbon Footprint Results
-                    {% endif %}
-                </h3>
+{% set report_route = 'enterprise' if is_esg else 'individual' %}
+<div class="max-w-6xl mx-auto">
+    <!-- Header Section -->
+    <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 md:p-8 mb-8 relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-64 h-64 bg-brand-500 rounded-full mix-blend-multiply filter blur-3xl opacity-5 translate-x-1/2 -translate-y-1/2"></div>
+        
+        <div class="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+            <div>
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-50 text-brand-700 text-sm font-semibold mb-3 border border-brand-200">
+                    <i class="ph-fill ph-check-circle"></i> Analysis Complete
+                </span>
+                <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 tracking-tight">
+                    {% if is_esg %}ESG Readiness Report{% else %}Carbon Footprint Report{% endif %}
+                </h1>
+                <p class="text-gray-500 mt-2 text-sm md:text-base">Prepared for <span class="font-semibold text-gray-800">{% if is_esg %}{{ inputs.company_name }}{% else %}{{ session.username }}{% endif %}</span></p>
             </div>
-            <div class="card-body">
-                <!-- Result Summary -->
-                <div class="text-center mb-5">
-                    {% if is_esg %}
-                    <h1 class="display-4 fw-bold mb-3">{{ result.total_score }}/100</h1>
-                    <p class="lead">Overall ESG Score</p>
-                    
-                    <div class="mb-4">
-                        <span class="result-badge 
-                            {% if result.esg_risk == 'Low' %}result-low
-                            {% elif result.esg_risk == 'Medium' %}result-medium
-                            {% else %}result-high{% endif %}">
-                            {{ result.esg_risk }} ESG Risk
-                        </span>
-                    </div>
-                    
-                    {% else %}
-                    <h1 class="display-4 fw-bold mb-3">{{ result.total_footprint|round|int }} kg CO2e</h1>
-                    <p class="lead">Annual Carbon Footprint</p>
-                    
-                    <div class="mb-4">
-                        <span class="result-badge 
-                            {% if result.carbon_level == 'Low' or result.carbon_level == 'Very Low' %}result-low
-                            {% elif result.carbon_level == 'Medium' or result.carbon_level == 'Medium-Low' or result.carbon_level == 'Medium-High' %}result-medium
-                            {% else %}result-high{% endif %}">
-                            {{ result.carbon_level }} Impact
-                        </span>
-                    </div>
-                    
-                    <p class="text-muted">
-                        Global average: ~4,000 kg CO2e per person per year
-                    </p>
-                    {% endif %}
-                </div>
-                
-                <!-- Action Buttons -->
-                <div class="d-flex justify-content-center gap-3 mb-5 flex-wrap">
-                    {% if is_esg %}
-                    <a href="{{ url_for('generate_report', report_type='enterprise') }}" class="btn btn-success btn-lg">
-                        <i class="bi bi-file-earmark-pdf"></i> Download ESG Report
-                    </a>
-                    <a href="{{ url_for('generate_report', report_type='certificate') }}" class="btn btn-outline-success btn-lg">
-                        <i class="bi bi-award"></i> Get Certificate
-                    </a>
-                    {% else %}
-                    
-                    {% if session.get('subscription_plan', 'free') in ['eco-starter', 'eco-pro', 'business'] %}
-                    <a href="{{ url_for('generate_report', report_type='individual') }}" class="btn btn-success btn-lg">
-                        <i class="bi bi-file-earmark-pdf"></i> Download Carbon Report
-                    </a>
-                    {% else %}
-                    <a href="/pricing" class="btn btn-outline">🔒 Upgrade for PDF Export</a>
-                    {% endif %}
-
-                    <a href="{{ url_for('generate_report', report_type='certificate') }}" class="btn btn-outline-success btn-lg">
-                        <i class="bi bi-award"></i> Get Certificate
-                    </a>
-                    {% endif %}
-                    <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary btn-lg">
-                        <i class="bi bi-arrow-left"></i> Back to Dashboard
-                    </a>
-                </div>
-                
-                {% if is_esg %}
-                <!-- ESG Component Scores -->
-                <div class="row mb-5">
-                    <div class="col-md-4 mb-3">
-                        <div class="card metric-card text-center h-100">
-                            <div class="card-header bg-success text-white">
-                                <h5 class="mb-0">Environmental</h5>
-                            </div>
-                            <div class="card-body">
-                                <h1 class="display-5 fw-bold text-success">{{ result.environmental_score|round(1) }}</h1>
-                                <p class="mb-0">Score (70% weight)</p>
-                                <div class="progress mt-3" style="height: 20px;">
-                                    <div class="progress-bar bg-success" 
-                                         style="width: {{result.environmental_score}}%">
-                                        {{result.environmental_score}}%
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="col-md-4 mb-3">
-                        <div class="card metric-card text-center h-100">
-                            <div class="card-header bg-info text-white">
-                                <h5 class="mb-0">Social</h5>
-                            </div>
-                            <div class="card-body">
-                                <h1 class="display-5 fw-bold text-info">{{ result.social_score|round(1) }}</h1>
-                                <p class="mb-0">Score (15% weight)</p>
-                                <div class="progress mt-3" style="height: 20px;">
-                                    <div class="progress-bar bg-info" 
-                                         style="width: {{result.social_score}}%">
-                                        {{result.social_score}}%
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="col-md-4 mb-3">
-                        <div class="card metric-card text-center h-100">
-                            <div class="card-header bg-primary text-white">
-                                <h5 class="mb-0">Governance</h5>
-                            </div>
-                            <div class="card-body">
-                                <h1 class="display-5 fw-bold text-primary">{{ result.governance_score|round(1) }}</h1>
-                                <p class="mb-0">Score (15% weight)</p>
-                                <div class="progress mt-3" style="height: 20px;">
-                                    <div class="progress-bar bg-primary" 
-                                         style="width: {{result.governance_score}}%">
-                                        {{result.governance_score}}%
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- ESG Key Metrics -->
-                <div class="row mb-5">
-                    <div class="col-md-6">
-                        <div class="card h-100">
-                            <div class="card-header">
-                                <h5 class="mb-0"><i class="bi bi-speedometer2"></i> Key Performance Metrics</h5>
-                            </div>
-                            <div class="card-body">
-                                <div class="list-group list-group-flush">
-                                    <div class="list-group-item d-flex justify-content-between">
-                                        <span>Emissions per Employee</span>
-                                        <span class="fw-bold">{{ result.emissions_per_employee }} tons CO2e</span>
-                                    </div>
-                                    <div class="list-group-item d-flex justify-content-between">
-                                        <span>Energy Intensity</span>
-                                        <span class="fw-bold">{{ result.energy_intensity }} kWh/employee</span>
-                                    </div>
-                                    <div class="list-group-item d-flex justify-content-between">
-                                        <span>Industry Benchmark</span>
-                                        <span class="fw-bold">Average: {{ result.industry_benchmark }} tons/employee
-<br>
-<small>{{ result.benchmark_status }}</small></span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="col-md-6">
-                        <div class="card h-100">
-                            <div class="card-header">
-                                <h5 class="mb-0"><i class="bi bi-graph-up"></i> Risk Assessment</h5>
-                            </div>
-                            <div class="card-body">
-                                <div class="text-center mb-4">
-                                    <div style="width: 200px; height: 200px; margin: 0 auto;">
-                                        <canvas id="riskGauge"></canvas>
-                                    </div>
-                                </div>
-                                <p class="text-center">
-                                    {% if result.esg_risk == 'Low' %}
-                                    <span class="badge bg-success fs-6">Low Risk Profile</span>
-                                    {% elif result.esg_risk == 'Medium' %}
-                                    <span class="badge bg-warning fs-6">Moderate Risk Profile</span>
-                                    {% else %}
-                                    <span class="badge bg-danger fs-6">High Risk Profile</span>
-                                    {% endif %}
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                {% else %}
-                <!-- Carbon Breakdown -->
-                <div class="row mb-5">
-                    <div class="col-md-8">
-                        <div class="card h-100">
-                            <div class="card-header">
-                                <h5 class="mb-0"><i class="bi bi-pie-chart"></i> Emissions Breakdown</h5>
-                            </div>
-                            <div class="card-body">
-                                <div class="chart-container">
-                                    <canvas id="carbonChart"></canvas>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="col-md-4">
-                        <div class="card h-100">
-                            <div class="card-header">
-                                <h5 class="mb-0"><i class="bi bi-list-check"></i> Category Details</h5>
-                            </div>
-                            <div class="card-body">
-                                <div class="list-group list-group-flush">
-                                    {% for category, value in result.breakdown.items() %}
-                                    <div class="list-group-item d-flex justify-content-between">
-                                        <span>{{ category|replace('_', ' ')|title }}</span>
-                                        <span class="fw-bold">{{ value|round|int }} kg</span>
-                                    </div>
-                                    {% endfor %}
-                                    <div class="list-group-item d-flex justify-content-between bg-light">
-                                        <span class="fw-bold">TOTAL</span>
-                                        <span class="fw-bold">{{ result.total_footprint|round|int }} kg</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Methodology Note -->
-                <div class="row mb-5">
-                    <div class="col-md-6">
-                        <div class="card h-100">
-                            <div class="card-header">
-                                <h5 class="mb-0"><i class="bi bi-calculator"></i> Calculation Method</h5>
-                            </div>
-                            <div class="card-body">
-                                <p>Your footprint was calculated using:</p>
-                                <ul>
-                                    <li><strong>ML Prediction:</strong> 
-                                        {% if result.ml_prediction is defined and result.ml_prediction is not none and result.ml_prediction > 0 %}
-                                            {{ result.ml_prediction|round|int }} kg CO2e
-                                        {% else %}
-                                            <span class="text-muted">Using rule-based calculation only</span>
-                                        {% endif %}
-                                    </li>
-                                    <li><strong>Rule-based:</strong> {{ result.rule_based|round|int }} kg CO2e</li>
-                                </ul>
-                                <p class="mb-0">
-                                    Final result uses weighted average of both methods for better accuracy.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="col-md-6">
-                        <div class="card h-100">
-                            <div class="card-header">
-                                <h5 class="mb-0"><i class="bi bi-award"></i> Comparison</h5>
-                            </div>
-                            <div class="card-body">
-                                <div class="text-center mb-3">
-                                    <div style="width: 200px; height: 200px; margin: 0 auto;">
-                                        <canvas id="comparisonGauge"></canvas>
-                                    </div>
-                                </div>
-                                <p class="text-center">
-                                    {% if result.total_footprint < 3000 %}
-                                    <span class="badge bg-success fs-6">Well Below Average 🌱</span>
-                                    {% elif result.total_footprint < 5000 %}
-                                    <span class="badge bg-info fs-6">Below Average 👍</span>
-                                    {% elif result.total_footprint < 7000 %}
-                                    <span class="badge bg-warning fs-6">Near Average ⚠️</span>
-                                    {% elif result.total_footprint < 9000 %}
-                                    <span class="badge bg-orange fs-6">Above Average 🔴</span>
-                                    {% elif result.total_footprint < 12000 %}
-                                    <span class="badge bg-danger fs-6">Well Above Average 🚨</span>
-                                    {% else %}
-                                    <span class="badge bg-danger fs-6">Very High 🔥</span>
-                                    {% endif %}
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                {% endif %}
-                
-                <!-- Recommendations -->
-                <div class="card mb-4">
-                    <div class="card-header">
-                        <h5 class="mb-0">
-                            <i class="bi bi-lightbulb"></i> 
-                            {% if is_esg %}Strategic Recommendations{% else %}Personalized Suggestions{% endif %}
-                        </h5>
-                    </div>
-                    <div class="card-body">
-                        {% if is_esg %}
-                            {% if result.recommendations %}
-                            <div class="row">
-                                {% for recommendation in result.recommendations[:6] %}
-                                <div class="col-md-6 mb-3">
-                                    <div class="d-flex">
-                                        <div class="flex-shrink-0">
-                                            <i class="bi bi-check-circle-fill text-success fs-5"></i>
-                                        </div>
-                                        <div class="flex-grow-1 ms-3">
-                                            {{ recommendation }}
-                                        </div>
-                                    </div>
-                                </div>
-                                {% endfor %}
-                            </div>
-                            {% endif %}
-                        {% else %}
-                            {% if result.suggestions %}
-                            <div class="row">
-                                {% for suggestion in result.suggestions[:6] %}
-                                <div class="col-md-6 mb-3">
-                                    <div class="d-flex">
-                                        <div class="flex-shrink-0">
-                                            <i class="bi bi-check-circle-fill text-success fs-5"></i>
-                                        </div>
-                                        <div class="flex-grow-1 ms-3">
-                                            {{ suggestion }}
-                                        </div>
-                                    </div>
-                                </div>
-                                {% endfor %}
-                            </div>
-                            {% endif %}
-                        {% endif %}
-                        
-                        <div class="mt-3">
-                            <a href="{{ url_for('generate_report', report_type='individual' if not is_esg else 'enterprise') }}" 
-                               class="btn btn-outline-success">
-                                <i class="bi bi-download"></i> Download full report for detailed action plan
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Input Summary -->
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="mb-0"><i class="bi bi-clipboard-data"></i> Your Input Summary</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            {% if is_esg %}
-                                <div class="col-md-4 mb-2"><strong>Company:</strong> {{ inputs.company_name }}</div>
-                                <div class="col-md-4 mb-2"><strong>Industry:</strong> {{ inputs.industry }}</div>
-                                <div class="col-md-4 mb-2"><strong>Employees:</strong> {{ inputs.employees }}</div>
-                                <div class="col-md-4 mb-2"><strong>Energy Usage:</strong> {{ inputs.energy_usage }} kWh/month</div>
-                                <div class="col-md-4 mb-2"><strong>Travel:</strong> {{ inputs.travel_km|round|int }} km/year</div>
-                                <div class="col-md-4 mb-2"><strong>Cloud Usage:</strong> {{ inputs.cloud_usage|title }}</div>
-                                <div class="col-md-4 mb-2"><strong>Waste Management:</strong> Level {{ inputs.waste_management }}/5</div>
-                            {% else %}
-                                <div class="col-md-3 mb-2"><strong>Country:</strong> {{ inputs.country }}</div>
-                                <div class="col-md-3 mb-2"><strong>Electricity:</strong> {{ inputs.electricity_kwh }} kWh/month</div>
-                                <div class="col-md-3 mb-2"><strong>Vehicle:</strong> {{ inputs.vehicle_type|title }}</div>
-                                <div class="col-md-3 mb-2"><strong>Distance:</strong> {{ inputs.vehicle_km }} km/month</div>
-                                <div class="col-md-3 mb-2"><strong>Flights:</strong> {{ inputs.flight_type|title }}</div>
-                                <div class="col-md-3 mb-2"><strong>Diet:</strong> {{ inputs.diet_type|title }}</div>
-                                <div class="col-md-3 mb-2"><strong>Shopping:</strong> {{ inputs.shopping_freq|title }}</div>
-                                <div class="col-md-3 mb-2"><strong>Recycling:</strong> {{ inputs.recycling|title }}</div>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
+            
+            <div class="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
+                <a href="{{ url_for('generate_report', report_type=report_route) }}" class="w-full sm:w-auto bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 px-5 py-2.5 rounded-xl font-semibold transition-all shadow-sm flex items-center justify-center gap-2 text-sm">
+                    <i class="ph-fill ph-file-pdf text-red-500 text-lg"></i> Full Report
+                </a>
+                <a href="{{ url_for('generate_report', report_type='certificate') }}" class="w-full sm:w-auto bg-gradient-to-r from-brand-600 to-brand-500 hover:from-brand-700 hover:to-brand-600 text-white px-5 py-2.5 rounded-xl font-semibold transition-all shadow-md hover:shadow-glow flex items-center justify-center gap-2 text-sm">
+                    <i class="ph-fill ph-certificate text-lg"></i> Certificate
+                </a>
             </div>
         </div>
     </div>
-</div>
 
-<!-- JavaScript for Charts -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Left Column: Scores & Charts -->
+        <div class="lg:col-span-1 space-y-8">
+            <!-- Main Score Card -->
+            <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 text-center relative overflow-hidden">
+                <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-6">
+                    {% if is_esg %}Overall ESG Score{% else %}Total Footprint{% endif %}
+                </h3>
+                
+                {% if is_esg %}
+                    {% if result.esg_risk == 'Low' %}
+                        {% set risk_color = 'bg-brand-50 text-brand-700' %}
+                    {% elif result.esg_risk == 'Medium' %}
+                        {% set risk_color = 'bg-yellow-50 text-yellow-700' %}
+                    {% else %}
+                        {% set risk_color = 'bg-red-50 text-red-700' %}
+                    {% endif %}
+                    <div class="text-6xl font-black text-blue-600 mb-2 tracking-tight">{{ result.total_score }}<span class="text-2xl text-gray-300 font-bold">/100</span></div>
+                    <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full {{ risk_color }} text-sm font-bold mt-3">
+                        Risk Level: {{ result.esg_risk }}
+                    </div>
+                {% else %}
+                    {% if result.carbon_level in ['Low', 'Well Below Average', 'Below Average'] %}
+                        {% set impact_color = 'bg-brand-50 text-brand-700' %}
+                    {% elif result.carbon_level in ['Medium', 'Near Average'] %}
+                        {% set impact_color = 'bg-yellow-50 text-yellow-700' %}
+                    {% else %}
+                        {% set impact_color = 'bg-red-50 text-red-700' %}
+                    {% endif %}
+                    <div class="text-5xl font-black text-brand-600 mb-2 tracking-tight">{{ "{:,.0f}".format(result.total_footprint|float) }}</div>
+                    <div class="text-gray-400 text-sm font-medium mb-5">kg CO₂e / Year</div>
+                    <div class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full {{ impact_color }} text-sm font-bold">
+                        Impact: {{ result.carbon_level }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Chart Card -->
+            <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6">
+                <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-6 text-center">
+                    {% if is_esg %}Pillar Breakdown{% else %}Emissions by Category{% endif %}
+                </h3>
+                <div class="relative h-64 w-full flex justify-center items-center">
+                    {% if is_esg %}
+                    <canvas id="resultsChart" 
+                        data-chart-type="esg"
+                        data-env="{{ result.environmental_score | default(0) }}"
+                        data-soc="{{ result.social_score | default(0) }}"
+                        data-gov="{{ result.governance_score | default(0) }}">
+                    </canvas>
+                    {% else %}
+                    <canvas id="resultsChart" 
+                        data-chart-type="carbon"
+                        data-electricity="{{ result.breakdown.get('electricity', 0) | default(0) }}"
+                        data-transport="{{ result.breakdown.get('transport', 0) | default(0) }}"
+                        data-diet="{{ result.breakdown.get('diet', 0) | default(0) }}"
+                        data-shopping="{{ result.breakdown.get('shopping', 0) | default(0) }}">
+                    </canvas>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Details & Insights -->
+        <div class="lg:col-span-2 space-y-8">
+            
+            <!-- Insights / Recommendations -->
+            <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 md:p-8">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="w-10 h-10 rounded-xl bg-yellow-50 text-yellow-500 flex items-center justify-center border border-yellow-100">
+                        <i class="ph-fill ph-lightbulb text-xl"></i>
+                    </div>
+                    <h2 class="text-xl font-bold text-gray-900">Personalized AI Insights</h2>
+                </div>
+                
+                <div class="space-y-3">
+                    {% if is_esg %}
+                        {% set insights = result.recommendations %}
+                    {% else %}
+                        {% set insights = result.suggestions %}
+                    {% endif %}
+                    
+                    {% if insights %}
+                        {% for item in insights %}
+                        <div class="flex items-start gap-4 p-4 rounded-2xl bg-gray-50 border border-gray-100 hover:bg-white hover:shadow-md transition-all duration-300">
+                            <div class="w-7 h-7 rounded-full bg-white shadow-sm flex items-center justify-center flex-shrink-0 text-brand-600 font-bold text-sm border border-gray-100 mt-0.5">
+                                {{ loop.index }}
+                            </div>
+                            <p class="text-gray-700 text-sm leading-relaxed font-medium">{{ item }}</p>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center py-8 bg-gray-50 rounded-2xl border border-gray-100 text-gray-500 italic">
+                            No specific insights available at this time.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Input Summary Grid -->
+            <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 md:p-8">
+                <h2 class="text-xl font-bold text-gray-900 mb-6">Profile Summary</h2>
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-y-8 gap-x-4">
+                    {% if is_esg %}
+                        <div><p class="text-xs text-gray-400 font-bold uppercase tracking-wider mb-1.5">Industry</p><p class="text-sm font-semibold text-gray-800">{{ inputs.industry | title }}</p></div>
+                        <div><p class="text-xs text-gray-400 font-bold uppercase tracking-wider mb-1.5">Employees</p><p class="text-sm font-semibold text-gray-800">{{ inputs.employees }}</p></div>
+                        <div><p class="text-xs text-gray-400 font-bold uppercase tracking-wider mb-1.5">Energy Usage</p><p class="text-sm font-semibold text-gray-800">{{ inputs.energy_usage }} kWh/mo</p></div>
+                        <div><p class="text-xs text-gray-400 font-bold uppercase tracking-wider mb-1.5">Travel</p><p class="text-sm font-semibold text-gray-800">{{ inputs.travel_km }} km</p></div>
+                        <div><p class="text-xs text-gray-400 font-bold uppercase tracking-wider mb-1.5">Cloud Infra</p><p class="text-sm font-semibold text-gray-800">{{ inputs.cloud_usage | title }}</p></div>
+                        <div><p class="text-xs text-gray-400 font-bold uppercase tracking-wider mb-1.5">Waste Mgt</p><p class="text-sm font-semibold text-gray-800">Level {{ inputs.waste_management }} / 5</p></div>
+                    {% else %}
+                        <div><p class="text-xs text-gray-400 font-bold uppercase tracking-wider mb-1.5">Country</p><p class="text-sm font-semibold text-gray-800">{{ inputs.country }}</p></div>
+                        <div><p class="text-xs text-gray-400 font-bold uppercase tracking-wider mb-1.5">Electricity</p><p class="text-sm font-semibold text-gray-800">{{ inputs.electricity_kwh }} kWh/mo</p></div>
+                        <div><p class="text-xs text-gray-400 font-bold uppercase tracking-wider mb-1.5">Vehicle</p><p class="text-sm font-semibold text-gray-800">{{ inputs.vehicle_type | title }} <span class="text-gray-400 font-normal">({{ inputs.vehicle_km }} km)</span></p></div>
+                        <div><p class="text-xs text-gray-400 font-bold uppercase tracking-wider mb-1.5">Flights</p><p class="text-sm font-semibold text-gray-800">{{ inputs.flight_type | title }}</p></div>
+                        <div><p class="text-xs text-gray-400 font-bold uppercase tracking-wider mb-1.5">Diet</p><p class="text-sm font-semibold text-gray-800">{{ inputs.diet_type | title }}</p></div>
+                        <div><p class="text-xs text-gray-400 font-bold uppercase tracking-wider mb-1.5">Shopping</p><p class="text-sm font-semibold text-gray-800">{{ inputs.shopping_freq | title }}</p></div>
+                    {% endif %}
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    {% if is_esg %}
-    // ESG Risk Gauge Chart
-    const riskCtx = document.getElementById('riskGauge').getContext('2d');
+document.addEventListener("DOMContentLoaded", function() {
+    const canvas = document.getElementById('resultsChart');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    Chart.defaults.font.family = "'Plus Jakarta Sans', sans-serif";
     
-    // Determine needle position based on risk
-    let needleValue;
-    if ("{{ result.esg_risk }}" === "Low") {
-        needleValue = 25;
-    } else if ("{{ result.esg_risk }}" === "Medium") {
-        needleValue = 50;
+    const chartType = canvas.getAttribute('data-chart-type');
+    
+    if (chartType === 'esg') {
+        const env = parseFloat(canvas.getAttribute('data-env')) || 0;
+        const soc = parseFloat(canvas.getAttribute('data-soc')) || 0;
+        const gov = parseFloat(canvas.getAttribute('data-gov')) || 0;
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Environmental', 'Social', 'Governance'],
+                datasets: [{
+                    label: 'Score',
+                    data: [env, soc, gov],
+                    backgroundColor: ['#22c55e', '#3b82f6', '#8b5cf6'],
+                    borderRadius: 6,
+                    borderSkipped: false,
+                    barThickness: 36
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { backgroundColor: 'rgba(17, 24, 39, 0.95)', padding: 12, cornerRadius: 8 }
+                },
+                scales: {
+                    y: { beginAtZero: true, max: 100, grid: { color: '#f3f4f6' }, border: { display: false } },
+                    x: { grid: { display: false }, border: { display: false }, ticks: { font: { weight: '600' } } }
+                }
+            }
+        });
     } else {
-        needleValue = 75;
+        const elec = parseFloat(canvas.getAttribute('data-electricity')) || 0;
+        const trans = parseFloat(canvas.getAttribute('data-transport')) || 0;
+        const diet = parseFloat(canvas.getAttribute('data-diet')) || 0;
+        const shop = parseFloat(canvas.getAttribute('data-shopping')) || 0;
+
+        const bData = {
+            'Electricity': elec,
+            'Transport': trans,
+            'Diet': diet,
+            'Shopping': shop
+        };
+
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: Object.keys(bData),
+                datasets: [{
+                    data: Object.values(bData),
+                    backgroundColor: ['#eab308', '#3b82f6', '#22c55e', '#8b5cf6'],
+                    borderWidth: 0,
+                    hoverOffset: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '70%',
+                plugins: {
+                    legend: { position: 'bottom', labels: { padding: 20, usePointStyle: true, boxWidth: 8 } },
+                    tooltip: { backgroundColor: 'rgba(17, 24, 39, 0.95)', padding: 12, cornerRadius: 8 }
+                }
+            }
+        });
     }
-    
-    const riskGauge = new Chart(riskCtx, {
-        type: 'doughnut',
-        data: {
-            datasets: [{
-                data: [needleValue, 100 - needleValue],
-                backgroundColor: [
-                    "{{ '#28a745' if result.esg_risk == 'Low' else '#ffc107' if result.esg_risk == 'Medium' else '#dc3545' }}",
-                    '#e9ecef'
-                ],
-                borderWidth: 0,
-                circumference: 180,
-                rotation: 270
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            cutout: '80%',
-            plugins: {
-                legend: {
-                    display: false
-                },
-                tooltip: {
-                    enabled: false
-                }
-            }
-        }
-    });
-    
-    {% else %}
-    // Carbon Breakdown Pie Chart
-    const carbonCtx = document.getElementById('carbonChart').getContext('2d');
-    
-    const breakdown = {{ result.breakdown|tojson }};
-    const categories = Object.keys(breakdown).map(key => 
-        key.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())
-    );
-    const values = Object.values(breakdown);
-    
-    // Colors for each category
-    const backgroundColors = [
-        '#FF6384', // Electricity - Red
-        '#36A2EB', // Transport - Blue
-        '#FFCE56', // Diet - Yellow
-        '#4BC0C0', // Shopping - Teal
-        '#9966FF'  // Recycling Credit - Purple
-    ];
-    
-    const carbonChart = new Chart(carbonCtx, {
-        type: 'pie',
-        data: {
-            labels: categories,
-            datasets: [{
-                data: values,
-                backgroundColor: backgroundColors.slice(0, categories.length),
-                borderWidth: 1,
-                borderColor: '#fff'
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    position: 'right',
-                    labels: {
-                        padding: 20,
-                        usePointStyle: true
-                    }
-                },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            const label = context.label || '';
-                            const value = context.raw || 0;
-                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                            const percentage = Math.round((value / total) * 100);
-                            return `${label}: ${value.toLocaleString()} kg (${percentage}%)`;
-                        }
-                    }
-                }
-            }
-        }
-    });
-    
-    // Comparison Gauge Chart
-    const comparisonCtx = document.getElementById('comparisonGauge').getContext('2d');
-    
-    // Calculate position based on carbon level
-    let comparisonValue;
-    if ("{{ result.carbon_level }}" === "Low" || "{{ result.carbon_level }}" === "Very Low") {
-        comparisonValue = 30; // Below average
-    } else if ("{{ result.carbon_level }}" === "Medium" || "{{ result.carbon_level }}" === "Medium-Low" || "{{ result.carbon_level }}" === "Medium-High") {
-        comparisonValue = 50; // Near average
-    } else {
-        comparisonValue = 80; // Above average
-    }
-    
-    const comparisonGauge = new Chart(comparisonCtx, {
-        type: 'doughnut',
-        data: {
-            datasets: [{
-                data: [comparisonValue, 100 - comparisonValue],
-                backgroundColor: [
-                    "{{ '#28a745' if result.carbon_level == 'Low' or result.carbon_level == 'Very Low' else '#ffc107' if 'Medium' in result.carbon_level else '#dc3545' }}",
-                    '#e9ecef'
-                ],
-                borderWidth: 0,
-                circumference: 180,
-                rotation: 270
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            cutout: '80%',
-            plugins: {
-                legend: {
-                    display: false
-                },
-                tooltip: {
-                    enabled: false
-                }
-            }
-        }
-    });
-    {% endif %}
 });
 </script>
 {% endblock %}

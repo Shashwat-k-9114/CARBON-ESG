@@ -38,50 +38,67 @@ except Exception:
     FONT_MEDIUM  = 'Helvetica-Bold'
     FONT_BOLD    = 'Helvetica-Bold'
 
-# ── Brand Colours ──────────────────────────────────────────────────────────────
+# ── Brand Colours (Tailwind Matched) ───────────────────────────────────────────
 C = {
-    'forest':    colors.HexColor('#0D2818'),
-    'primary':   colors.HexColor('#155724'),
-    'mid':       colors.HexColor('#1a6b35'),
-    'emerald':   colors.HexColor('#2ecc71'),
-    'mint':      colors.HexColor('#a8e6cf'),
-    'sage':      colors.HexColor('#E8F5E9'),
-    'sage2':     colors.HexColor('#C8E6C9'),
-    'blue':      colors.HexColor('#0d47a1'),
-    'sky':       colors.HexColor('#42a5f5'),
-    'navy':      colors.HexColor('#0a1428'),
-    'amber':     colors.HexColor('#b7791f'),
-    'gold':      colors.HexColor('#f6d860'),
-    'gold2':     colors.HexColor('#ffd700'),
-    'cream':     colors.HexColor('#fdfaf4'),
-    'parchment': colors.HexColor('#f5efe0'),
-    'warning':   colors.HexColor('#ff9800'),
-    'danger':    colors.HexColor('#ef5350'),
+    # Tailwind Green/Emerald Theme
+    'brand950':  colors.HexColor('#052e16'),
+    'brand900':  colors.HexColor('#14532d'),
+    'brand800':  colors.HexColor('#166534'),
+    'brand700':  colors.HexColor('#15803d'),
+    'brand600':  colors.HexColor('#16a34a'),
+    'brand500':  colors.HexColor('#22c55e'),
+    'brand400':  colors.HexColor('#4ade80'),
+    'brand100':  colors.HexColor('#dcfce7'),
+    'brand50':   colors.HexColor('#f0fdf4'),
+
+    # Tailwind Blue Theme
+    'blue900':   colors.HexColor('#1e3a8a'),
+    'blue800':   colors.HexColor('#1e40af'),
+    'blue600':   colors.HexColor('#2563eb'),
+    'blue500':   colors.HexColor('#3b82f6'),
+    'blue50':    colors.HexColor('#eff6ff'),
+
+    # Tailwind Grays
+    'gray900':   colors.HexColor('#111827'),
+    'gray800':   colors.HexColor('#1f2937'),
+    'gray600':   colors.HexColor('#4b5563'),
+    'gray500':   colors.HexColor('#6b7280'),
+    'gray400':   colors.HexColor('#9ca3af'),
+    'gray200':   colors.HexColor('#e5e7eb'),
+    'gray50':    colors.HexColor('#f9fafb'),
+
+    # Status Colors
+    'yellow500': colors.HexColor('#eab308'),
+    'yellow50':  colors.HexColor('#fefce8'),
+    'red500':    colors.HexColor('#ef4444'),
+    'red50':     colors.HexColor('#fef2f2'),
     'white':     colors.white,
-    'black':     colors.HexColor('#1c1c1e'),
-    'gray1':     colors.HexColor('#f5f5f5'),
-    'gray2':     colors.HexColor('#e0e0e0'),
-    'gray3':     colors.HexColor('#9e9e9e'),
-    'text':      colors.HexColor('#2c2c2e'),
-    'muted':     colors.HexColor('#6c6c70'),
 }
+
+# Aliases for backward compatibility in the code
+C['forest']    = C['brand950']
+C['primary']   = C['brand600']
+C['mid']       = C['brand700']
+C['emerald']   = C['brand500']
+C['sage']      = C['brand50']
+C['sage2']     = C['brand100']
+C['navy']      = C['blue900']
+C['blue']      = C['blue600']
+C['sky']       = C['blue500']
+C['amber']     = C['yellow500']
+C['gold2']     = C['yellow500']
+C['cream']     = C['yellow50']
+C['warning']   = C['yellow500']
+C['danger']    = C['red500']
+C['black']     = C['gray900']
+C['text']      = C['gray800']
+C['muted']     = C['gray500']
+C['gray1']     = C['gray50']
+C['gray2']     = C['gray200']
+C['gray3']     = C['gray500']
 
 
 # ── Custom Flowables ───────────────────────────────────────────────────────────
-
-class FullWidthRect(Flowable):
-    """A decorative full-width coloured rectangle."""
-    def __init__(self, height, fill_color, stroke=False):
-        Flowable.__init__(self)
-        self.height = height
-        self.fill_color = fill_color
-        self.stroke = stroke
-        self.width = 0  # set on draw
-
-    def draw(self):
-        self.canv.setFillColor(self.fill_color)
-        self.canv.rect(0, 0, self.width or 500, self.height, stroke=0, fill=1)
-
 
 class GradientBar(Flowable):
     """Horizontal gradient bar — used as section dividers."""
@@ -89,8 +106,8 @@ class GradientBar(Flowable):
         Flowable.__init__(self)
         self.width  = width
         self.height = height
-        self.c1 = c1 or C['primary']
-        self.c2 = c2 or C['emerald']
+        self.c1 = c1 or C['brand800']
+        self.c2 = c2 or C['brand400']
 
     def draw(self):
         steps = 40
@@ -106,128 +123,16 @@ class GradientBar(Flowable):
 
 
 class SectionDivider(Flowable):
-    """Thin elegant divider with optional label."""
-    def __init__(self, width, label='', color=None):
+    """Thin elegant divider."""
+    def __init__(self, width, color=None):
         Flowable.__init__(self)
         self.width = width
-        self.label = label
         self.color = color or C['gray2']
 
     def draw(self):
         self.canv.setStrokeColor(self.color)
-        self.canv.setLineWidth(0.5)
+        self.canv.setLineWidth(1)
         self.canv.line(0, 2, self.width, 2)
-
-
-class ScoreGauge(Flowable):
-    """
-    Beautiful arc-gauge showing a score 0–100.
-    centre_x, centre_y = position within drawing
-    """
-    def __init__(self, score, width=200, height=120, color=None):
-        Flowable.__init__(self)
-        self.score  = max(0, min(100, score))
-        self.width  = width
-        self.height = height
-        self.color  = color
-
-    def draw(self):
-        cx = self.width / 2
-        cy = 30
-        r  = 70
-        canv = self.canv
-
-        # Background arc (grey)
-        canv.setStrokeColor(C['gray2'])
-        canv.setLineWidth(14)
-        canv.arc(cx - r, cy - r, cx + r, cy + r, startAng=0, extent=180)
-
-        # Score arc (coloured)
-        if self.score > 0:
-            sc = self.color or (
-                C['emerald'] if self.score >= 70 else
-                C['warning'] if self.score >= 40 else
-                C['danger']
-            )
-            canv.setStrokeColor(sc)
-            canv.setLineWidth(14)
-            extent = (self.score / 100) * 180
-            canv.arc(cx - r, cy - r, cx + r, cy + r, startAng=0, extent=extent)
-
-        # Score number
-        canv.setFillColor(C['black'])
-        canv.setFont(FONT_BOLD, 32)
-        canv.drawCentredString(cx, cy - 10, str(int(self.score)))
-
-        # /100 label
-        canv.setFillColor(C['muted'])
-        canv.setFont(FONT_REGULAR, 10)
-        canv.drawCentredString(cx, cy - 26, '/ 100')
-
-
-class CertificateBorder(Flowable):
-    """Elegant decorative border for certificate page."""
-    def __init__(self, width, height, color=None, accent=None):
-        Flowable.__init__(self)
-        self.width  = width
-        self.height = height
-        self.color  = color  or C['amber']
-        self.accent = accent or C['gold2']
-
-    def draw(self):
-        canv  = self.canv
-        w, h  = self.width, self.height
-        m     = 8    # margin
-        r     = 16   # corner radius
-        lw    = 2.5
-
-        # Outer border
-        canv.setStrokeColor(self.color)
-        canv.setLineWidth(lw)
-        canv.roundRect(m, m, w - 2*m, h - 2*m, r, stroke=1, fill=0)
-
-        # Inner border (thin, inset)
-        canv.setStrokeColor(self.accent)
-        canv.setLineWidth(0.8)
-        canv.roundRect(m + 7, m + 7, w - 2*(m+7), h - 2*(m+7), r - 3, stroke=1, fill=0)
-
-        # Corner ornament squares
-        cs = 10
-        for x, y in [(m, m), (w-m-cs, m), (m, h-m-cs), (w-m-cs, h-m-cs)]:
-            canv.setFillColor(self.color)
-            canv.rect(x, y, cs, cs, stroke=0, fill=1)
-
-
-class GoldSeal(Flowable):
-    """Circular gold seal / stamp for certificate."""
-    def __init__(self, size=80):
-        Flowable.__init__(self)
-        self.size   = size
-        self.width  = size
-        self.height = size
-
-    def draw(self):
-        canv = self.canv
-        cx   = self.size / 2
-        cy   = self.size / 2
-        r    = self.size / 2 - 4
-
-        # Outer circle
-        canv.setFillColor(C['gold2'])
-        canv.setStrokeColor(C['amber'])
-        canv.setLineWidth(2)
-        canv.circle(cx, cy, r, stroke=1, fill=1)
-
-        # Inner ring
-        canv.setFillColor(C['amber'])
-        canv.setStrokeColor(colors.white)
-        canv.setLineWidth(1.5)
-        canv.circle(cx, cy, r - 8, stroke=1, fill=0)
-
-        # Star / asterisk in centre
-        canv.setFillColor(C['amber'])
-        canv.setFont(FONT_BOLD, 20)
-        canv.drawCentredString(cx, cy - 7, '★')
 
 
 # ── Page Callbacks ─────────────────────────────────────────────────────────────
@@ -238,35 +143,35 @@ def _header_footer_carbon(canvas, doc):
     w, h = A4
 
     # Top bar
-    canvas.setFillColor(C['forest'])
+    canvas.setFillColor(C['brand950'])
     canvas.rect(0, h - 44, w, 44, stroke=0, fill=1)
 
     # Brand name
     canvas.setFillColor(colors.white)
-    canvas.setFont(FONT_BOLD, 11)
+    canvas.setFont(FONT_BOLD, 12)
     canvas.drawString(36, h - 28, 'Carbon.ESG')
 
-    canvas.setFillColor(colors.HexColor('#2ecc71'))
+    canvas.setFillColor(C['brand400'])
     canvas.setFont(FONT_REGULAR, 9)
     canvas.drawRightString(w - 36, h - 28, 'Carbon Footprint Report  |  Confidential')
 
     # Bottom bar
-    canvas.setFillColor(C['sage'])
-    canvas.rect(0, 0, w, 32, stroke=0, fill=1)
+    canvas.setFillColor(C['gray50'])
+    canvas.rect(0, 0, w, 36, stroke=0, fill=1)
 
-    canvas.setFillColor(C['muted'])
+    canvas.setFillColor(C['gray500'])
     canvas.setFont(FONT_REGULAR, 8)
-    canvas.drawString(36, 10, f'Generated: {datetime.now().strftime("%d %B %Y, %H:%M")}')
-    canvas.drawRightString(w - 36, 10, f'Page {doc.page}  |  Carbon ESG Platform')
+    canvas.drawString(36, 14, f'Generated: {datetime.now().strftime("%d %B %Y, %H:%M")}')
+    canvas.drawRightString(w - 36, 14, f'Page {doc.page}  |  Carbon ESG Platform')
 
     # Thin gradient top accent
     steps = 30
     bw = w / steps
     for i in range(steps):
         t = i / steps
-        r = C['primary'].red + (C['emerald'].red - C['primary'].red) * t
-        g = C['primary'].green + (C['emerald'].green - C['primary'].green) * t
-        b = C['primary'].blue + (C['emerald'].blue - C['primary'].blue) * t
+        r = C['brand600'].red + (C['brand400'].red - C['brand600'].red) * t
+        g = C['brand600'].green + (C['brand400'].green - C['brand600'].green) * t
+        b = C['brand600'].blue + (C['brand400'].blue - C['brand600'].blue) * t
         canvas.setFillColor(colors.Color(r, g, b))
         canvas.rect(i * bw, h - 48, bw + 1, 4, stroke=0, fill=1)
 
@@ -278,32 +183,32 @@ def _header_footer_esg(canvas, doc):
     canvas.saveState()
     w, h = A4
 
-    canvas.setFillColor(C['navy'])
+    canvas.setFillColor(C['blue900'])
     canvas.rect(0, h - 44, w, 44, stroke=0, fill=1)
 
     canvas.setFillColor(colors.white)
-    canvas.setFont(FONT_BOLD, 11)
+    canvas.setFont(FONT_BOLD, 12)
     canvas.drawString(36, h - 28, 'Carbon.ESG')
 
-    canvas.setFillColor(C['sky'])
+    canvas.setFillColor(C['blue500'])
     canvas.setFont(FONT_REGULAR, 9)
     canvas.drawRightString(w - 36, h - 28, 'ESG Readiness Report  |  Confidential')
 
-    canvas.setFillColor(colors.HexColor('#f0f6ff'))
-    canvas.rect(0, 0, w, 32, stroke=0, fill=1)
+    canvas.setFillColor(C['blue50'])
+    canvas.rect(0, 0, w, 36, stroke=0, fill=1)
 
-    canvas.setFillColor(C['muted'])
+    canvas.setFillColor(C['gray600'])
     canvas.setFont(FONT_REGULAR, 8)
-    canvas.drawString(36, 10, f'Generated: {datetime.now().strftime("%d %B %Y, %H:%M")}')
-    canvas.drawRightString(w - 36, 10, f'Page {doc.page}  |  Carbon ESG Platform')
+    canvas.drawString(36, 14, f'Generated: {datetime.now().strftime("%d %B %Y, %H:%M")}')
+    canvas.drawRightString(w - 36, 14, f'Page {doc.page}  |  Carbon ESG Platform')
 
     steps = 30
     bw = w / steps
     for i in range(steps):
         t = i / steps
-        r = C['blue'].red + (C['sky'].red - C['blue'].red) * t
-        g = C['blue'].green + (C['sky'].green - C['blue'].green) * t
-        b = C['blue'].blue + (C['sky'].blue - C['blue'].blue) * t
+        r = C['blue800'].red + (C['blue500'].red - C['blue800'].red) * t
+        g = C['blue800'].green + (C['blue500'].green - C['blue800'].green) * t
+        b = C['blue800'].blue + (C['blue500'].blue - C['blue800'].blue) * t
         canvas.setFillColor(colors.Color(r, g, b))
         canvas.rect(i * bw, h - 48, bw + 1, 4, stroke=0, fill=1)
 
@@ -314,7 +219,7 @@ def _header_footer_esg(canvas, doc):
 
 def _s(name, base='Normal', font=None, size=10, color=None, align=TA_LEFT,
        leading=None, before=0, after=8, bold=False):
-    """Create a paragraph style - FIXED: removed fontName parameter"""
+    """Create a paragraph style"""
     font_name = font or (FONT_BOLD if bold else FONT_REGULAR)
     return ParagraphStyle(
         name=name,
@@ -342,7 +247,6 @@ class PDFGenerator:
         if recommendations is None:
             recommendations = assessment_data.get('suggestions', [])
         
-        # Convert to list if it's not already a list
         if not isinstance(recommendations, list):
             if isinstance(recommendations, dict):
                 recommendations = list(recommendations.values())
@@ -365,203 +269,141 @@ class PDFGenerator:
         W = A4[0] - 72   # usable width
 
         # ── STYLES ────────────────────────────────────────────────────────────
-        sTitle    = _s('Title',    size=26, color=C['forest'], align=TA_CENTER, bold=True, leading=32, after=4)
-        sSub      = _s('Sub',      size=12, color=C['mid'],    align=TA_CENTER, leading=16, after=20)
-        sSec      = _s('Sec',      size=14, color=C['primary'], bold=True, before=6, after=10)
-        sBody     = _s('Body',     size=10, color=C['text'],   leading=15, after=8)
-        sSmall    = _s('Small',    size=8,  color=C['muted'],  align=TA_CENTER, after=4)
-        sLabel    = _s('Label',    size=8,  color=C['muted'],  bold=True, after=2)
-        sVal      = _s('Val',      size=11, color=C['black'],  bold=True, after=0)
-        sRec      = _s('Rec',      size=9,  color=C['text'],   leading=14, after=6)
-        sTH       = _s('TH',       size=9,  color=colors.white, align=TA_CENTER, bold=True)
-        sTD       = _s('TD',       size=9,  color=C['text'],   align=TA_CENTER, leading=13)
-        sTDL      = _s('TDL',      size=9,  color=C['text'],   align=TA_LEFT,   leading=13)
+        sTitle    = _s('Title',    size=28, color=C['gray900'], align=TA_CENTER, bold=True, leading=34, after=4)
+        sSub      = _s('Sub',      size=12, color=C['gray500'], align=TA_CENTER, leading=16, after=24)
+        sSec      = _s('Sec',      size=16, color=C['gray900'], bold=True, before=10, after=8)
+        sBody     = _s('Body',     size=10, color=C['gray800'], leading=16, after=8)
+        sRec      = _s('Rec',      size=10, color=C['gray800'], leading=15, after=6)
+        sTH       = _s('TH',       size=9,  color=C['gray500'], align=TA_LEFT, bold=True)
+        sTD       = _s('TD',       size=10, color=C['gray900'], align=TA_LEFT, leading=14)
 
         footprint = assessment_data.get('total_footprint', 0)
         level     = assessment_data.get('carbon_level', 'Medium')
         username  = user_data.get('username', 'User')
 
-        level_color = C['emerald'] if level == 'Low' else C['warning'] if level == 'Medium' else C['danger']
+        level_color = C['brand500'] if level == 'Low' else C['warning'] if level == 'Medium' else C['danger']
 
         # ── COVER BLOCK ───────────────────────────────────────────────────────
         story.append(Spacer(1, 10))
-        story.append(GradientBar(W, 6, C['primary'], C['emerald']))
-        story.append(Spacer(1, 24))
-
         story.append(Paragraph('Carbon Footprint Report', sTitle))
-        story.append(Paragraph(f'Prepared for <b>{username}</b>', sSub))
+        story.append(Paragraph(f'Personalized Assessment for <b>{username}</b>', sSub))
 
-        # Hero metric table
+        # Hero metric table (Rounded Card)
         hero_data = [
             [
-                Paragraph(f'<b>{int(footprint):,}</b>', _s('H1', size=28, color=level_color, align=TA_CENTER, bold=True, leading=32)),
-                Paragraph(f'<b>{level}</b>', _s('H2', size=22, color=level_color, align=TA_CENTER, bold=True, leading=26)),
-                Paragraph(f'<b>{datetime.now().strftime("%Y")}</b>', _s('H3', size=22, color=C['forest'], align=TA_CENTER, bold=True, leading=26)),
+                Paragraph(f'<b>{int(footprint):,}</b>', _s('H1', size=32, color=level_color, align=TA_CENTER, bold=True, leading=36)),
+                Paragraph(f'<b>{level}</b>', _s('H2', size=24, color=level_color, align=TA_CENTER, bold=True, leading=28)),
             ],
             [
-                Paragraph('kg CO₂e per year', _s('HL1', size=8, color=C['muted'], align=TA_CENTER)),
-                Paragraph('Carbon Level', _s('HL2', size=8, color=C['muted'], align=TA_CENTER)),
-                Paragraph('Assessment Year', _s('HL3', size=8, color=C['muted'], align=TA_CENTER)),
+                Paragraph('kg CO₂e / Year', _s('HL1', size=9, color=C['gray500'], align=TA_CENTER)),
+                Paragraph('Impact Level', _s('HL2', size=9, color=C['gray500'], align=TA_CENTER)),
             ],
         ]
-        hero_table = Table(hero_data, colWidths=[W/3]*3)
+        hero_table = Table(hero_data, colWidths=[W/2]*2)
         hero_table.setStyle(TableStyle([
-            ('BACKGROUND', (0,0), (-1,-1), C['sage']),
-            ('BACKGROUND', (0,0), (0,-1), colors.HexColor('#f0fff4')),
-            ('BOX', (0,0), (-1,-1), 1, C['sage2']),
-            ('LINEAFTER', (0,0), (1,-1), 0.5, C['gray2']),
+            ('BACKGROUND', (0,0), (-1,-1), C['brand50']),
+            ('LINEBETWEEN', (0,0), (-1,-1), 1, C['brand100']),
             ('ALIGN', (0,0), (-1,-1), 'CENTER'),
             ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
-            ('TOPPADDING', (0,0), (-1,-1), 16),
-            ('BOTTOMPADDING', (0,0), (-1,-1), 16),
-            ('ROUNDEDCORNERS', [12, 12, 12, 12]),
+            ('TOPPADDING', (0,0), (-1,-1), 20),
+            ('BOTTOMPADDING', (0,0), (-1,-1), 20),
+            ('ROUNDEDCORNERS', [16, 16, 16, 16]),
         ]))
         story.append(hero_table)
-        story.append(Spacer(1, 24))
+        story.append(Spacer(1, 30))
 
         # ── PROFILE SUMMARY ───────────────────────────────────────────────────
-        story.append(Paragraph('Assessment Overview', sSec))
-        story.append(GradientBar(W, 3, C['primary'], C['emerald']))
+        story.append(Paragraph('Input Summary', sSec))
+        story.append(GradientBar(W, 2, C['brand500'], C['brand400']))
         story.append(Spacer(1, 12))
 
-        profile_rows = [
-            [Paragraph('Field', sTH), Paragraph('Your Data', sTH), Paragraph('Field', sTH), Paragraph('Your Data', sTH)],
-        ]
+        profile_rows = []
         fields = [
             ('Country',           assessment_data.get('country', '—')),
-            ('Electricity',        f"{assessment_data.get('electricity_kwh', '—')} kWh/month"),
+            ('Electricity',        f"{assessment_data.get('electricity_kwh', '—')} kWh/mo"),
             ('Vehicle Type',      assessment_data.get('vehicle_type', '—').title()),
-            ('Vehicle Distance',   f"{assessment_data.get('vehicle_km', '—')} km/month"),
-            ('Flight Type',       assessment_data.get('flight_type', '—').title()),
+            ('Vehicle Dist.',      f"{assessment_data.get('vehicle_km', '—')} km/mo"),
+            ('Flight Freq.',      assessment_data.get('flight_type', '—').title()),
             ('Diet Type',         assessment_data.get('diet_type', '—').title()),
             ('Shopping',          assessment_data.get('shopping_freq', '—').title()),
             ('Recycling',         assessment_data.get('recycling', '—').title()),
         ]
-        # Build 2-column layout
         for i in range(0, len(fields), 2):
             row = []
             for j in [i, i+1]:
                 if j < len(fields):
-                    row.append(Paragraph(fields[j][0], _s(f'PK{j}', size=8, color=C['muted'], bold=True)))
-                    row.append(Paragraph(str(fields[j][1]), _s(f'PV{j}', size=9, color=C['black'])))
+                    row.append(Paragraph(fields[j][0], _s(f'PK{j}', size=8, color=C['gray500'], bold=True)))
+                    row.append(Paragraph(str(fields[j][1]), _s(f'PV{j}', size=10, color=C['gray900'], bold=True)))
                 else:
                     row += [Paragraph('', sTD), Paragraph('', sTD)]
             profile_rows.append(row)
 
-        profile_table = Table(profile_rows, colWidths=[W*0.22, W*0.28, W*0.22, W*0.28])
+        profile_table = Table(profile_rows, colWidths=[W*0.20, W*0.30, W*0.20, W*0.30])
         profile_table.setStyle(TableStyle([
-            ('BACKGROUND', (0,0), (-1,0), C['primary']),
-            ('TEXTCOLOR',  (0,0), (-1,0), colors.white),
-            ('FONTNAME',   (0,0), (-1,0), FONT_BOLD),
-            ('FONTSIZE',   (0,0), (-1,0), 9),
-            ('ALIGN',      (0,0), (-1,-1), 'CENTER'),
+            ('BACKGROUND', (0,0), (-1,-1), C['gray50']),
+            ('ALIGN',      (0,0), (-1,-1), 'LEFT'),
             ('VALIGN',     (0,0), (-1,-1), 'MIDDLE'),
-            ('GRID',       (0,0), (-1,-1), 0.5, C['gray2']),
-            ('ROWBACKGROUNDS', (0,1), (-1,-1), [colors.white, C['gray1']]),
-            ('TOPPADDING',    (0,0), (-1,-1), 8),
-            ('BOTTOMPADDING', (0,0), (-1,-1), 8),
-            ('LEFTPADDING',   (0,0), (-1,-1), 10),
+            ('TOPPADDING',    (0,0), (-1,-1), 12),
+            ('BOTTOMPADDING', (0,0), (-1,-1), 12),
+            ('LEFTPADDING',   (0,0), (-1,-1), 16),
+            ('ROUNDEDCORNERS', [12, 12, 12, 12]),
         ]))
         story.append(profile_table)
-        story.append(Spacer(1, 24))
+        story.append(Spacer(1, 30))
 
         # ── EMISSIONS BREAKDOWN ───────────────────────────────────────────────
         story.append(Paragraph('Emissions Breakdown', sSec))
-        story.append(GradientBar(W, 3, C['primary'], C['emerald']))
+        story.append(GradientBar(W, 2, C['brand500'], C['brand400']))
         story.append(Spacer(1, 12))
 
         breakdown = assessment_data.get('breakdown', {})
         if breakdown:
             bk_data = [
-                [Paragraph(h, sTH) for h in ['Category', 'kg CO₂e / year', '% of Total']],
+                [Paragraph(h, _s('BTH', size=9, color=C['gray500'], align=TA_LEFT, bold=True)) for h in ['Category', 'kg CO₂e / Year', '% of Total']],
             ]
             total_calc = sum(breakdown.values()) or 1
             for name, val in breakdown.items():
                 pct = val / total_calc * 100
                 row = [
-                    Paragraph(f'<b>{name.replace("_", " ").title()}</b>', sTDL),
-                    Paragraph(f'{int(val):,}', _s(f'BV{name}', size=9, color=C['primary'], align=TA_CENTER, bold=True)),
-                    Paragraph(f'{pct:.1f}%', _s(f'BP{name}', size=9, color=C['muted'], align=TA_CENTER)),
+                    Paragraph(f'<b>{name.replace("_", " ").title()}</b>', sTD),
+                    Paragraph(f'{int(val):,}', _s(f'BV{name}', size=10, color=C['brand700'], align=TA_LEFT, bold=True)),
+                    Paragraph(f'{pct:.1f}%', _s(f'BP{name}', size=10, color=C['gray600'], align=TA_LEFT)),
                 ]
                 bk_data.append(row)
 
             bk_table = Table(bk_data, colWidths=[W*0.4, W*0.3, W*0.3])
             bk_table.setStyle(TableStyle([
-                ('BACKGROUND', (0,0), (-1,0), C['forest']),
-                ('TEXTCOLOR',  (0,0), (-1,0), colors.white),
-                ('GRID',       (0,0), (-1,-1), 0.5, C['gray2']),
-                ('ROWBACKGROUNDS', (0,1), (-1,-1), [colors.white, C['gray1']]),
+                ('LINEBELOW', (0,0), (-1,-2), 1, C['gray200']),
                 ('VALIGN',     (0,0), (-1,-1), 'MIDDLE'),
-                ('TOPPADDING',    (0,0), (-1,-1), 9),
-                ('BOTTOMPADDING', (0,0), (-1,-1), 9),
-                ('LEFTPADDING',   (0,0), (-1,-1), 10),
+                ('TOPPADDING',    (0,0), (-1,-1), 12),
+                ('BOTTOMPADDING', (0,0), (-1,-1), 12),
             ]))
             story.append(bk_table)
-            story.append(Spacer(1, 24))
-
-        # ── BENCHMARK ─────────────────────────────────────────────────────────
-        story.append(Paragraph('Benchmarking', sSec))
-        story.append(GradientBar(W, 3, C['primary'], C['emerald']))
-        story.append(Spacer(1, 12))
-
-        benchmarks = [
-            ('Your Footprint',      footprint,  level_color,    True),
-            ('Global Average',      7_200,      C['warning'],   False),
-            ('Sustainable Target',  2_000,      C['emerald'],   False),
-            ('India Average',       1_900,      C['muted'],     False),
-            ('USA Average',         16_000,     C['danger'],    False),
-            ('EU Average',          7_000,      C['sky'],       False),
-        ]
-        max_val = max(v for _, v, _, _ in benchmarks) or 1
-
-        bm_data = [[Paragraph(h, sTH) for h in ['Entity', 'kg CO₂e / yr']]]
-        for name, val, col, bold in benchmarks:
-            bm_data.append([
-                Paragraph(f'<b>{name}</b>' if bold else name, _s(f'BMN{name}', size=9, color=col, align=TA_CENTER, bold=bold)),
-                Paragraph(f'{int(val):,}', _s(f'BMV{name}', size=9, color=col, align=TA_CENTER, bold=bold)),
-            ])
-
-        bm_table = Table(bm_data, colWidths=[W*0.7, W*0.3])
-        bm_table.setStyle(TableStyle([
-            ('BACKGROUND', (0,0), (-1,0), C['forest']),
-            ('TEXTCOLOR',  (0,0), (-1,0), colors.white),
-            ('BACKGROUND', (0,1), (-1,1), colors.HexColor('#f0fff4')),
-            ('GRID',       (0,0), (-1,-1), 0.5, C['gray2']),
-            ('ROWBACKGROUNDS', (0,2), (-1,-1), [colors.white, C['gray1']]),
-            ('VALIGN',     (0,0), (-1,-1), 'MIDDLE'),
-            ('TOPPADDING',    (0,0), (-1,-1), 9),
-            ('BOTTOMPADDING', (0,0), (-1,-1), 9),
-            ('LEFTPADDING',   (0,0), (-1,-1), 10),
-        ]))
-        story.append(bm_table)
-        story.append(Spacer(1, 24))
+            story.append(Spacer(1, 30))
 
         # ── RECOMMENDATIONS ───────────────────────────────────────────────────
-        story.append(Paragraph('Personalised Recommendations', sSec))
-        story.append(GradientBar(W, 3, C['primary'], C['emerald']))
+        story.append(Paragraph('Actionable Insights', sSec))
+        story.append(GradientBar(W, 2, C['brand500'], C['brand400']))
         story.append(Spacer(1, 12))
 
         if recommendations:
-            rec_data = [[Paragraph(h, sTH) for h in ['#', 'Recommendation']]]
+            rec_data = []
             for i, rec in enumerate(recommendations[:8], 1):
                 if isinstance(rec, dict):
                     text = rec.get('text', str(rec))
                 else:
                     text = str(rec)
                 rec_data.append([
-                    Paragraph(f'<b>{i}</b>', _s(f'RN{i}', size=10, color=C['primary'], align=TA_CENTER, bold=True)),
+                    Paragraph(f'<b>{i}.</b>', _s(f'RN{i}', size=11, color=C['brand600'], align=TA_LEFT, bold=True)),
                     Paragraph(text, sRec),
                 ])
-            rec_table = Table(rec_data, colWidths=[W*0.1, W*0.9])
+            rec_table = Table(rec_data, colWidths=[W*0.06, W*0.94])
             rec_table.setStyle(TableStyle([
-                ('BACKGROUND', (0,0), (-1,0), C['primary']),
-                ('TEXTCOLOR',  (0,0), (-1,0), colors.white),
-                ('GRID',       (0,0), (-1,-1), 0.5, C['gray2']),
-                ('ROWBACKGROUNDS', (0,1), (-1,-1), [colors.white, C['sage']]),
-                ('VALIGN',     (0,0), (-1,-1), 'MIDDLE'),
-                ('TOPPADDING',    (0,0), (-1,-1), 9),
-                ('BOTTOMPADDING', (0,0), (-1,-1), 9),
-                ('LEFTPADDING',   (0,1), (-1,-1), 12),
+                ('BACKGROUND', (0,0), (-1,-1), C['brand50']),
+                ('VALIGN',     (0,0), (-1,-1), 'TOP'),
+                ('TOPPADDING',    (0,0), (-1,-1), 12),
+                ('BOTTOMPADDING', (0,0), (-1,-1), 12),
+                ('ROUNDEDCORNERS', [12, 12, 12, 12]),
             ]))
             story.append(rec_table)
         else:
@@ -579,9 +421,9 @@ class PDFGenerator:
             'This carbon footprint report is generated by the Carbon ESG Platform for educational '
             'and awareness purposes only. Figures are AI-estimated based on provided inputs and standard '
             'emission factors (DEFRA). They do not constitute formal environmental certification or regulatory '
-            'compliance documentation. For official carbon accounting, please engage a qualified sustainability consultant.'
+            'compliance documentation.'
         )
-        story.append(Paragraph(disc, _s('Disc', size=7.5, color=C['muted'], align=TA_JUSTIFY, leading=12)))
+        story.append(Paragraph(disc, _s('Disc', size=8, color=C['gray500'], align=TA_JUSTIFY, leading=12)))
 
         doc.build(story, onFirstPage=_header_footer_carbon, onLaterPages=_header_footer_carbon)
         return filename
@@ -595,7 +437,6 @@ class PDFGenerator:
         if recommendations is None:
             recommendations = assessment_data.get('recommendations', [])
         
-        # Convert to list if it's not already a list
         if not isinstance(recommendations, list):
             if isinstance(recommendations, dict):
                 recommendations = list(recommendations.values())
@@ -617,13 +458,12 @@ class PDFGenerator:
         story = []
         W = A4[0] - 72
 
-        sTitle = _s('ET', size=24, color=C['navy'], align=TA_CENTER, bold=True, leading=30, after=4)
-        sSub   = _s('ES', size=11, color=C['blue'],  align=TA_CENTER, leading=15, after=20)
-        sSec   = _s('ESecH', size=13, color=C['navy'], bold=True, before=6, after=10)
-        sBody  = _s('EBody', size=10, color=C['text'], leading=15, after=8)
-        sTH    = _s('ETH', size=9, color=colors.white, align=TA_CENTER, bold=True)
-        sTD    = _s('ETD', size=9, color=C['text'], align=TA_CENTER, leading=13)
-        sTDL   = _s('ETDL', size=9, color=C['text'], leading=13)
+        sTitle = _s('ET', size=28, color=C['gray900'], align=TA_CENTER, bold=True, leading=34, after=4)
+        sSub   = _s('ES', size=12, color=C['blue600'],  align=TA_CENTER, leading=16, after=24)
+        sSec   = _s('ESecH', size=16, color=C['gray900'], bold=True, before=10, after=8)
+        sBody  = _s('EBody', size=10, color=C['gray800'], leading=16, after=8)
+        sTH    = _s('ETH', size=9, color=C['gray500'], align=TA_LEFT, bold=True)
+        sTD    = _s('ETD', size=10, color=C['gray900'], align=TA_LEFT, leading=14)
 
         esg_score   = assessment_data.get('total_score', 0)
         esg_risk    = assessment_data.get('esg_risk', 'Medium')
@@ -633,408 +473,303 @@ class PDFGenerator:
         soc_score   = assessment_data.get('social_score', esg_score * 0.15)
         gov_score   = assessment_data.get('governance_score', esg_score * 0.15)
 
-        risk_color = C['emerald'] if esg_risk == 'Low' else C['warning'] if esg_risk == 'Medium' else C['danger']
+        risk_color = C['brand500'] if esg_risk == 'Low' else C['warning'] if esg_risk == 'Medium' else C['danger']
 
         # ── COVER ─────────────────────────────────────────────────────────────
         story.append(Spacer(1, 10))
-        story.append(GradientBar(W, 6, C['navy'], C['sky']))
-        story.append(Spacer(1, 24))
-
         story.append(Paragraph('ESG Readiness Report', sTitle))
-        story.append(Paragraph(f'{company}  ·  {industry}  ·  {datetime.now().strftime("%B %Y")}', sSub))
+        story.append(Paragraph(f'Prepared for <b>{company}</b> · {industry}', sSub))
 
-        # ESG Score hero
+        # ESG Score hero (Rounded Card)
         hero_data = [
             [
-                Paragraph(f'<b>{esg_score}</b>', _s('SV', size=30, color=C['navy'], align=TA_CENTER, bold=True, leading=34)),
-                Paragraph(f'<b>{esg_risk} Risk</b>', _s('RV', size=18, color=risk_color, align=TA_CENTER, bold=True, leading=22)),
-                Paragraph(f'<b>{int(env_score)}</b>', _s('EV', size=20, color=C['primary'], align=TA_CENTER, bold=True, leading=24)),
-                Paragraph(f'<b>{int(soc_score)}</b>', _s('SoV', size=20, color=C['blue'], align=TA_CENTER, bold=True, leading=24)),
-                Paragraph(f'<b>{int(gov_score)}</b>', _s('GV', size=20, color=colors.HexColor('#4527a0'), align=TA_CENTER, bold=True, leading=24)),
+                Paragraph(f'<b>{esg_score}</b><font size=14 color="{C["gray400"]}">/100</font>', _s('SV', size=36, color=C['blue900'], align=TA_CENTER, bold=True, leading=40)),
+                Paragraph(f'<b>{esg_risk} Risk</b>', _s('RV', size=22, color=risk_color, align=TA_CENTER, bold=True, leading=26)),
             ],
             [
-                Paragraph('Overall Score / 100', _s('SL', size=8, color=C['muted'], align=TA_CENTER)),
-                Paragraph('Risk Classification', _s('RL', size=8, color=C['muted'], align=TA_CENTER)),
-                Paragraph('Environmental', _s('EL', size=8, color=C['muted'], align=TA_CENTER)),
-                Paragraph('Social', _s('SoL', size=8, color=C['muted'], align=TA_CENTER)),
-                Paragraph('Governance', _s('GL', size=8, color=C['muted'], align=TA_CENTER)),
+                Paragraph('Overall ESG Score', _s('SL', size=9, color=C['gray500'], align=TA_CENTER)),
+                Paragraph('Risk Classification', _s('RL', size=9, color=C['gray500'], align=TA_CENTER)),
             ],
         ]
-        hero_table = Table(hero_data, colWidths=[W/5]*5)
+        hero_table = Table(hero_data, colWidths=[W/2]*2)
         hero_table.setStyle(TableStyle([
-            ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#f0f6ff')),
-            ('BACKGROUND', (0,0), (0,-1), colors.HexColor('#e8f0fe')),
-            ('BOX', (0,0), (-1,-1), 1, colors.HexColor('#c5d5f5')),
-            ('LINEAFTER', (0,0), (3,-1), 0.5, colors.HexColor('#c5d5f5')),
+            ('BACKGROUND', (0,0), (-1,-1), C['blue50']),
+            ('LINEBETWEEN', (0,0), (-1,-1), 1, colors.HexColor('#dbeafe')),
             ('ALIGN', (0,0), (-1,-1), 'CENTER'),
             ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
-            ('TOPPADDING', (0,0), (-1,-1), 16),
-            ('BOTTOMPADDING', (0,0), (-1,-1), 16),
+            ('TOPPADDING', (0,0), (-1,-1), 20),
+            ('BOTTOMPADDING', (0,0), (-1,-1), 20),
+            ('ROUNDEDCORNERS', [16, 16, 16, 16]),
         ]))
         story.append(hero_table)
-        story.append(Spacer(1, 24))
-
-        # ── COMPANY PROFILE ────────────────────────────────────────────────────
-        story.append(Paragraph('Company Profile', sSec))
-        story.append(GradientBar(W, 3, C['navy'], C['sky']))
-        story.append(Spacer(1, 12))
-
-        co_fields = [
-            ('Company Name',     company),
-            ('Industry',         industry),
-            ('Employees',        f"{assessment_data.get('employees', 0):,}"),
-            ('Energy Usage',     f"{int(assessment_data.get('energy_usage', 0)):,} kWh/mo"),
-            ('Business Travel',  f"{int(assessment_data.get('travel_km', 0)):,} km/yr"),
-            ('Cloud Usage',      assessment_data.get('cloud_usage', '—').title()),
-            ('Waste Management', f"Level {assessment_data.get('waste_management', '—')} / 5"),
-        ]
-        co_rows = [[Paragraph(h, sTH) for h in ['Field', 'Value']]]
-        for i in range(0, len(co_fields)):
-            row = [
-                Paragraph(co_fields[i][0], _s(f'CF{i}', size=8, color=C['muted'], bold=True)),
-                Paragraph(str(co_fields[i][1]), _s(f'CV{i}', size=9, color=C['black'])),
-            ]
-            co_rows.append(row)
-
-        co_table = Table(co_rows, colWidths=[W*0.3, W*0.7])
-        co_table.setStyle(TableStyle([
-            ('BACKGROUND', (0,0), (-1,0), C['navy']),
-            ('TEXTCOLOR',  (0,0), (-1,0), colors.white),
-            ('GRID',       (0,0), (-1,-1), 0.5, C['gray2']),
-            ('ROWBACKGROUNDS', (0,1), (-1,-1), [colors.white, colors.HexColor('#f0f6ff')]),
-            ('VALIGN',     (0,0), (-1,-1), 'MIDDLE'),
-            ('TOPPADDING', (0,0), (-1,-1), 8),
-            ('BOTTOMPADDING', (0,0), (-1,-1), 8),
-            ('LEFTPADDING', (0,0), (-1,-1), 10),
-        ]))
-        story.append(co_table)
-        story.append(Spacer(1, 24))
+        story.append(Spacer(1, 30))
 
         # ── ESG PILLAR SCORES ─────────────────────────────────────────────────
-        story.append(Paragraph('ESG Pillar Analysis', sSec))
-        story.append(GradientBar(W, 3, C['navy'], C['sky']))
+        story.append(Paragraph('Pillar Analysis', sSec))
+        story.append(GradientBar(W, 2, C['blue600'], C['blue400']))
         story.append(Spacer(1, 12))
 
-        def score_band(s):
-            if s >= 75: return ('Excellent', C['emerald'])
-            if s >= 55: return ('Good',      C['primary'])
-            if s >= 35: return ('Fair',      C['warning'])
-            return ('Poor', C['danger'])
-
         pillars = [
-            ('Environmental', env_score, 70, C['primary']),
-            ('Social', soc_score, 15, C['blue']),
-            ('Governance', gov_score, 15, colors.HexColor('#4527a0')),
+            ('Environmental', env_score, 70, C['brand600']),
+            ('Social', soc_score, 15, C['blue600']),
+            ('Governance', gov_score, 15, colors.HexColor('#7c3aed')), # Violet-600
         ]
 
-        pillar_data = [[Paragraph(h, sTH) for h in ['Pillar', 'Score', 'Weight', 'Band']]]
+        pillar_data = []
         for name, score, weight, col in pillars:
-            band, band_col = score_band(score)
             pillar_data.append([
-                Paragraph(f'<b>{name}</b>', _s(f'PN{name}', size=9, color=col, bold=True)),
-                Paragraph(f'<b>{int(score)}</b>', _s(f'PS{name}', size=9, color=col, align=TA_CENTER, bold=True)),
-                Paragraph(f'{weight}%', _s(f'PW{name}', size=9, color=C['muted'], align=TA_CENTER)),
-                Paragraph(band, _s(f'PB{name}', size=9, color=band_col, align=TA_CENTER, bold=True)),
+                Paragraph(f'<b>{name}</b>', _s(f'PN{name}', size=11, color=C['gray900'], bold=True)),
+                Paragraph(f'<b>{int(score)}</b>', _s(f'PS{name}', size=18, color=col, align=TA_RIGHT, bold=True)),
+            ])
+            pillar_data.append([
+                Paragraph(f'Weight: {weight}%', _s(f'PW{name}', size=8, color=C['gray500'])),
+                Paragraph('', _s(f'PE{name}', size=8)),
             ])
 
-        pillar_table = Table(pillar_data, colWidths=[W*0.3, W*0.2, W*0.2, W*0.3])
+        pillar_table = Table(pillar_data, colWidths=[W*0.7, W*0.3])
         pillar_table.setStyle(TableStyle([
-            ('BACKGROUND', (0,0), (-1,0), C['navy']),
-            ('TEXTCOLOR',  (0,0), (-1,0), colors.white),
-            ('GRID',       (0,0), (-1,-1), 0.5, C['gray2']),
-            ('ROWBACKGROUNDS', (0,1), (-1,-1), [colors.white, colors.HexColor('#f0f6ff')]),
+            ('BACKGROUND', (0,0), (-1,-1), C['gray50']),
+            ('LINEBELOW', (0,1), (-1,1), 1, C['white']),
+            ('LINEBELOW', (0,3), (-1,3), 1, C['white']),
             ('VALIGN',     (0,0), (-1,-1), 'MIDDLE'),
-            ('TOPPADDING',    (0,0), (-1,-1), 10),
-            ('BOTTOMPADDING', (0,0), (-1,-1), 10),
-            ('LEFTPADDING',   (0,0), (-1,-1), 10),
+            ('TOPPADDING',    (0,0), (-1,-1), 6),
+            ('BOTTOMPADDING', (0,0), (-1,-1), 6),
+            ('LEFTPADDING',   (0,0), (-1,-1), 16),
+            ('RIGHTPADDING',  (0,0), (-1,-1), 16),
+            ('ROUNDEDCORNERS', [12, 12, 12, 12]),
         ]))
         story.append(pillar_table)
-        story.append(Spacer(1, 24))
+        story.append(Spacer(1, 30))
 
         # ── KEY METRICS ────────────────────────────────────────────────────
         story.append(Paragraph('Key Performance Metrics', sSec))
-        story.append(GradientBar(W, 3, C['navy'], C['sky']))
+        story.append(GradientBar(W, 2, C['blue600'], C['blue400']))
         story.append(Spacer(1, 12))
 
         metrics_data = [
-            ['Emissions per Employee', f"{assessment_data.get('emissions_per_employee', 0)} tons CO2e"],
-            ['Energy Intensity', f"{assessment_data.get('energy_intensity', 0)} kWh/employee"],
+            [Paragraph('Metric', sTH), Paragraph('Value', sTH)],
+            [Paragraph('<b>Emissions per Employee</b>', sTD), Paragraph(f"{assessment_data.get('emissions_per_employee', 0)} tons CO₂e", sTD)],
+            [Paragraph('<b>Energy Intensity</b>', sTD), Paragraph(f"{assessment_data.get('energy_intensity', 0)} kWh/emp", sTD)],
+            [Paragraph('<b>Industry Benchmark</b>', sTD), Paragraph(f"{assessment_data.get('industry_benchmark', 0)} tons/emp", sTD)],
         ]
-        metrics_table = Table(metrics_data, colWidths=[W*0.5, W*0.5])
+        metrics_table = Table(metrics_data, colWidths=[W*0.6, W*0.4])
         metrics_table.setStyle(TableStyle([
-            ('BACKGROUND', (0,0), (-1,0), colors.HexColor('#f0f6ff')),
-            ('GRID', (0,0), (-1,-1), 0.5, C['gray2']),
+            ('LINEBELOW', (0,0), (-1,-2), 1, C['gray200']),
             ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
-            ('TOPPADDING', (0,0), (-1,-1), 10),
-            ('BOTTOMPADDING', (0,0), (-1,-1), 10),
-            ('LEFTPADDING', (0,0), (-1,-1), 10),
+            ('TOPPADDING', (0,0), (-1,-1), 12),
+            ('BOTTOMPADDING', (0,0), (-1,-1), 12),
         ]))
         story.append(metrics_table)
-        story.append(Spacer(1, 24))
+        story.append(Spacer(1, 30))
 
         # ── RECOMMENDATIONS ────────────────────────────────────────────────────
         if recommendations:
             story.append(Paragraph('Strategic Recommendations', sSec))
-            story.append(GradientBar(W, 3, C['navy'], C['sky']))
+            story.append(GradientBar(W, 2, C['blue600'], C['blue400']))
             story.append(Spacer(1, 12))
 
-            rec_data = [[Paragraph(h, sTH) for h in ['Recommendation']]]
+            rec_data = []
             for i, rec in enumerate(recommendations[:6], 1):
                 if isinstance(rec, dict):
                     txt = rec.get('text', str(rec))
                 else:
                     txt = str(rec)
-                rec_data.append([Paragraph(f'{i}. {txt}', _s(f'RT{i}', size=9, leading=13))])
+                rec_data.append([
+                    Paragraph(f'<b>{i}.</b>', _s(f'RN{i}', size=11, color=C['blue600'], align=TA_LEFT, bold=True)),
+                    Paragraph(txt, _s(f'RT{i}', size=10, color=C['gray800'], leading=15))
+                ])
 
-            rec_table = Table(rec_data, colWidths=[W])
+            rec_table = Table(rec_data, colWidths=[W*0.06, W*0.94])
             rec_table.setStyle(TableStyle([
-                ('BACKGROUND', (0,0), (-1,0), C['navy']),
-                ('TEXTCOLOR',  (0,0), (-1,0), colors.white),
-                ('GRID',       (0,0), (-1,-1), 0.5, C['gray2']),
-                ('ROWBACKGROUNDS', (0,1), (-1,-1), [colors.white, colors.HexColor('#f0f6ff')]),
-                ('VALIGN',     (0,0), (-1,-1), 'MIDDLE'),
-                ('TOPPADDING',    (0,0), (-1,-1), 9),
-                ('BOTTOMPADDING', (0,0), (-1,-1), 9),
-                ('LEFTPADDING',   (0,1), (-1,-1), 20),
+                ('BACKGROUND', (0,0), (-1,-1), C['blue50']),
+                ('VALIGN',     (0,0), (-1,-1), 'TOP'),
+                ('TOPPADDING',    (0,0), (-1,-1), 12),
+                ('BOTTOMPADDING', (0,0), (-1,-1), 12),
+                ('ROUNDEDCORNERS', [12, 12, 12, 12]),
             ]))
             story.append(rec_table)
             story.append(Spacer(1, 24))
 
         # ── DISCLAIMER ────────────────────────────────────────────────────────
-        story.append(SectionDivider(W, color=colors.HexColor('#c5d5f5')))
+        story.append(SectionDivider(W))
         story.append(Spacer(1, 12))
         story.append(Paragraph(
             'This ESG readiness report is generated by the Carbon ESG Platform for educational and strategic awareness '
-            'purposes only. It does not constitute formal ESG certification, audit, regulatory compliance documentation, '
-            'or investment advice. For formal ESG reporting and certification, engage qualified sustainability consultants '
-            'and follow established frameworks (GRI, SASB, TCFD, ISSB).',
-            _s('EDisc', size=7.5, color=C['muted'], align=TA_JUSTIFY, leading=12)
+            'purposes only. It does not constitute formal ESG certification, audit, or regulatory compliance documentation.',
+            _s('EDisc', size=8, color=C['gray500'], align=TA_JUSTIFY, leading=12)
         ))
 
         doc.build(story, onFirstPage=_header_footer_esg, onLaterPages=_header_footer_esg)
         return filename
 
     # ── Certificate ───────────────────────────────────────────────────────────
+# ── Certificate ───────────────────────────────────────────────────────────
 
     def generate_certificate(self, user_data: dict, assessment_type: str, score) -> str:
         """
-        Generate a beautiful, elegant participation certificate.
-        Landscape A4 with gold border, seal, and premium typography.
+        Generate a highly creative, single-page, premium certificate using absolute Canvas drawing.
+        Incorporates organic fluid shapes and a Royal Gold/Emerald aesthetic.
         """
+        from reportlab.pdfgen import canvas
+        
         filename = f"certificate_{user_data['username']}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf"
         filepath = os.path.join('static', 'reports', filename)
         os.makedirs(os.path.dirname(filepath), exist_ok=True)
 
-        # Landscape A4
         page_w, page_h = landscape(A4)
+        
+        # Using Canvas directly guarantees a strict single-page layout
+        c = canvas.Canvas(filepath, pagesize=(page_w, page_h))
 
-        doc = SimpleDocTemplate(
-            filepath,
-            pagesize=landscape(A4),
-            rightMargin=60, leftMargin=60,
-            topMargin=60, bottomMargin=60,
-            title='Certificate of Achievement',
-            author='Carbon ESG Platform',
-        )
+        # Premium Color Palette
+        royal_emerald = colors.HexColor('#064e3b') # Deep rich background
+        deep_accent   = colors.HexColor('#022c22') # Shadow/depth layer
+        gold          = colors.HexColor('#fbbf24') # Royal Gold
+        gold_light    = colors.HexColor('#fef08a') # Highlight Gold
+        gold_dark     = colors.HexColor('#b45309') # Ribbon shadow
+        white         = colors.white
+        
+        # 1. Base Background
+        c.setFillColor(royal_emerald)
+        c.rect(0, 0, page_w, page_h, stroke=0, fill=1)
 
-        def cert_background(canvas, doc):
-            """Draw the full certificate background and border."""
-            canvas.saveState()
+        # 2. Fluid / Organic Background Shapes (Fluid Intelligence design)
+        # Top-right organic wave
+        c.setFillColor(deep_accent)
+        p = c.beginPath()
+        p.moveTo(page_w, page_h)
+        p.lineTo(page_w / 2, page_h)
+        p.curveTo(page_w * 0.7, page_h * 0.8, page_w * 0.8, page_h * 0.4, page_w, page_h * 0.3)
+        p.close()
+        c.drawPath(p, stroke=0, fill=1)
 
-            # Cream parchment background
-            canvas.setFillColor(C['cream'])
-            canvas.rect(0, 0, page_w, page_h, stroke=0, fill=1)
+        # Bottom-left organic wave
+        p = c.beginPath()
+        p.moveTo(0, 0)
+        p.lineTo(page_w * 0.4, 0)
+        p.curveTo(page_w * 0.3, page_h * 0.2, page_w * 0.1, page_h * 0.4, 0, page_h * 0.6)
+        p.close()
+        c.drawPath(p, stroke=0, fill=1)
 
-            # Subtle texture (thin horizontal lines)
-            canvas.setStrokeColor(colors.HexColor('#f0e8d0'))
-            canvas.setLineWidth(0.3)
-            for y in range(0, int(page_h), 6):
-                canvas.line(0, y, page_w, y)
+        # 3. Outer Premium Gold Borders
+        c.setStrokeColor(gold)
+        c.setLineWidth(2.5)
+        c.roundRect(30, 30, page_w - 60, page_h - 60, 15, stroke=1, fill=0)
+        
+        c.setStrokeColor(gold_light)
+        c.setLineWidth(0.8)
+        c.roundRect(38, 38, page_w - 76, page_h - 76, 10, stroke=1, fill=0)
 
-            # Outer gold border
-            canvas.setStrokeColor(C['amber'])
-            canvas.setLineWidth(3)
-            canvas.roundRect(20, 20, page_w - 40, page_h - 40, 8, stroke=1, fill=0)
+        # 4. Sharp Corner Accents
+        for x, y, ang in [
+            (30, page_h - 30, 0),
+            (page_w - 30, page_h - 30, 90),
+            (page_w - 30, 30, 180),
+            (30, 30, 270),
+        ]:
+            c.saveState()
+            c.translate(x, y)
+            c.rotate(ang)
+            c.setFillColor(gold)
+            p = c.beginPath()
+            p.moveTo(0, 0)
+            p.lineTo(35, 0)
+            p.lineTo(0, -35)
+            p.close()
+            c.drawPath(p, stroke=0, fill=1)
+            c.restoreState()
 
-            # Inner thin gold border
-            canvas.setStrokeColor(C['gold2'])
-            canvas.setLineWidth(0.8)
-            canvas.roundRect(28, 28, page_w - 56, page_h - 56, 5, stroke=1, fill=0)
+        # 5. Typography & Content Alignment
+        c.setFillColor(gold_light)
+        c.setFont(FONT_BOLD, 14)
+        c.drawCentredString(page_w / 2, page_h - 90, "C A R B O N . E S G   P L A T F O R M")
 
-            # Corner ornaments
-            for x, y, ang in [
-                (20, page_h - 20, 0),
-                (page_w - 20, page_h - 20, 90),
-                (page_w - 20, 20, 180),
-                (20, 20, 270),
-            ]:
-                canvas.saveState()
-                canvas.translate(x, y)
-                canvas.rotate(ang)
-                canvas.setFillColor(C['amber'])
-                canvas.rect(0, 0, 18, 18, stroke=0, fill=1)
-                canvas.setFillColor(C['gold2'])
-                canvas.rect(3, 3, 12, 12, stroke=0, fill=1)
-                canvas.restoreState()
+        c.setFillColor(white)
+        c.setFont(FONT_BOLD, 46)
+        c.drawCentredString(page_w / 2, page_h - 165, "CERTIFICATE OF EXCELLENCE")
 
-            # Top decorative green strip
-            canvas.setFillColor(C['primary'])
-            canvas.rect(40, page_h - 48, page_w - 80, 12, stroke=0, fill=1)
+        c.setFillColor(gold_light)
+        c.setFont(FONT_LIGHT, 16)
+        c.drawCentredString(page_w / 2, page_h - 220, "This is proudly presented to")
 
-            # Gradient over the strip
-            steps = 40
-            sw = (page_w - 80) / steps
-            for i in range(steps):
-                t = i / steps
-                r = C['primary'].red + (C['emerald'].red - C['primary'].red) * t
-                g = C['primary'].green + (C['emerald'].green - C['primary'].green) * t
-                b = C['primary'].blue + (C['emerald'].blue - C['primary'].blue) * t
-                canvas.setFillColor(colors.Color(r, g, b))
-                canvas.rect(40 + i * sw, page_h - 48, sw + 1, 12, stroke=0, fill=1)
-
-            # Bottom strip (mirror)
-            canvas.setFillColor(C['primary'])
-            canvas.rect(40, 36, page_w - 80, 12, stroke=0, fill=1)
-            for i in range(steps):
-                t = i / steps
-                r = C['primary'].red + (C['emerald'].red - C['primary'].red) * t
-                g = C['primary'].green + (C['emerald'].green - C['primary'].green) * t
-                b = C['primary'].blue + (C['emerald'].blue - C['primary'].blue) * t
-                canvas.setFillColor(colors.Color(r, g, b))
-                canvas.rect(40 + i * sw, 36, sw + 1, 12, stroke=0, fill=1)
-
-            # Gold Seal (bottom-right)
-            sx, sy, sr = page_w - 100, 60, 38
-            # Outer
-            canvas.setFillColor(C['gold2'])
-            canvas.setStrokeColor(C['amber'])
-            canvas.setLineWidth(2)
-            canvas.circle(sx, sy, sr, stroke=1, fill=1)
-            # Inner ring
-            canvas.setFillColor(colors.HexColor('#ffeaa0'))
-            canvas.setStrokeColor(C['amber'])
-            canvas.setLineWidth(1)
-            canvas.circle(sx, sy, sr - 8, stroke=1, fill=1)
-            # Star
-            canvas.setFillColor(C['amber'])
-            canvas.setFont(FONT_BOLD, 22)
-            canvas.drawCentredString(sx, sy - 8, '★')
-
-            # Platform watermark (faint, diagonal)
-            canvas.saveState()
-            canvas.setFillColor(colors.HexColor('#e8dfc8'))
-            canvas.setFont(FONT_LIGHT, 52)
-            canvas.translate(page_w / 2, page_h / 2)
-            canvas.rotate(25)
-            canvas.drawCentredString(0, 0, 'Carbon·ESG')
-            canvas.restoreState()
-
-            canvas.restoreState()
-
-        story = []
-        W = page_w - 120
-
-        # ── CERT CONTENT ──────────────────────────────────────────────────────
-        story.append(Spacer(1, 18))
-
-        # Platform name
-        story.append(Paragraph(
-            'Carbon<font color="#2ecc71">.</font>ESG Platform',
-            _s('CPN', size=13, color=C['mid'], align=TA_CENTER, bold=True, after=4)
-        ))
-
-        story.append(Spacer(1, 8))
-
-        # Main certificate title
-        story.append(Paragraph(
-            'CERTIFICATE OF ACHIEVEMENT',
-            _s('CTit', size=28, color=C['forest'], align=TA_CENTER, bold=True, leading=34, after=4)
-        ))
-
-        story.append(Spacer(1, 6))
-
-        # "This is to certify"
-        story.append(Paragraph(
-            'This is to certify that',
-            _s('CTC', size=13, color=C['muted'], align=TA_CENTER, after=4, font=FONT_LIGHT)
-        ))
-
-        # Recipient name (large, elegant)
         username = user_data.get('username', 'Participant')
-        story.append(Paragraph(
-            username,
-            _s('CName', size=34, color=C['forest'], align=TA_CENTER, bold=True, leading=40, after=8)
-        ))
+        c.setFillColor(gold)
+        c.setFont(FONT_BOLD, 54)
+        c.drawCentredString(page_w / 2, page_h - 290, username.upper())
 
-        story.append(Spacer(1, 14))
+        c.setFillColor(white)
+        c.setFont(FONT_LIGHT, 15)
+        c.drawCentredString(page_w / 2, page_h - 340, "for outstanding performance and successful completion of the")
 
-        story.append(Paragraph(
-            'has successfully completed the',
-            _s('CTC2', size=13, color=C['muted'], align=TA_CENTER, after=6, font=FONT_LIGHT)
-        ))
+        c.setFillColor(gold_light)
+        c.setFont(FONT_BOLD, 22)
+        c.drawCentredString(page_w / 2, page_h - 380, assessment_type.upper())
 
-        story.append(Paragraph(
-            assessment_type,
-            _s('CType', size=16, color=C['primary'], align=TA_CENTER, bold=True, after=4)
-        ))
+        # 6. Bottom Metadata (Signatures & Date)
+        # Left Side: Date
+        c.setFillColor(white)
+        c.setFont(FONT_BOLD, 14)
+        c.drawString(100, 120, datetime.now().strftime("%d %B %Y"))
+        
+        c.setStrokeColor(gold)
+        c.setLineWidth(1)
+        c.line(100, 110, 280, 110)
+        
+        c.setFillColor(gold_light)
+        c.setFont(FONT_LIGHT, 10)
+        c.drawString(100, 95, "DATE OF ISSUE")
 
-        story.append(Paragraph(
-            'on the Carbon ESG Platform',
-            _s('CTC3', size=11, color=C['muted'], align=TA_CENTER, after=16, font=FONT_LIGHT)
-        ))
+        # Right Side: Score
+        c.setFillColor(white)
+        c.setFont(FONT_BOLD, 14)
+        c.drawRightString(page_w - 100, 120, f"Score: {score} / 100")
+        
+        c.line(page_w - 280, 110, page_w - 100, 110)
+        
+        c.setFillColor(gold_light)
+        c.setFont(FONT_LIGHT, 10)
+        c.drawRightString(page_w - 100, 95, "AUTHORISED SIGNATURE")
 
-        # Score and date row
-        meta_data = [
-            [
-                Paragraph(f'<b>{score}</b>', _s('CMScore', size=22, color=C['amber'], align=TA_CENTER, bold=True, leading=26)),
-                Paragraph(f'<b>{datetime.now().strftime("%d %B %Y")}</b>', _s('CMDate', size=14, color=C['forest'], align=TA_CENTER, bold=True, leading=18)),
-            ],
-            [
-                Paragraph('Assessment Score', _s('CMSLbl', size=8, color=C['muted'], align=TA_CENTER)),
-                Paragraph('Date of Issue', _s('CMLbl', size=8, color=C['muted'], align=TA_CENTER)),
-            ],
-        ]
-        meta_table = Table(meta_data, colWidths=[W*0.4, W*0.6])
-        meta_table.setStyle(TableStyle([
-            ('BACKGROUND', (0,0), (-1,-1), colors.HexColor('#f9f4e4')),
-            ('BOX',        (0,0), (-1,-1), 1, C['amber']),
-            ('LINEAFTER',  (0,0), (0,-1), 0.5, C['amber']),
-            ('ALIGN',      (0,0), (-1,-1), 'CENTER'),
-            ('VALIGN',     (0,0), (-1,-1), 'MIDDLE'),
-            ('TOPPADDING', (0,0), (-1,-1), 12),
-            ('BOTTOMPADDING', (0,0), (-1,-1), 12),
-            ('ROUNDEDCORNERS', [6, 6, 6, 6]),
-        ]))
-        story.append(meta_table)
-        story.append(Spacer(1, 20))
+        # 7. Center Gold Seal with Ribbon
+        cx, cy = page_w / 2, 115
+        r_outer = 45
+        r_inner = 35
 
-        # Signature row
-        sig_data = [
-            [
-                Paragraph('_' * 28, _s('SigAL', size=10, color=C['primary'], align=TA_CENTER)),
-                Paragraph('_' * 28, _s('SigBL', size=10, color=C['primary'], align=TA_CENTER)),
-            ],
-            [
-                Paragraph('Authorised Signatory', _s('SigAN', size=8, color=C['muted'], align=TA_CENTER)),
-                Paragraph('Carbon ESG Platform', _s('SigBN', size=8, color=C['muted'], align=TA_CENTER)),
-            ],
-        ]
-        sig_table = Table(sig_data, colWidths=[W*0.5, W*0.5])
-        sig_table.setStyle(TableStyle([
-            ('ALIGN',  (0,0), (-1,-1), 'CENTER'),
-            ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
-            ('TOPPADDING', (0,0), (-1,-1), 4),
-            ('BOTTOMPADDING', (0,0), (-1,-1), 4),
-        ]))
-        story.append(sig_table)
-        story.append(Spacer(1, 16))
+        # Ribbon Tails
+        c.setFillColor(gold_dark)
 
-        # Disclaimer
-        story.append(Paragraph(
-            'This certificate is issued for educational participation purposes only. '
-            'It does not constitute formal professional certification or regulatory compliance documentation.',
-            _s('CDi', size=7.5, color=C['gray3'], align=TA_CENTER, leading=11)
-        ))
+        p1 = c.beginPath()
+        p1.moveTo(cx - 20, cy - 30)
+        p1.lineTo(cx - 45, cy - 90)
+        p1.lineTo(cx - 10, cy - 75)
+        p1.close()
+        c.drawPath(p1, stroke=0, fill=1)
 
-        doc.build(story, onFirstPage=cert_background, onLaterPages=cert_background)
+        p2 = c.beginPath()
+        p2.moveTo(cx + 20, cy - 30)
+        p2.lineTo(cx + 45, cy - 90)
+        p2.lineTo(cx + 10, cy - 75)
+        p2.close()
+        c.drawPath(p2, stroke=0, fill=1)
+
+        # Multi-layer Seal
+        c.setFillColor(gold)
+        c.circle(cx, cy, r_outer, stroke=0, fill=1)
+        
+        c.setFillColor(royal_emerald)
+        c.circle(cx, cy, r_inner, stroke=0, fill=1)
+        
+        c.setStrokeColor(gold_light)
+        c.setLineWidth(1)
+        c.circle(cx, cy, r_inner - 4, stroke=1, fill=0)
+
+        # Star / Center Icon
+        c.setFillColor(gold)
+        c.setFont(FONT_BOLD, 26)
+        c.drawCentredString(cx, cy - 9, "★")
+
+        # Compile and save the single-page PDF
+        c.showPage()
+        c.save()
+
         return filename

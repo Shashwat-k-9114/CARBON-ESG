@@ -431,9 +431,10 @@ def generate_report(report_type):
     
     if report_type == 'individual' and 'last_calculation' in session:
         calculation = session['last_calculation']
-        filename = pdf_gen.generate_individual_report(user, calculation['result'])
+        buffer = pdf_gen.generate_individual_report(user, calculation['result'])
         
         # Save report record to database
+        filename = f"Carbon_Report_{user['username']}_{datetime.now().strftime('%Y%m%d%H%M%S')}.pdf"
         conn = get_db_connection()
         conn.execute(
             'INSERT INTO reports (user_id, report_type, file_path) VALUES (?, ?, ?)',
@@ -442,17 +443,19 @@ def generate_report(report_type):
         conn.commit()
         conn.close()
         
-        return send_file(f'static/reports/{filename}', 
+        return send_file(buffer, 
                         as_attachment=True,
-                        download_name=f'Carbon_Report_{user["username"]}.pdf')
+                        download_name=filename,
+                        mimetype='application/pdf')
     
     elif report_type == 'enterprise' and 'last_esg_calculation' in session:
         calculation = session['last_esg_calculation']
-        filename = pdf_gen.generate_enterprise_report(user, 
+        buffer = pdf_gen.generate_enterprise_report(user, 
                                                      calculation['result'],
                                                      calculation['inputs'])
         
         # Save report record
+        filename = f"ESG_Report_{user['username']}_{datetime.now().strftime('%Y%m%d%H%M%S')}.pdf"
         conn = get_db_connection()
         conn.execute(
             'INSERT INTO reports (user_id, report_type, file_path) VALUES (?, ?, ?)',
@@ -461,30 +464,33 @@ def generate_report(report_type):
         conn.commit()
         conn.close()
         
-        return send_file(f'static/reports/{filename}',
+        return send_file(buffer,
                         as_attachment=True,
-                        download_name=f'ESG_Report_{user["username"]}.pdf')
+                        download_name=filename,
+                        mimetype='application/pdf')
     
     elif report_type == 'certificate':
+        filename = f"Certificate_{user['username']}_{datetime.now().strftime('%Y%m%d%H%M%S')}.pdf"
         # Determine what type of certificate to generate
         if user['user_type'] == 'individual' and 'last_calculation' in session:
             score = session['last_calculation']['result']['total_footprint']
             # Convert footprint to score (inverse)
             cert_score = max(0, 100 - (score / 200))
-            filename = pdf_gen.generate_certificate(user, 
+            buffer = pdf_gen.generate_certificate(user, 
                                                    'Carbon Footprint Assessment',
                                                    round(cert_score, 1))
         elif user['user_type'] == 'enterprise' and 'last_esg_calculation' in session:
             score = session['last_esg_calculation']['result']['total_score']
-            filename = pdf_gen.generate_certificate(user,
+            buffer = pdf_gen.generate_certificate(user,
                                                    'ESG Readiness Assessment',
                                                    score)
         else:
             return redirect(url_for('dashboard'))
         
-        return send_file(f'static/reports/{filename}',
+        return send_file(buffer,
                         as_attachment=True,
-                        download_name=f'Certificate_{user["username"]}.pdf')
+                        download_name=filename,
+                        mimetype='application/pdf')
     
     return redirect(url_for('dashboard'))
 

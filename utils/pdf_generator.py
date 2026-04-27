@@ -19,6 +19,7 @@ from reportlab.graphics.shapes import (
 )
 from reportlab.graphics import renderPDF
 from datetime import datetime
+import io
 import os
 import math
 
@@ -255,13 +256,9 @@ class PDFGenerator:
             else:
                 recommendations = []
             
-        filename  = f"carbon_report_{user_data['username']}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf"
-        filepath  = os.path.join('static', 'reports', filename)
-        filepath  = os.path.join(BASE_DIR, 'static', 'reports', filename)
-        os.makedirs(os.path.dirname(filepath), exist_ok=True)
-
+        buffer = io.BytesIO()
         doc = SimpleDocTemplate(
-            filepath, pagesize=A4,
+            buffer, pagesize=A4,
             rightMargin=36, leftMargin=36,
             topMargin=60, bottomMargin=48,
             title='Carbon Footprint Report',
@@ -429,7 +426,8 @@ class PDFGenerator:
         story.append(Paragraph(disc, _s('Disc', size=8, color=C['gray500'], align=TA_JUSTIFY, leading=12)))
 
         doc.build(story, onFirstPage=_header_footer_carbon, onLaterPages=_header_footer_carbon)
-        return filename
+        buffer.seek(0)
+        return buffer
 
     # ── ESG Report ────────────────────────────────────────────────────────────
 
@@ -446,13 +444,9 @@ class PDFGenerator:
             else:
                 recommendations = []
             
-        filename = f"esg_report_{user_data['username']}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf"
-        filepath = os.path.join('static', 'reports', filename)
-        filepath = os.path.join(BASE_DIR, 'static', 'reports', filename)
-        os.makedirs(os.path.dirname(filepath), exist_ok=True)
-
+        buffer = io.BytesIO()
         doc = SimpleDocTemplate(
-            filepath, pagesize=A4,
+            buffer, pagesize=A4,
             rightMargin=36, leftMargin=36,
             topMargin=60, bottomMargin=48,
             title='ESG Readiness Report',
@@ -604,7 +598,8 @@ class PDFGenerator:
         ))
 
         doc.build(story, onFirstPage=_header_footer_esg, onLaterPages=_header_footer_esg)
-        return filename
+        buffer.seek(0)
+        return buffer
 
     # ── Certificate ───────────────────────────────────────────────────────────
 # ── Certificate ───────────────────────────────────────────────────────────
@@ -616,15 +611,11 @@ class PDFGenerator:
         """
         from reportlab.pdfgen import canvas
         
-        filename = f"certificate_{user_data['username']}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf"
-        filepath = os.path.join('static', 'reports', filename)
-        filepath = os.path.join(BASE_DIR, 'static', 'reports', filename)
-        os.makedirs(os.path.dirname(filepath), exist_ok=True)
-
         page_w, page_h = landscape(A4)
+        buffer = io.BytesIO()
         
         # Using Canvas directly guarantees a strict single-page layout
-        c = canvas.Canvas(filepath, pagesize=(page_w, page_h))
+        c = canvas.Canvas(buffer, pagesize=(page_w, page_h))
 
         # Premium Color Palette
         royal_emerald = colors.HexColor('#064e3b') # Deep rich background
@@ -776,5 +767,6 @@ class PDFGenerator:
         # Compile and save the single-page PDF
         c.showPage()
         c.save()
+        buffer.seek(0)
 
-        return filename
+        return buffer

@@ -1,15 +1,51 @@
-import sqlite3
 import os
+import sqlite3
+import psycopg2
+from psycopg2.extras import DictCursor
+
+DB_URL = os.environ.get('DATABASE_URL')
+
+class DBWrapper:
+    """A smart wrapper that switches between local SQLite and Render's PostgreSQL seamlessly."""
+    def __init__(self):
+        self.is_postgres = bool(DB_URL)
+        if self.is_postgres:
+            self.conn = psycopg2.connect(DB_URL, cursor_factory=DictCursor)
+        else:
+            self.conn = sqlite3.connect('database/carbon_esg.db')
+            self.conn.row_factory = sqlite3.Row
+
+    def execute(self, query, params=()):
+        if self.is_postgres:
+            # Convert SQLite '?' placeholders to Postgres '%s'
+            query = query.replace('?', '%s')
+            
+        cursor = self.conn.cursor()
+        cursor.execute(query, params)
+        return cursor
+
+    def commit(self):
+        self.conn.commit()
+
+    def close(self):
+        self.conn.close()
+
+def get_db_connection():
+    """Get a database connection"""
+    return DBWrapper()
 
 def init_db():
     """Initialize the database with required tables"""
-    conn = sqlite3.connect('database/carbon_esg.db')
-    cursor = conn.cursor()
+    conn = get_db_connection()
+    is_pg = conn.is_postgres
+    
+    # PostgreSQL uses SERIAL, SQLite uses AUTOINCREMENT
+    autoincrement = "SERIAL PRIMARY KEY" if is_pg else "INTEGER PRIMARY KEY AUTOINCREMENT"
     
     # Create users table
-    cursor.execute('''
+    conn.execute(f'''
     CREATE TABLE IF NOT EXISTS users (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        id {autoincrement},
         username TEXT UNIQUE NOT NULL,
         email TEXT UNIQUE NOT NULL,
         password TEXT NOT NULL,
@@ -21,9 +57,9 @@ def init_db():
     ''')
     
     # Create individual assessments table
-    cursor.execute('''
+    conn.execute(f'''
     CREATE TABLE IF NOT EXISTS individual_assessments (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        id {autoincrement},
         user_id INTEGER,
         country TEXT,
         electricity_kwh REAL,
@@ -47,9 +83,9 @@ def init_db():
     ''')
     
     # Create enterprise assessments table
-    cursor.execute('''
+    conn.execute(f'''
     CREATE TABLE IF NOT EXISTS enterprise_assessments (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        id {autoincrement},
         user_id INTEGER,
         company_name TEXT,
         industry TEXT,
@@ -68,9 +104,9 @@ def init_db():
     ''')
     
     # Create reports table
-    cursor.execute('''
+    conn.execute(f'''
     CREATE TABLE IF NOT EXISTS reports (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        id {autoincrement},
         user_id INTEGER,
         report_type TEXT,
         file_path TEXT,
@@ -82,12 +118,6 @@ def init_db():
     conn.commit()
     conn.close()
     print("Database initialized successfully!")
-
-def get_db_connection():
-    """Get a database connection"""
-    conn = sqlite3.connect('database/carbon_esg.db')
-    conn.row_factory = sqlite3.Row  # Return rows as dictionaries
-    return conn
 
 if __name__ == '__main__':
     init_db()

@@ -22,8 +22,12 @@ esg_calculator = ESGCalculator()
 pdf_gen = PDFGenerator()
 
 # Ensure database is initialized
-if not os.path.exists('database/carbon_esg.db'):
+if os.environ.get('DATABASE_URL'):
+    # In production (Render Postgres), always ensure tables exist
     init_db()
+else:
+    if not os.path.exists('database/carbon_esg.db'):
+        init_db()
 
 # ------------------------------------------------------------
 # HELPER FUNCTIONS
@@ -296,7 +300,6 @@ def calculate_individual():
             result['carbon_level']
         ))
         
-        assessment_id = cursor.lastrowid
         conn.commit()
         conn.close()
         
@@ -304,7 +307,7 @@ def calculate_individual():
         session['last_calculation'] = {
             'inputs': inputs,
             'result': result,
-            'assessment_id': assessment_id
+            'assessment_id': None
         }
         
         return redirect(url_for('show_result'))
@@ -369,7 +372,6 @@ def calculate_enterprise():
             result['esg_risk']
         ))
         
-        assessment_id = cursor.lastrowid
         conn.commit()
         conn.close()
         
@@ -377,7 +379,7 @@ def calculate_enterprise():
         session['last_esg_calculation'] = {
             'inputs': inputs,
             'result': result,
-            'assessment_id': assessment_id
+            'assessment_id': None
         }
         
         return redirect(url_for('show_esg_result'))

@@ -22,6 +22,8 @@ from datetime import datetime
 import os
 import math
 
+BASE_DIR = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
+
 # ── Font Registration ──────────────────────────────────────────────────────────
 try:
     pdfmetrics.registerFont(TTFont('Roboto-Light',   'Roboto-Light.ttf'))
@@ -255,6 +257,7 @@ class PDFGenerator:
             
         filename  = f"carbon_report_{user_data['username']}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf"
         filepath  = os.path.join('static', 'reports', filename)
+        filepath  = os.path.join(BASE_DIR, 'static', 'reports', filename)
         os.makedirs(os.path.dirname(filepath), exist_ok=True)
 
         doc = SimpleDocTemplate(
@@ -445,6 +448,7 @@ class PDFGenerator:
             
         filename = f"esg_report_{user_data['username']}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf"
         filepath = os.path.join('static', 'reports', filename)
+        filepath = os.path.join(BASE_DIR, 'static', 'reports', filename)
         os.makedirs(os.path.dirname(filepath), exist_ok=True)
 
         doc = SimpleDocTemplate(
@@ -614,6 +618,7 @@ class PDFGenerator:
         
         filename = f"certificate_{user_data['username']}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf"
         filepath = os.path.join('static', 'reports', filename)
+        filepath = os.path.join(BASE_DIR, 'static', 'reports', filename)
         os.makedirs(os.path.dirname(filepath), exist_ok=True)
 
         page_w, page_h = landscape(A4)

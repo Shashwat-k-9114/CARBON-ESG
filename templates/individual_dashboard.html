@@ -261,12 +261,12 @@
                                     <p class="text-xs text-gray-400 mt-2">Typical petrol car: 12–18 km/L</p>
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2" for="flights_per_year">Flights per Year</label>
-                                    <select class="dash-select w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 text-sm bg-white text-gray-800 transition-all cursor-pointer" id="flights_per_year" name="flights_per_year" required>
-                                        <option value="0" {% if form_data and form_data.flights_per_year=='0' %}selected{% endif %}>None</option>
-                                        <option value="1" {% if form_data and form_data.flights_per_year=='1' %}selected{% endif %}>1–2 short-haul</option>
-                                        <option value="2" {% if form_data and form_data.flights_per_year=='2' %}selected{% endif %}>3–5 flights</option>
-                                        <option value="3" {% if form_data and form_data.flights_per_year=='3' %}selected{% endif %}>6+ or long-haul</option>
+                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2" for="flight_type">Flight Frequency</label>
+                                    <select class="dash-select w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 text-sm bg-white text-gray-800 transition-all cursor-pointer" id="flight_type" name="flight_type" required>
+                                        <option value="none" {% if form_data and form_data.flight_type=='none' %}selected{% endif %}>None</option>
+                                        <option value="short" {% if form_data and form_data.flight_type=='short' %}selected{% endif %}>1–2 short-haul</option>
+                                        <option value="medium" {% if form_data and form_data.flight_type=='medium' %}selected{% endif %}>3–5 flights</option>
+                                        <option value="long" {% if form_data and form_data.flight_type=='long' %}selected{% endif %}>6+ or long-haul</option>
                                     </select>
                                 </div>
                                 <div>

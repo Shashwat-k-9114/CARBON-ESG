@@ -278,9 +278,8 @@ def calculate_individual():
         
         # Save to database
         conn = get_db_connection()
-        cursor = conn.cursor()
         
-        cursor.execute('''
+        conn.execute('''
             INSERT INTO individual_assessments 
             (user_id, country, electricity_kwh, vehicle_type, vehicle_km, 
              flight_type, diet_type, shopping_freq, recycling, 
@@ -349,9 +348,8 @@ def calculate_enterprise():
         
         # Save to database
         conn = get_db_connection()
-        cursor = conn.cursor()
         
-        cursor.execute('''
+        conn.execute('''
             INSERT INTO enterprise_assessments 
             (user_id, company_name, industry, employees, energy_usage, 
              travel_km, cloud_usage, waste_management,

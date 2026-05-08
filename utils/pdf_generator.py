@@ -59,6 +59,7 @@ C = {
     'blue800':   colors.HexColor('#1e40af'),
     'blue600':   colors.HexColor('#2563eb'),
     'blue500':   colors.HexColor('#3b82f6'),
+    'blue400':   colors.HexColor('#60a5fa'),
     'blue50':    colors.HexColor('#eff6ff'),
 
     # Tailwind Grays

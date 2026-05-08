@@ -450,9 +450,15 @@ def generate_report(report_type):
     
     elif report_type == 'enterprise' and 'last_esg_calculation' in session:
         calculation = session['last_esg_calculation']
-        buffer = pdf_gen.generate_enterprise_report(user, 
-                                                     calculation['result'],
-                                                     calculation['inputs'])
+        enterprise_report_data = {
+            **calculation['result'],
+            'company_name': calculation['inputs'].get('company_name'),
+            'industry': calculation['inputs'].get('industry')
+        }
+        buffer = pdf_gen.generate_enterprise_report(
+            user,
+            enterprise_report_data
+        )
         
         # Save report record
         filename = f"ESG_Report_{user['username']}_{datetime.now().strftime('%Y%m%d%H%M%S')}.pdf"
